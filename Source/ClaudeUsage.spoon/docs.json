@@ -1,0 +1,329 @@
+[
+  {
+    "Command": [],
+    "Constant": [
+      {
+        "def": "ClaudeUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "./init.lua",
+        "lineno": "24",
+        "name": "author",
+        "signature": "ClaudeUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "./init.lua",
+        "lineno": "34",
+        "name": "homepage",
+        "signature": "ClaudeUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "./init.lua",
+        "lineno": "29",
+        "name": "license",
+        "signature": "ClaudeUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "./init.lua",
+        "lineno": "14",
+        "name": "name",
+        "signature": "ClaudeUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "./init.lua",
+        "lineno": "19",
+        "name": "version",
+        "signature": "ClaudeUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "Constructor": [],
+    "Deprecated": [],
+    "Field": [],
+    "Function": [],
+    "Method": [
+      {
+        "def": "ClaudeUsage:fetch()",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "524",
+        "name": "fetch",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:fetch()",
+        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:init()",
+        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "604",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:init()",
+        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:start()",
+        "desc": "Starts background polling. Performs an immediate fetch then schedules",
+        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "622",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:start()",
+        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "640",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      }
+    ],
+    "Variable": [
+      {
+        "def": "ClaudeUsage.autoRefreshToken",
+        "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "file": "./init.lua",
+        "lineno": "44",
+        "name": "autoRefreshToken",
+        "signature": "ClaudeUsage.autoRefreshToken",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.pollInterval",
+        "desc": "Seconds between usage API fetches. Default 120.",
+        "doc": "Seconds between usage API fetches. Default 120.",
+        "file": "./init.lua",
+        "lineno": "39",
+        "name": "pollInterval",
+        "signature": "ClaudeUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      }
+    ],
+    "desc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked",
+    "doc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked\nsegmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "items": [
+      {
+        "def": "ClaudeUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "./init.lua",
+        "lineno": "24",
+        "name": "author",
+        "signature": "ClaudeUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.autoRefreshToken",
+        "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "file": "./init.lua",
+        "lineno": "44",
+        "name": "autoRefreshToken",
+        "signature": "ClaudeUsage.autoRefreshToken",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage:fetch()",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "524",
+        "name": "fetch",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:fetch()",
+        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "./init.lua",
+        "lineno": "34",
+        "name": "homepage",
+        "signature": "ClaudeUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage:init()",
+        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "604",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:init()",
+        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "./init.lua",
+        "lineno": "29",
+        "name": "license",
+        "signature": "ClaudeUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "./init.lua",
+        "lineno": "14",
+        "name": "name",
+        "signature": "ClaudeUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.pollInterval",
+        "desc": "Seconds between usage API fetches. Default 120.",
+        "doc": "Seconds between usage API fetches. Default 120.",
+        "file": "./init.lua",
+        "lineno": "39",
+        "name": "pollInterval",
+        "signature": "ClaudeUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage:start()",
+        "desc": "Starts background polling. Performs an immediate fetch then schedules",
+        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "622",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:start()",
+        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "640",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "./init.lua",
+        "lineno": "19",
+        "name": "version",
+        "signature": "ClaudeUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "name": "ClaudeUsage",
+    "stripped_doc": "segmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "submodules": [],
+    "type": "Module"
+  }
+]
