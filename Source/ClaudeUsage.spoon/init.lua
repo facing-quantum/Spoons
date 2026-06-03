@@ -128,9 +128,14 @@ local ROUTINE_CLR = {red=0.529, green=0.620, blue=0.788, alpha=1}  -- slate blue
 local WARN_RED    = {red=0.85,  green=0.22,  blue=0.18,  alpha=1}  -- high-usage red
 local AMBER       = {red=0.95,  green=0.65,  blue=0.10,  alpha=1}
 
+local BG_EMPTY  = {red=0.3,              green=0.3,               blue=0.3,               alpha=0.25}
+local BG_TINTED = {red=ROUTINE_CLR.red,  green=ROUTINE_CLR.green,  blue=ROUTINE_CLR.blue,  alpha=0.55}
+
 local function lerpColor(a, b, t)
-  return {red=a.red+(b.red-a.red)*t, green=a.green+(b.green-a.green)*t,
-          blue=a.blue+(b.blue-a.blue)*t, alpha=1}
+  return {red   = a.red   + (b.red   - a.red)   * t,
+          green = a.green + (b.green - a.green) * t,
+          blue  = a.blue  + (b.blue  - a.blue)  * t,
+          alpha = a.alpha + (b.alpha - a.alpha) * t}
 end
 
 local function barColor(base, pct)
@@ -184,6 +189,15 @@ local function formatCountdown(s)
   return humanDuration(diff)
 end
 
+local FIVE_HOUR_SECS = 18000   -- 5 * 3600
+local SEVEN_DAY_SECS = 604800  -- 7 * 86400
+
+local function timeElapsedPct(resets_at_iso, window_secs)
+  local rt = utcIsoToUnix(resets_at_iso)
+  if not rt then return 0 end
+  return math.max(0, math.min(100, (1 - (rt - os.time()) / window_secs) * 100))
+end
+
 -- ── Auth ───────────────────────────────────────────────────────────────
 
 -- Returns (accessToken, planDisplay, error, refreshToken).
@@ -234,15 +248,16 @@ end
 
 -- ── Menu bar icon ──────────────────────────────────────────────────────
 
-local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h)
-  local SEGS = 8
-  local GAP  = 2.5
-  local segW = (totalW - GAP * (SEGS - 1)) / SEGS
+local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h, timePct)
+  local SEGS   = 8
+  local GAP    = 2.5
+  local segW   = (totalW - GAP * (SEGS - 1)) / SEGS
   local filled = math.floor(pct / 100 * SEGS)
+  local bgClr  = lerpColor(BG_EMPTY, BG_TINTED, math.max(0, math.min(1, (timePct or 0) / 100)))
   for s = 1, SEGS do
     local sx = x0 + (s - 1) * (segW + GAP)
     c:appendElements({type="rectangle", action="fill",
-      fillColor={white=0.3, alpha=0.25},
+      fillColor=bgClr,
       frame={x=sx, y=y0, w=segW, h=h},
       roundedRectRadii={xRadius=1.5, yRadius=1.5}})
     if s <= filled then
@@ -254,7 +269,7 @@ local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h)
   end
 end
 
-local function buildIcon(sPct, wPct)
+local function buildIcon(sPct, wPct, sTimePct, wTimePct)
   sPct = math.max(0, math.min(100, sPct or 0))
   wPct = math.max(0, math.min(100, wPct or 0))
   local W, H, BH     = 94, 22, 8
@@ -266,11 +281,11 @@ local function buildIcon(sPct, wPct)
   c:appendElements({type="text", text=string.format("%d%%", math.floor(sPct)),
     textColor=sc, textSize=11, textAlignment="right",
     frame={x=0, y=0, w=LABEL_W, h=11}})
-  appendGradientBar(c, SESSION_CLR, sPct, BAR_X, 2, BAR_W, BH)
+  appendGradientBar(c, SESSION_CLR, sPct, BAR_X, 2,  BAR_W, BH, sTimePct)
   c:appendElements({type="text", text=string.format("%d%%", math.floor(wPct)),
     textColor=wc, textSize=11, textAlignment="right",
     frame={x=0, y=11, w=LABEL_W, h=11}})
-  appendGradientBar(c, WEEKLY_CLR, wPct, BAR_X, 13, BAR_W, BH)
+  appendGradientBar(c, WEEKLY_CLR,  wPct, BAR_X, 13, BAR_W, BH, wTimePct)
   local img = c:imageFromCanvas()
   img:template(false)
   c:delete()
@@ -572,9 +587,11 @@ function obj:fetch()
         lastData      = parsed
         lastFetchTime = os.time()
         fetchError    = nil
-        local sPct = (parsed.five_hour and parsed.five_hour.utilization) or 0
-        local wPct = (parsed.seven_day and parsed.seven_day.utilization) or 0
-        menubar:setIcon(buildIcon(sPct, wPct), false)
+        local sPct     = (parsed.five_hour and parsed.five_hour.utilization) or 0
+        local wPct     = (parsed.seven_day and parsed.seven_day.utilization)  or 0
+        local sTimePct = timeElapsedPct(parsed.five_hour and parsed.five_hour.resets_at, FIVE_HOUR_SECS)
+        local wTimePct = timeElapsedPct(parsed.seven_day and parsed.seven_day.resets_at, SEVEN_DAY_SECS)
+        menubar:setIcon(buildIcon(sPct, wPct, sTimePct, wTimePct), false)
         menubar:setTitle("")
       else
         fetchError = "Bad response from server"
