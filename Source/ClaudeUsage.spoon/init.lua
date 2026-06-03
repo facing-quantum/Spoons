@@ -125,11 +125,10 @@ end
 local SESSION_CLR = {red=0.851, green=0.467, blue=0.337, alpha=1}  -- warm coral  #D97756
 local WEEKLY_CLR  = {red=0.769, green=0.635, blue=0.349, alpha=1}  -- golden tan  #C4A259
 local ROUTINE_CLR = {red=0.529, green=0.620, blue=0.788, alpha=1}  -- slate blue  #879EC9
+local SAGE_CLR    = {red=0.400, green=0.620, blue=0.480, alpha=1}  -- sage green  #66A07A
 local WARN_RED    = {red=0.85,  green=0.22,  blue=0.18,  alpha=1}  -- high-usage red
 local AMBER       = {red=0.95,  green=0.65,  blue=0.10,  alpha=1}
 
-local BG_EMPTY  = {red=0.3,              green=0.3,               blue=0.3,               alpha=0.25}
-local BG_TINTED = {red=ROUTINE_CLR.red,  green=ROUTINE_CLR.green,  blue=ROUTINE_CLR.blue,  alpha=0.55}
 
 local function lerpColor(a, b, t)
   return {red   = a.red   + (b.red   - a.red)   * t,
@@ -192,10 +191,10 @@ end
 local FIVE_HOUR_SECS = 18000   -- 5 * 3600
 local SEVEN_DAY_SECS = 604800  -- 7 * 86400
 
-local function timeElapsedPct(resets_at_iso, window_secs)
+local function timeRemainingPct(resets_at_iso, window_secs)
   local rt = utcIsoToUnix(resets_at_iso)
   if not rt then return 0 end
-  return math.max(0, math.min(100, (1 - (rt - os.time()) / window_secs) * 100))
+  return math.max(0, math.min(100, (rt - os.time()) / window_secs * 100))
 end
 
 -- ── Auth ───────────────────────────────────────────────────────────────
@@ -248,16 +247,15 @@ end
 
 -- ── Menu bar icon ──────────────────────────────────────────────────────
 
-local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h, timePct)
+local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h)
   local SEGS   = 8
   local GAP    = 2.5
   local segW   = (totalW - GAP * (SEGS - 1)) / SEGS
   local filled = math.floor(pct / 100 * SEGS)
-  local bgClr  = lerpColor(BG_EMPTY, BG_TINTED, math.max(0, math.min(1, (timePct or 0) / 100)))
   for s = 1, SEGS do
     local sx = x0 + (s - 1) * (segW + GAP)
     c:appendElements({type="rectangle", action="fill",
-      fillColor=bgClr,
+      fillColor={white=0.3, alpha=0.25},
       frame={x=sx, y=y0, w=segW, h=h},
       roundedRectRadii={xRadius=1.5, yRadius=1.5}})
     if s <= filled then
@@ -269,10 +267,24 @@ local function appendGradientBar(c, baseClr, pct, x0, y0, totalW, h, timePct)
   end
 end
 
+local function appendThinBar(c, clr, pct, x0, y0, totalW, h)
+  c:appendElements({type="rectangle", action="fill",
+    fillColor={white=0.3, alpha=0.2},
+    frame={x=x0, y=y0, w=totalW, h=h},
+    roundedRectRadii={xRadius=1, yRadius=1}})
+  local filledW = totalW * math.max(0, math.min(1, pct / 100))
+  if filledW > 0 then
+    c:appendElements({type="rectangle", action="fill",
+      fillColor=clr,
+      frame={x=x0, y=y0, w=filledW, h=h},
+      roundedRectRadii={xRadius=1, yRadius=1}})
+  end
+end
+
 local function buildIcon(sPct, wPct, sTimePct, wTimePct)
   sPct = math.max(0, math.min(100, sPct or 0))
   wPct = math.max(0, math.min(100, wPct or 0))
-  local W, H, BH     = 94, 22, 8
+  local W, H, BH     = 94, 26, 8
   local LABEL_W       = 34
   local BAR_X, BAR_W  = 36, 58
   local sc = barColor(SESSION_CLR, sPct)
@@ -281,11 +293,13 @@ local function buildIcon(sPct, wPct, sTimePct, wTimePct)
   c:appendElements({type="text", text=string.format("%d%%", math.floor(sPct)),
     textColor=sc, textSize=11, textAlignment="right",
     frame={x=0, y=0, w=LABEL_W, h=11}})
-  appendGradientBar(c, SESSION_CLR, sPct, BAR_X, 2,  BAR_W, BH, sTimePct)
+  appendGradientBar(c, SESSION_CLR, sPct, BAR_X, 2,  BAR_W, BH)
+  appendThinBar    (c, SAGE_CLR, sTimePct or 0, BAR_X, 11, BAR_W, 2)
   c:appendElements({type="text", text=string.format("%d%%", math.floor(wPct)),
     textColor=wc, textSize=11, textAlignment="right",
-    frame={x=0, y=11, w=LABEL_W, h=11}})
-  appendGradientBar(c, WEEKLY_CLR,  wPct, BAR_X, 13, BAR_W, BH, wTimePct)
+    frame={x=0, y=13, w=LABEL_W, h=11}})
+  appendGradientBar(c, WEEKLY_CLR,  wPct, BAR_X, 15, BAR_W, BH)
+  appendThinBar    (c, SAGE_CLR, wTimePct or 0, BAR_X, 24, BAR_W, 2)
   local img = c:imageFromCanvas()
   img:template(false)
   c:delete()
@@ -296,14 +310,28 @@ end
 
 local function styledBlockBar(pct, baseColor, width)
   width = width or 16
-  local emptyColor = {white=0.45, alpha=0.7}
+  local emptyColor = {white=0.3, alpha=0.5}
   local n = math.max(0, math.min(width, math.floor(pct / 100 * width)))
   local result = hs.styledtext.new("")
   for i = 1, n do
     result = result .. hs.styledtext.new("█", {color=barColor(baseColor, (i / width) * 100)})
   end
-  if n < width then
-    result = result .. hs.styledtext.new(string.rep("░", width - n), {color=emptyColor})
+  for _ = n + 1, width do
+    result = result .. hs.styledtext.new("█", {color=emptyColor})
+  end
+  return result
+end
+
+local function styledBlockBarFlat(pct, clr, width)
+  width = width or 14
+  local emptyColor = {white=0.3, alpha=0.5}
+  local n = math.max(0, math.min(width, math.floor(pct / 100 * width)))
+  local result = hs.styledtext.new("")
+  for i = 1, n do
+    result = result .. hs.styledtext.new("█", {color=clr})
+  end
+  for _ = n + 1, width do
+    result = result .. hs.styledtext.new("█", {color=emptyColor})
   end
   return result
 end
@@ -319,7 +347,7 @@ local function buildMenu()
   local lc   = labelColor()
   local dim  = lc.white > 0.5 and {white=0.55, alpha=0.85} or {white=0.45, alpha=0.85}
   local bold = ".AppleSystemUIFontBold"
-  local tabPS = {tabStops={{location=82, alignment="left"}}}
+  local tabPS = {tabStops={{location=88, alignment="left"}}}
 
   local items = {}
   local function add(title, opts)
@@ -353,14 +381,19 @@ local function buildMenu()
     add(hs.styledtext.new("SESSION", {font={name=bold, size=10}, color=SESSION_CLR}),
         {disabled=true})
     if d.five_hour then
-      local p = math.max(0, d.five_hour.utilization or 0)
+      local p  = math.max(0, d.five_hour.utilization or 0)
+      local tp = timeRemainingPct(d.five_hour.resets_at, FIVE_HOUR_SECS)
       add(hs.styledtext.new("  Current\t", {color=lc, paragraphStyle=tabPS})
         .. styledBlockBar(p, SESSION_CLR, 14)
         .. hs.styledtext.new(string.format("  %d%% used", math.floor(p)), {color=lc}),
         {disabled=true})
+      add(hs.styledtext.new("  Time left\t", {color=dim, paragraphStyle=tabPS})
+        .. styledBlockBarFlat(tp, SAGE_CLR, 14)
+        .. hs.styledtext.new(string.format("  %s", formatCountdown(d.five_hour.resets_at)), {color=dim}),
+        {disabled=true})
       add(hs.styledtext.new(
-        string.format("  Resets in %s  ·  %s",
-          formatCountdown(d.five_hour.resets_at), formatReset(d.five_hour.resets_at)),
+        string.format("  Resets %s",
+          formatReset(d.five_hour.resets_at)),
         {color=dim}), {disabled=true})
     else
       add(hs.styledtext.new("  No data", {color=dim}), {disabled=true})
@@ -371,14 +404,19 @@ local function buildMenu()
     add(hs.styledtext.new("WEEKLY", {font={name=bold, size=10}, color=WEEKLY_CLR}),
         {disabled=true})
     if d.seven_day then
-      local p = math.max(0, d.seven_day.utilization or 0)
+      local p  = math.max(0, d.seven_day.utilization or 0)
+      local tp = timeRemainingPct(d.seven_day.resets_at, SEVEN_DAY_SECS)
       add(hs.styledtext.new("  All models\t", {color=lc, paragraphStyle=tabPS})
         .. styledBlockBar(p, WEEKLY_CLR, 14)
         .. hs.styledtext.new(string.format("  %d%% used", math.floor(p)), {color=lc}),
         {disabled=true})
+      add(hs.styledtext.new("  Time left\t", {color=dim, paragraphStyle=tabPS})
+        .. styledBlockBarFlat(tp, SAGE_CLR, 14)
+        .. hs.styledtext.new(string.format("  %s", formatCountdown(d.seven_day.resets_at)), {color=dim}),
+        {disabled=true})
       add(hs.styledtext.new(
-        string.format("  Resets in %s  ·  %s",
-          formatCountdown(d.seven_day.resets_at), formatReset(d.seven_day.resets_at)),
+        string.format("  Resets %s",
+          formatReset(d.seven_day.resets_at)),
         {color=dim}), {disabled=true})
     end
 
@@ -589,8 +627,8 @@ function obj:fetch()
         fetchError    = nil
         local sPct     = (parsed.five_hour and parsed.five_hour.utilization) or 0
         local wPct     = (parsed.seven_day and parsed.seven_day.utilization)  or 0
-        local sTimePct = timeElapsedPct(parsed.five_hour and parsed.five_hour.resets_at, FIVE_HOUR_SECS)
-        local wTimePct = timeElapsedPct(parsed.seven_day and parsed.seven_day.resets_at, SEVEN_DAY_SECS)
+        local sTimePct = timeRemainingPct(parsed.five_hour and parsed.five_hour.resets_at, FIVE_HOUR_SECS)
+        local wTimePct = timeRemainingPct(parsed.seven_day and parsed.seven_day.resets_at, SEVEN_DAY_SECS)
         menubar:setIcon(buildIcon(sPct, wPct, sTimePct, wTimePct), false)
         menubar:setTitle("")
       else
