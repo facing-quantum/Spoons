@@ -194,7 +194,8 @@ local SEVEN_DAY_SECS = 604800  -- 7 * 86400
 local function timeRemainingPct(resets_at_iso, window_secs)
   local rt = utcIsoToUnix(resets_at_iso)
   if not rt then return 0 end
-  return math.max(0, math.min(100, (rt - os.time()) / window_secs * 100))
+  local linear = math.max(0, math.min(1, (rt - os.time()) / window_secs))
+  return math.sqrt(linear) * 100  -- sqrt scale: keeps bar visible near zero
 end
 
 -- ── Auth ───────────────────────────────────────────────────────────────
