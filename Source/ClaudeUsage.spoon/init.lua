@@ -52,7 +52,6 @@ obj.autoRefreshToken = false
 local menubar, timer
 local lastData, lastFetchTime, fetchError, planName
 local tsCache     = {}
-local _labelColor = nil
 local isFetching       = false
 local rateLimitedUntil = 0
 
@@ -100,7 +99,7 @@ end
 local function getUserAgent()
   if _cachedUserAgent then return _cachedUserAgent end
   local ver = hs.execute(
-    shellQuote(os.getenv("HOME") .. "/.local/bin/claude") .. " --version 2>/dev/null"):gsub("%s+$", "")
+    shellQuote(claudeBinPath()) .. " --version 2>/dev/null"):gsub("%s+$", "")
   local v  = ver:match("^([0-9]+%.[0-9]+%.[0-9]+)")
   _cachedUserAgent = v and ("claude-code/" .. v) or "claude-code/1.0.0"
   return _cachedUserAgent
@@ -295,12 +294,12 @@ local function buildIcon(sPct, wPct, sTimePct, wTimePct)
     textColor=sc, textSize=11, textAlignment="right",
     frame={x=0, y=0, w=LABEL_W, h=11}})
   appendGradientBar(c, SESSION_CLR, sPct, BAR_X, 2,  BAR_W, BH)
-  appendThinBar    (c, SAGE_CLR, sTimePct or 0, BAR_X, 11, BAR_W, 2)
+  appendThinBar    (c, SAGE_CLR, sTimePct, BAR_X, 11, BAR_W, 2)
   c:appendElements({type="text", text=string.format("%d%%", math.floor(wPct)),
     textColor=wc, textSize=11, textAlignment="right",
     frame={x=0, y=13, w=LABEL_W, h=11}})
   appendGradientBar(c, WEEKLY_CLR,  wPct, BAR_X, 15, BAR_W, BH)
-  appendThinBar    (c, SAGE_CLR, wTimePct or 0, BAR_X, 24, BAR_W, 2)
+  appendThinBar    (c, SAGE_CLR, wTimePct, BAR_X, 24, BAR_W, 2)
   local img = c:imageFromCanvas()
   img:template(false)
   c:delete()
@@ -310,7 +309,7 @@ end
 -- ── Dropdown menu ──────────────────────────────────────────────────────
 
 local function styledBlockBar(pct, baseColor, width)
-  width = width or 16
+  width = width or 14
   local emptyColor = {white=0.3, alpha=0.5}
   local n = math.max(0, math.min(width, math.floor(pct / 100 * width)))
   local result = hs.styledtext.new("")
@@ -338,10 +337,8 @@ local function styledBlockBarFlat(pct, clr, width)
 end
 
 local function labelColor()
-  if _labelColor then return _labelColor end
-  _labelColor = (hs.host.interfaceStyle() == "Dark")
+  return (hs.host.interfaceStyle() == "Dark")
     and {white=0.85, alpha=0.9} or {white=0.1, alpha=0.9}
-  return _labelColor
 end
 
 local function buildMenu()
@@ -419,6 +416,8 @@ local function buildMenu()
         string.format("  Resets %s",
           formatReset(d.seven_day.resets_at)),
         {color=dim}), {disabled=true})
+    else
+      add(hs.styledtext.new("  No data", {color=dim}), {disabled=true})
     end
 
     local models = {}
@@ -436,7 +435,8 @@ local function buildMenu()
     if d.extra_usage and type(d.extra_usage) == "table" then
       local ex = d.extra_usage
       local runsUsed  = ex.routine_runs and ex.routine_runs.used
-      local runsLimit = ex.routine_runs and ex.routine_runs.limit or 5
+      local _rl = ex.routine_runs and ex.routine_runs.limit
+      local runsLimit = (_rl == nil) and 5 or _rl
       if runsUsed ~= nil then
         sep()
         add(hs.styledtext.new("ADDITIONAL FEATURES",
@@ -637,12 +637,11 @@ function obj:fetch()
         menubar:setIcon(); menubar:setTitle("⚠")
       end
     elseif status == 429 then
-      local retryAfter = math.min(
-        tonumber(headers and (headers["Retry-After"] or headers["retry-after"])) or obj.pollInterval,
-        3600)
+      local _ra = tonumber(headers and (headers["Retry-After"] or headers["retry-after"]))
+      local retryAfter = math.min((_ra == nil) and obj.pollInterval or _ra, 3600)
       rateLimitedUntil = os.time() + retryAfter
       print(string.format("[ClaudeUsage] HTTP 429 rate limited, retry in %ds", retryAfter))
-      fetchError = "Rate limited — retry in " .. humanDuration(retryAfter)
+      menubar:setIcon(); menubar:setTitle("⚠")
     elseif status == 401 then
       print("[ClaudeUsage] HTTP 401 auth error: " .. tostring(body):sub(1, 200))
       fetchError = "Auth failed — re-open Claude Code to refresh token"
@@ -706,12 +705,11 @@ function obj:stop()
   if timer   then timer:stop();     timer   = nil end
   if menubar then menubar:delete(); menubar = nil end
   lastData, lastFetchTime, fetchError, planName = nil, nil, nil, nil
-  tsCache     = {}
-  _labelColor = nil
-  _cachedBinPath, _cachedClientId, _cachedUserAgent, _cachedOauthBeta = nil, nil, nil, nil
+  tsCache          = {}
   isFetching       = false
   rateLimitedUntil = 0
   isRefreshing     = false
+  _cachedBinPath, _cachedClientId, _cachedUserAgent, _cachedOauthBeta = nil, nil, nil, nil
   return self
 end
 
