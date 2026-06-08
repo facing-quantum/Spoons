@@ -12,9 +12,10 @@
 ---     http://localhost/
 ---
 --- Security default:
----   - Token auth is required.
----   - If CLIPBOARD_BRIDGE_TOKEN is unset, start() refuses to run unless
----     allowUnauthenticated is explicitly set to true.
+---   - Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.
+---   - Set authToken to empty/nil to allow unauthenticated requests.
+---   - Unauthorized requests can trigger a local notification.
+---   - Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.
 
 local obj = {}
 obj.__index = obj
@@ -53,15 +54,10 @@ obj.socketPath = os.getenv("HOME") .. "/.hammerspoon/clipboard-bridge.sock"
 
 --- ClipboardBridge.authToken
 --- Variable
---- Bearer token required by clients.
+--- Bearer token required by clients when set.
 --- Default: CLIPBOARD_BRIDGE_TOKEN environment variable.
+--- Set to empty/nil to disable auth checks.
 obj.authToken = os.getenv("CLIPBOARD_BRIDGE_TOKEN") or ""
-
---- ClipboardBridge.allowUnauthenticated
---- Variable
---- Allows serving requests without a token when set to true.
---- Default: false (secure by default).
-obj.allowUnauthenticated = false
 
 --- ClipboardBridge.maxAge
 --- Variable
@@ -69,7 +65,13 @@ obj.allowUnauthenticated = false
 --- returned instead. Default 60 (1 minute).
 obj.maxAge = 60
 
-local _watcher, _server, _imageTimestamp, _pollTimer
+--- ClipboardBridge.unauthorizedNotificationRateLimit
+--- Variable
+--- Minimum number of seconds between unauthorized access notifications.
+--- Default: 60. Set to 0/nil to disable unauthorized notifications.
+obj.unauthorizedNotificationRateLimit = 60
+
+local _watcher, _server, _imageTimestamp, _pollTimer, _lastUnauthorizedNotificationAt
 
 -- ── Helpers ────────────────────────────────────────────────────────────
 
@@ -79,7 +81,6 @@ end
 
 local HTTP_204 = "HTTP/1.1 204 No Content\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"
 local HTTP_401 = "HTTP/1.1 401 Unauthorized\r\nWWW-Authenticate: Bearer realm=\"ClipboardBridge\"\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"
-local HTTP_503 = "HTTP/1.1 503 Service Unavailable\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"
 local HTTP_500 = "HTTP/1.1 500 Internal Server Error\r\nConnection: close\r\nContent-Length: 0\r\n\r\n"
 local READ_DELIMITER = "\r\n\r\n"
 local POLL_INTERVAL_SECONDS = 0.5
@@ -91,6 +92,25 @@ local function resetRuntime()
     if _server     then _server:disconnect(); _server     = nil end
     if _pollTimer  then _pollTimer:stop();    _pollTimer  = nil end
     _imageTimestamp = nil
+    _lastUnauthorizedNotificationAt = nil
+end
+
+local function notifyUnauthorizedAttempt(self)
+    local now = os.time()
+    local rateLimit = tonumber(self.unauthorizedNotificationRateLimit)
+    if not rateLimit or rateLimit <= 0 then
+        return
+    end
+
+    if _lastUnauthorizedNotificationAt and (now - _lastUnauthorizedNotificationAt) < rateLimit then
+        return
+    end
+
+    _lastUnauthorizedNotificationAt = now
+    hs.notify.new({
+        title = "ClipboardBridge",
+        informativeText = "Unauthorized clipboard access attempt blocked",
+    }):send()
 end
 
 local function parseHeaders(request)
@@ -105,7 +125,7 @@ local function parseHeaders(request)
 end
 
 local function isAuthorized(self, headers)
-    if self.authToken == "" then
+    if not self.authToken or self.authToken == "" then
         return false
     end
 
@@ -168,19 +188,18 @@ local function handleRequest(self)
 end
 
 local function handleConnection(self, request)
-    if self.authToken == "" then
-        if self.allowUnauthenticated then
-            return handleRequest(self)
-        end
-        return HTTP_503
+    if not self.authToken or self.authToken == "" then
+        return handleRequest(self)
     end
 
     if not request or request == "" then
+        notifyUnauthorizedAttempt(self)
         return HTTP_401
     end
 
     local headers = parseHeaders(request)
     if not isAuthorized(self, headers) then
+        notifyUnauthorizedAttempt(self)
         return HTTP_401
     end
 
@@ -200,11 +219,6 @@ end
 ---  * The ClipboardBridge object
 function obj:start()
     resetRuntime()
-
-    if self.authToken == "" and not self.allowUnauthenticated then
-        print("[ClipboardBridge] CLIPBOARD_BRIDGE_TOKEN is not set; refusing unauthenticated mode by default")
-        return self
-    end
 
     _watcher = hs.pasteboard.watcher.new(function()
         if hs.pasteboard.readImage() then
