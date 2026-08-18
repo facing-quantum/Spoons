@@ -5,8 +5,13 @@
 --- expands a dropdown mirroring the platform.claude.com usage page with
 --- reset times in the local timezone.
 ---
+--- The dropdown also reports Claude service health from the public Statuspage
+--- API at status.claude.com: per-component status, a rolling incident summary,
+--- and a submenu of recent incidents linking to their status page entries.
+---
 --- Credentials are read from the macOS Keychain entry "Claude Code-credentials"
---- (set by Claude Code) with a fallback to ~/.claude/.credentials.json.
+--- (set by Claude Code) with a fallback to ~/.claude/.credentials.json. The
+--- status endpoints are public and need no authentication.
 
 local obj = {}
 obj.__index = obj
@@ -41,6 +46,20 @@ obj.homepage = "https://github.com/Hammerspoon/Spoons"
 --- Seconds between usage API fetches. Default 120.
 obj.pollInterval = 120
 
+--- ClaudeUsage.statusPollInterval
+--- Variable
+--- Minimum seconds between status.claude.com component fetches. Default 300.
+--- Checked on each poll tick, so the effective interval is rounded up to the
+--- next multiple of ClaudeUsage.pollInterval.
+obj.statusPollInterval = 300
+
+--- ClaudeUsage.incidentsPollInterval
+--- Variable
+--- Minimum seconds between status.claude.com incident history fetches.
+--- Default 900. This response is much larger than the component summary and
+--- changes rarely, so it is polled far less often.
+obj.incidentsPollInterval = 900
+
 --- ClaudeUsage.autoRefreshToken
 --- Variable
 --- When true, the spoon will attempt to refresh an expired OAuth token itself
@@ -51,13 +70,24 @@ obj.autoRefreshToken = false
 
 local menubar, timer
 local lastData, lastFetchTime, fetchError, planName
+local statusData, statusFetchTime, statusError, statusAttemptTime
+local incidentsData, incidentsError, incidentsAttemptTime
 local tsCache     = {}
 local isFetching       = false
 local rateLimitedUntil = 0
 
-local CREDS_PATH = os.getenv("HOME") .. "/.claude/.credentials.json"
-local USAGE_URL  = "https://api.anthropic.com/api/oauth/usage"
-local TOKEN_URL  = "https://platform.claude.com/v1/oauth/token"
+-- Assigned in the Fetch section; declared here so buildMenu can close over them.
+local fetchStatus, fetchIncidents
+
+local CREDS_PATH    = os.getenv("HOME") .. "/.claude/.credentials.json"
+local USAGE_URL     = "https://api.anthropic.com/api/oauth/usage"
+local TOKEN_URL     = "https://platform.claude.com/v1/oauth/token"
+local STATUS_URL    = "https://status.claude.com/api/v2/summary.json"
+local INCIDENTS_URL = "https://status.claude.com/api/v2/incidents.json"
+
+-- status.claude.com is Atlassian Statuspage, not Anthropic infrastructure
+-- (CNAME → tymt9n04zgry.stspg-customer.com). These endpoints are public and are
+-- sent no credentials.
 
 -- ── Claude binary discovery ────────────────────────────────────────────
 -- All three values are resolved once on first use and cached; they update
@@ -142,20 +172,33 @@ end
 
 -- ── Time ───────────────────────────────────────────────────────────────
 
--- Uses `date -jf` with TZ=UTC so DST is handled correctly.
+-- Days between 1970-01-01 and the given proleptic Gregorian date. Handles
+-- leap years, century non-leaps and 400-year leaps exactly.
+local function daysFromCivil(year, month, day)
+  local y = (month <= 2) and (year - 1) or year
+  local era = math.floor(y / 400)
+  local yearOfEra = y - era * 400
+  local shiftedMonth = month + ((month > 2) and -3 or 9)
+  local dayOfYear = math.floor((153 * shiftedMonth + 2) / 5) + day - 1
+  local dayOfEra = yearOfEra * 365 + math.floor(yearOfEra / 4)
+                   - math.floor(yearOfEra / 100) + dayOfYear
+  return era * 146097 + dayOfEra - 719468
+end
+
+-- Both APIs emit UTC, so there is no DST or offset handling to do and any
+-- trailing offset is ignored. Parsing in Lua avoids a shell fork per timestamp,
+-- which matters because incident history carries dozens of them.
 local function utcIsoToUnix(s)
   if not s then return nil end
   if tsCache[s] then return tsCache[s] end
-  local dt = s:match("(%d+-%d+-%d+T%d+:%d+:%d+)")
-  if not dt then return nil end
-  local out = hs.execute(string.format(
-    'TZ=UTC date -jf "%%Y-%%m-%%dT%%H:%%M:%%S" "%s" "+%%s" 2>/dev/null', dt))
-  local ts = tonumber(out and out:gsub("%s+", ""))
-  if ts then
-    tsCache[s] = ts
-  else
-    print("[ClaudeUsage] utcIsoToUnix: failed to parse timestamp: " .. tostring(dt))
+  local y, mo, d, h, mi, sec = s:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)")
+  if not y then
+    print("[ClaudeUsage] utcIsoToUnix: failed to parse timestamp: " .. tostring(s))
+    return nil
   end
+  local ts = daysFromCivil(tonumber(y), tonumber(mo), tonumber(d)) * 86400
+             + tonumber(h) * 3600 + tonumber(mi) * 60 + tonumber(sec)
+  tsCache[s] = ts
   return ts
 end
 
@@ -195,6 +238,108 @@ local function timeRemainingPct(resets_at_iso, window_secs)
   if not rt then return 0 end
   local linear = math.max(0, math.min(1, (rt - os.time()) / window_secs))
   return math.sqrt(linear) * 100  -- sqrt scale: keeps bar visible near zero
+end
+
+-- ── Claude status ──────────────────────────────────────────────────────
+-- Component health uses semantic shapes rather than a severity ramp: the set
+-- includes a healthy state, and a ramp would either shout when all is well or
+-- whisper during an outage. Incident impact carries no glyph at all and tints
+-- the incident title instead.
+
+local COMPONENT_STATE = {
+  operational          = {glyph="✓", label="operational",    color=SAGE_CLR},
+  degraded_performance = {glyph="▲", label="degraded",       color=AMBER},
+  partial_outage       = {glyph="◐", label="partial outage", color=AMBER},
+  major_outage         = {glyph="✕", label="major outage",   color=WARN_RED},
+  under_maintenance    = {glyph="◇", label="maintenance",    color=ROUTINE_CLR},
+}
+
+local INDICATOR_COLOR = {
+  none        = SAGE_CLR,
+  minor       = AMBER,
+  major       = WARN_RED,
+  critical    = WARN_RED,
+  maintenance = ROUTINE_CLR,
+}
+
+local IMPACT_COLOR = {
+  minor       = AMBER,
+  major       = WARN_RED,
+  critical    = WARN_RED,
+  maintenance = ROUTINE_CLR,
+}
+
+-- Statuspage sets impact independently of the incident title, so an entry whose
+-- prose mentions errors is still dim when it is classified "none". An impact
+-- this spoon does not recognise gets amber rather than silently borrowing the
+-- dim of a genuine "none", and is reported once so it can be mapped later.
+local loggedImpacts = {}
+local function impactColor(impact, dim)
+  if impact == "none" then return dim end
+  local color = IMPACT_COLOR[impact]
+  if color then return color end
+  local key = tostring(impact)
+  if not loggedImpacts[key] then
+    loggedImpacts[key] = true
+    print("[ClaudeUsage] unknown incident impact: " .. key)
+  end
+  return AMBER
+end
+
+-- Unknown statuses are drawn in amber rather than hidden: a state this spoon
+-- has not seen before is more likely to be bad news than good.
+local function componentState(status)
+  local state = COMPONENT_STATE[status]
+  if state then return state end
+  return {glyph="·", color=AMBER,
+          label=status and status:gsub("_", " ") or "unknown"}
+end
+
+-- "Claude API (api.anthropic.com)" → "Claude API". Stripping the parenthetical
+-- rather than mapping known names keeps new components readable.
+local function shortComponentName(name)
+  return (tostring(name):gsub("%s*%b()", ""))
+end
+
+local function componentSince(component)
+  local ts = utcIsoToUnix(component.updated_at)
+  if not ts then return nil end
+  return humanDuration(os.time() - ts)
+end
+
+local function incidentStart(incident)
+  return utcIsoToUnix(incident.started_at or incident.created_at)
+end
+
+local function incidentDuration(incident)
+  local startTs = incidentStart(incident)
+  if not startTs then return nil end
+  local endTs = incident.resolved_at and utcIsoToUnix(incident.resolved_at) or os.time()
+  if not endTs then return nil end
+  return math.max(0, endTs - startTs)
+end
+
+-- Statuspage exposes no uptime or metrics endpoint, so recent reliability is
+-- derived from incident durations instead. Incident time is not downtime, and
+-- the API only returns roughly the last three weeks.
+local function incidentStats(incidents)
+  local now = os.time()
+  local stats = {weekCount=0, weekSecs=0, critical=0, major=0, windowDays=0}
+  local oldest
+  for _, incident in ipairs(incidents) do
+    local startTs = incidentStart(incident)
+    if startTs then
+      if not oldest or startTs < oldest then oldest = startTs end
+      if now - startTs <= SEVEN_DAY_SECS then
+        stats.weekCount = stats.weekCount + 1
+        stats.weekSecs  = stats.weekSecs + (incidentDuration(incident) or 0)
+      end
+      if incident.impact == "critical" then stats.critical = stats.critical + 1 end
+      if incident.impact == "major"    then stats.major    = stats.major    + 1 end
+    end
+  end
+  if oldest then stats.windowDays = math.floor((now - oldest) / 86400) end
+  return stats
 end
 
 -- ── Auth ───────────────────────────────────────────────────────────────
@@ -281,10 +426,12 @@ local function appendThinBar(c, clr, pct, x0, y0, totalW, h)
   end
 end
 
-local function buildIcon(sPct, wPct, sTimePct, wTimePct)
+-- dotColor nil leaves the indicator slot empty. The slot is always reserved so
+-- the icon keeps a constant width instead of shifting when an outage starts.
+local function buildIcon(sPct, wPct, sTimePct, wTimePct, dotColor)
   sPct = math.max(0, math.min(100, sPct or 0))
   wPct = math.max(0, math.min(100, wPct or 0))
-  local W, H, BH     = 94, 26, 8
+  local W, H, BH     = 102, 26, 8
   local LABEL_W       = 34
   local BAR_X, BAR_W  = 36, 58
   local sc = barColor(SESSION_CLR, sPct)
@@ -300,10 +447,40 @@ local function buildIcon(sPct, wPct, sTimePct, wTimePct)
     frame={x=0, y=13, w=LABEL_W, h=11}})
   appendGradientBar(c, WEEKLY_CLR,  wPct, BAR_X, 15, BAR_W, BH)
   appendThinBar    (c, SAGE_CLR, wTimePct, BAR_X, 24, BAR_W, 2)
+  if dotColor then
+    c:appendElements({type="circle", action="fill", fillColor=dotColor,
+      center={x=97, y=13}, radius=3})
+  end
   local img = c:imageFromCanvas()
   img:template(false)
   c:delete()
   return img
+end
+
+-- The icon indicator tracks Claude Code alone, so an outage confined to Cowork
+-- or Government stays quiet. At 6px a shape is illegible, and the indicator only
+-- has to answer "is something wrong", so color alone carries it here.
+local function claudeCodeDotColor()
+  if not statusData or type(statusData.components) ~= "table" then return nil end
+  for _, component in ipairs(statusData.components) do
+    if component.name == "Claude Code" then
+      if component.status == "operational" then return nil end
+      return componentState(component.status).color
+    end
+  end
+  return nil
+end
+
+local function refreshIcon()
+  if not menubar or not lastData then return end
+  local sPct     = (lastData.five_hour and lastData.five_hour.utilization) or 0
+  local wPct     = (lastData.seven_day and lastData.seven_day.utilization) or 0
+  local sTimePct = timeRemainingPct(
+    lastData.five_hour and lastData.five_hour.resets_at, FIVE_HOUR_SECS)
+  local wTimePct = timeRemainingPct(
+    lastData.seven_day and lastData.seven_day.resets_at, SEVEN_DAY_SECS)
+  menubar:setIcon(buildIcon(sPct, wPct, sTimePct, wTimePct, claudeCodeDotColor()), false)
+  menubar:setTitle("")
 end
 
 -- ── Dropdown menu ──────────────────────────────────────────────────────
@@ -339,6 +516,97 @@ end
 local function labelColor()
   return (hs.host.interfaceStyle() == "Dark")
     and {white=0.85, alpha=0.9} or {white=0.1, alpha=0.9}
+end
+
+-- Points available to an incident title before it would reach the duration
+-- column, and the font both the measuring and the drawing must agree on.
+local INCIDENT_TITLE_WIDTH = 320
+local INCIDENT_FONT_NAME   = ".AppleSystemUIFont"
+local INCIDENT_FONT_SIZE   = 13
+
+local titleFitCache = {}
+
+-- Menu text is proportional, so a fixed character cap both clips titles that
+-- would have fit and lets wide ones reach the duration column. Measure the
+-- rendered width instead. Cached by title and font because buildMenu blocks the
+-- UI while it runs and the incident list changes far less often than it opens.
+local function fitIncidentTitle(text, font)
+  local key = font.name .. "|" .. text
+  if titleFitCache[key] then return titleFitCache[key] end
+
+  local function widthOf(s)
+    local size = hs.drawing.getTextDrawingSize(hs.styledtext.new(s, {font=font}))
+    return size and (size.w or size.width or 0) or 0
+  end
+
+  -- Never leave a trailing byte from a partially sliced multi-byte character.
+  local function trimToCharBoundary(s)
+    while #s > 0 do
+      local b = s:byte(#s)
+      if b >= 0x80 and b < 0xC0 then s = s:sub(1, #s - 1) else break end
+    end
+    local last = s:byte(#s)
+    if last and last >= 0xC0 then s = s:sub(1, #s - 1) end
+    return s
+  end
+
+  local fitted = text
+  if widthOf(text) > INCIDENT_TITLE_WIDTH then
+    local full  = widthOf(text)
+    local guess = full > 0 and math.floor(#text * INCIDENT_TITLE_WIDTH / full) or #text
+    fitted = trimToCharBoundary(text:sub(1, math.max(1, guess)))
+    -- The proportional guess lands either side of the budget, so walk to the
+    -- boundary in whichever direction is needed.
+    while #fitted < #text
+      and widthOf(trimToCharBoundary(text:sub(1, #fitted + 1)) .. "…") <= INCIDENT_TITLE_WIDTH do
+      fitted = trimToCharBoundary(text:sub(1, #fitted + 1))
+    end
+    while #fitted > 1 and widthOf(fitted .. "…") > INCIDENT_TITLE_WIDTH do
+      fitted = trimToCharBoundary(fitted:sub(1, #fitted - 1))
+    end
+    fitted = fitted:gsub("%s+$", "") .. "…"
+  end
+
+  titleFitCache[key] = fitted
+  return fitted
+end
+
+-- major and critical share a red, so critical is set bold to keep the two
+-- distinguishable now that no glyph separates them.
+local function buildIncidentSubmenu(dim, bold)
+  -- The key is tabStopType, not alignment, and the style must be carried by
+  -- every run: AppKit reads it from the range holding the tab character, so
+  -- styling only the leading run silently falls back to 28pt default stops.
+  -- A right stop ends text at location, which must clear the widest title.
+  local incidentPS = {tabStops={{location=430, tabStopType="right"}}}
+  local entries = {}
+  for _, incident in ipairs(incidentsData) do
+    local startTs = incidentStart(incident)
+    local age = incident.resolved_at
+      and (startTs and humanDuration(os.time() - startTs) or "?")
+      or "now"
+    local secs = incidentDuration(incident)
+    local font = {name = incident.impact == "critical" and bold or INCIDENT_FONT_NAME,
+                  size = INCIDENT_FONT_SIZE}
+    local title =
+      hs.styledtext.new(
+        "  " .. fitIncidentTitle(incident.name or "Untitled incident", font),
+        {color=impactColor(incident.impact, dim), font=font, paragraphStyle=incidentPS})
+      .. hs.styledtext.new(
+        "\t" .. age .. (secs and (" · " .. humanDuration(secs)) or ""),
+        {color=dim, font={name=INCIDENT_FONT_NAME, size=INCIDENT_FONT_SIZE},
+         paragraphStyle=incidentPS})
+    local link = incident.shortlink
+    table.insert(entries, {
+      title    = title,
+      fn       = link and function() hs.urlevent.openURL(link) end or nil,
+      disabled = link == nil,
+    })
+  end
+  table.insert(entries, {title="-"})
+  table.insert(entries, {title="Open status.claude.com",
+    fn=function() hs.urlevent.openURL("https://status.claude.com") end})
+  return entries
 end
 
 local function buildMenu()
@@ -452,6 +720,66 @@ local function buildMenu()
     end
   end
 
+  -- ── Claude status ───────────────────────────────────────────────────
+  -- Rendered outside the usage branches above: service health is independent of
+  -- whether the usage fetch succeeded, and status.claude.com has itself been the
+  -- subject of an incident.
+  sep()
+  local statusPS = {tabStops={{location=24,  alignment="left"},
+                              {location=176, alignment="left"}}}
+  local statusHeader = hs.styledtext.new("STATUS", {font={name=bold, size=10}, color=lc})
+  if statusData and type(statusData.status) == "table" and statusData.status.description then
+    statusHeader = statusHeader .. hs.styledtext.new(
+      "  " .. statusData.status.description,
+      {font={name=bold, size=10},
+       color=INDICATOR_COLOR[statusData.status.indicator] or lc})
+  end
+  add(statusHeader, {disabled=true})
+
+  if statusData and type(statusData.components) == "table" then
+    for _, component in ipairs(statusData.components) do
+      if not component.group then
+        local state = componentState(component.status)
+        local row = hs.styledtext.new("  " .. state.glyph,
+                      {color=state.color, paragraphStyle=statusPS})
+          .. hs.styledtext.new("\t" .. shortComponentName(component.name),
+                               {color=lc, paragraphStyle=statusPS})
+        if component.status ~= "operational" then
+          local since = componentSince(component)
+          row = row .. hs.styledtext.new(
+            "\t" .. state.label .. (since and (" · " .. since) or ""),
+            {color=state.color, paragraphStyle=statusPS})
+        end
+        add(row, {disabled=true})
+      end
+    end
+  end
+
+  if statusError then
+    local lastOk = statusFetchTime
+      and (" · last ok " .. humanDuration(os.time() - statusFetchTime) .. " ago") or ""
+    add(hs.styledtext.new("  " .. statusError .. lastOk, {color=dim}), {disabled=true})
+  elseif not statusData then
+    add(hs.styledtext.new("  Fetching…", {color=dim}), {disabled=true})
+  end
+
+  if incidentsError then
+    add(hs.styledtext.new("  " .. incidentsError, {color=dim}), {disabled=true})
+  elseif incidentsData and #incidentsData == 0 then
+    add(hs.styledtext.new("  No recent incidents", {color=dim}), {disabled=true})
+  elseif incidentsData then
+    local stats = incidentStats(incidentsData)
+    add(hs.styledtext.new(string.format("  %d incident%s in 7d · ~%s degraded",
+      stats.weekCount, stats.weekCount == 1 and "" or "s",
+      humanDuration(stats.weekSecs)), {color=dim}), {disabled=true})
+    if stats.critical > 0 or stats.major > 0 then
+      add(hs.styledtext.new(string.format("  %d critical · %d major in %dd",
+        stats.critical, stats.major, stats.windowDays), {color=dim}), {disabled=true})
+    end
+    add(hs.styledtext.new("  Past incidents", {color=lc}),
+        {menu=buildIncidentSubmenu(dim, bold)})
+  end
+
   -- ── Footer ──────────────────────────────────────────────────────────
   sep()
   if lastFetchTime then
@@ -466,7 +794,11 @@ local function buildMenu()
   elseif isFetching then
     add(hs.styledtext.new("Fetching…", {color=dim}), {disabled=true})
   else
-    add("Refresh now", {fn=function() obj:fetch() end})
+    add("Refresh now", {fn=function()
+      obj:fetch()
+      fetchStatus()
+      fetchIncidents()
+    end})
   end
 
   return items
@@ -575,6 +907,51 @@ end
 
 -- ── Fetch ──────────────────────────────────────────────────────────────
 
+-- Status failures are kept out of fetchError and never set the ⚠ title, which
+-- stays reserved for usage and auth problems. Stale component data is left on
+-- screen with the error noting how long ago it was last confirmed.
+function fetchStatus()
+  statusAttemptTime = os.time()
+  hs.http.asyncGet(STATUS_URL, {["User-Agent"] = getUserAgent()},
+    function(status, body, _)
+      if not menubar then return end  -- stop() fired while request was in-flight
+      if status ~= 200 then
+        print(string.format("[ClaudeUsage] status fetch HTTP %d", status))
+        statusError = string.format("status page unavailable (HTTP %d)", status)
+        return
+      end
+      local ok, parsed = pcall(hs.json.decode, body)
+      if not (ok and type(parsed) == "table" and type(parsed.components) == "table") then
+        statusError = "status page returned unexpected data"
+        return
+      end
+      statusData      = parsed
+      statusFetchTime = os.time()
+      statusError     = nil
+      refreshIcon()
+    end)
+end
+
+function fetchIncidents()
+  incidentsAttemptTime = os.time()
+  hs.http.asyncGet(INCIDENTS_URL, {["User-Agent"] = getUserAgent()},
+    function(status, body, _)
+      if not menubar then return end
+      if status ~= 200 then
+        print(string.format("[ClaudeUsage] incidents fetch HTTP %d", status))
+        incidentsError = "incident history unavailable"
+        return
+      end
+      local ok, parsed = pcall(hs.json.decode, body)
+      if not (ok and type(parsed) == "table" and type(parsed.incidents) == "table") then
+        incidentsError = "incident history returned unexpected data"
+        return
+      end
+      incidentsData  = parsed.incidents
+      incidentsError = nil
+    end)
+end
+
 --- ClaudeUsage:fetch()
 --- Method
 --- Immediately fetches current usage from the Anthropic API and updates the
@@ -626,12 +1003,7 @@ function obj:fetch()
         lastData      = parsed
         lastFetchTime = os.time()
         fetchError    = nil
-        local sPct     = (parsed.five_hour and parsed.five_hour.utilization) or 0
-        local wPct     = (parsed.seven_day and parsed.seven_day.utilization)  or 0
-        local sTimePct = timeRemainingPct(parsed.five_hour and parsed.five_hour.resets_at, FIVE_HOUR_SECS)
-        local wTimePct = timeRemainingPct(parsed.seven_day and parsed.seven_day.resets_at, SEVEN_DAY_SECS)
-        menubar:setIcon(buildIcon(sPct, wPct, sTimePct, wTimePct), false)
-        menubar:setTitle("")
+        refreshIcon()
       else
         fetchError = "Bad response from server"
         menubar:setIcon(); menubar:setTitle("⚠")
@@ -687,7 +1059,18 @@ end
 function obj:start()
   if timer then timer:stop(); timer = nil end
   self:fetch()
-  timer = hs.timer.new(obj.pollInterval, function() self:fetch() end)
+  fetchStatus()
+  fetchIncidents()
+  timer = hs.timer.new(obj.pollInterval, function()
+    self:fetch()
+    local now = os.time()
+    if now - (statusAttemptTime or 0) >= obj.statusPollInterval then
+      fetchStatus()
+    end
+    if now - (incidentsAttemptTime or 0) >= obj.incidentsPollInterval then
+      fetchIncidents()
+    end
+  end)
   timer:start()
   return self
 end
@@ -705,6 +1088,8 @@ function obj:stop()
   if timer   then timer:stop();     timer   = nil end
   if menubar then menubar:delete(); menubar = nil end
   lastData, lastFetchTime, fetchError, planName = nil, nil, nil, nil
+  statusData, statusFetchTime, statusError, statusAttemptTime = nil, nil, nil, nil
+  incidentsData, incidentsError, incidentsAttemptTime = nil, nil, nil
   tsCache          = {}
   isFetching       = false
   rateLimitedUntil = 0
