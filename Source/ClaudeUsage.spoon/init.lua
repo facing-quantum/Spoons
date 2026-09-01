@@ -9,9 +9,11 @@
 --- API at status.claude.com: per-component status, a rolling incident summary,
 --- and a submenu of recent incidents linking to their status page entries.
 ---
---- Credentials are read from the macOS Keychain entry "Claude Code-credentials"
---- (set by Claude Code) with a fallback to ~/.claude/.credentials.json. The
---- status endpoints are public and need no authentication.
+--- Credentials come from the macOS Keychain entry "Claude Code-credentials"
+--- (set by Claude Code). That entry is authoritative when it exists: the spoon
+--- neither reads nor writes ~/.claude/.credentials.json in that case. The file
+--- is used only by installs that have no Keychain entry at all. The status
+--- endpoints are public and need no authentication.
 
 local obj = {}
 obj.__index = obj
@@ -60,12 +62,37 @@ obj.statusPollInterval = 300
 --- changes rarely, so it is polled far less often.
 obj.incidentsPollInterval = 900
 
+--- ClaudeUsage.claudeBinPaths
+--- Variable
+--- Extra locations to search for the `claude` binary, tried in order before the
+--- PATH lookup, so an entry here overrides whatever PATH would have found. Each
+--- entry is an absolute path to the binary or to a symlink pointing at it.
+--- Entries that do not exist are skipped with a console note, so one list can
+--- cover several machines. Accepts a string or a table of strings. Default {}.
+---
+--- Full search order: these entries, then `command -v claude` in your login
+--- shell, then /opt/homebrew/bin, /usr/local/bin and ~/.local/bin.
+---
+--- Only needed when `claude` is installed somewhere the spoon cannot find on its
+--- own; the binary supplies the client_id, version and anthropic-beta headers,
+--- and the spoon falls back to pinned values when it cannot be read.
+---
+--- Resolved once and cached on first use, so set this before ClaudeUsage:start().
+--- To change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or
+--- reload Hammerspoon.
+---
+--- Example:
+---   spoon.ClaudeUsage.claudeBinPaths = {"/opt/custom/bin/claude"}
+obj.claudeBinPaths = {}
+
 --- ClaudeUsage.autoRefreshToken
 --- Variable
 --- When true, the spoon will attempt to refresh an expired OAuth token itself
 --- and write the result back to ~/.claude/.credentials.json. Disabled by default:
 --- Claude Code owns the token lifecycle and will refresh it on its next run.
 --- Enable only if the spoon is running without Claude Code active.
+---
+--- Has no effect when the credentials came from the Keychain — see resolveToken.
 obj.autoRefreshToken = false
 
 local menubar, timer
@@ -102,14 +129,92 @@ local function shellQuote(s)
   return "'" .. s:gsub("'", "'\\''") .. "'"
 end
 
+-- Searched after the PATH lookup, so the spoon still finds claude when the
+-- shell lookup is unavailable or unusable.
+local DEFAULT_BIN_PATHS = {
+  "/opt/homebrew/bin/claude",
+  "/usr/local/bin/claude",
+  os.getenv("HOME") .. "/.local/bin/claude",
+}
+
+-- A symlink may point at another symlink (Homebrew's bin shim → a Caskroom
+-- version directory), so follow the chain rather than a single hop. The bound
+-- stops a cycle from hanging Hammerspoon's main thread.
+local function resolveSymlinks(path)
+  for _ = 1, 10 do
+    local target = hs.execute("readlink " .. shellQuote(path) .. " 2>/dev/null"):gsub("%s+$", "")
+    if target == "" then return path end
+    if target:sub(1,1) ~= "/" then target = (path:match("(.*/)") or "") .. target end
+    path = target
+  end
+  return path
+end
+
+local function fileExists(path)
+  return path ~= "" and hs.fs.attributes(path, "mode") ~= nil
+end
+
+-- ClaudeUsage.claudeBinPaths accepts a bare string as a convenience, so normalise
+-- to a list before searching.
+local function configuredBinPaths()
+  local configured = obj.claudeBinPaths
+  if type(configured) == "string" then return {configured} end
+  if type(configured) ~= "table"  then return {} end
+  return configured
+end
+
+-- Hammerspoon is launched by Finder with a minimal PATH, so finding claude means
+-- asking the user's shell — hs.execute's second argument runs the command in a
+-- login interactive shell. That also runs the user's profile, and whatever the
+-- profile prints lands in the same captured stdout ahead of the answer: zsh
+-- keybinding warnings, version-manager banners, a motd. Treating the whole
+-- capture as the path fails on any such line, so the value is delimited and
+-- matched out of the noise.
+local LOOKUP_MARKER = "__CLAUDEUSAGE_BIN__"
+local LOOKUP_CMD =
+  [[printf '__CLAUDEUSAGE_BIN__%s__CLAUDEUSAGE_BIN__' "$(command -v claude 2>/dev/null)"]]
+
+local function shellLookupClaude()
+  local ok, out = pcall(hs.execute, LOOKUP_CMD, true)
+  if not ok or type(out) ~= "string" then return nil end
+  local path = out:match(LOOKUP_MARKER .. "(.-)" .. LOOKUP_MARKER)
+  if not path then return nil end
+  path = path:gsub("^%s+", ""):gsub("%s+$", "")
+  if path:sub(1,1) ~= "/" then return nil end
+  return path
+end
+
+-- claude is installed several different ways — a Homebrew cask, the official
+-- installer's ~/.local/bin shim, npm — so candidates are gathered in preference
+-- order and the first one that actually exists wins. Configured paths lead so a
+-- user can override a PATH installation. Existence is checked rather than
+-- assumed: a path that silently is not there yields pinned fallback headers
+-- instead of an error, which is exactly the failure that is hard to notice.
 local function claudeBinPath()
   if _cachedBinPath then return _cachedBinPath end
-  local link   = os.getenv("HOME") .. "/.local/bin/claude"
-  local target = hs.execute("readlink " .. shellQuote(link) .. " 2>/dev/null"):gsub("%s+$", "")
-  if target == ""            then _cachedBinPath = link; return link end
-  if target:sub(1,1) ~= "/" then target = (link:match("(.*/)") or "") .. target end
-  _cachedBinPath = target
-  return target
+  for _, path in ipairs(configuredBinPaths()) do
+    if type(path) == "string" and fileExists(path) then
+      _cachedBinPath = resolveSymlinks(path)
+      return _cachedBinPath
+    end
+    print("[ClaudeUsage] claudeBinPaths entry not found, skipping: " .. tostring(path))
+  end
+
+  local candidates = {}
+  local fromShell = shellLookupClaude()
+  if fromShell then table.insert(candidates, fromShell) end
+  for _, path in ipairs(DEFAULT_BIN_PATHS) do table.insert(candidates, path) end
+  for _, path in ipairs(candidates) do
+    if fileExists(path) then
+      _cachedBinPath = resolveSymlinks(path)
+      return _cachedBinPath
+    end
+  end
+
+  print("[ClaudeUsage] WARNING: claude binary not found on PATH or in the default " ..
+        "locations — set ClaudeUsage.claudeBinPaths to its location")
+  _cachedBinPath = DEFAULT_BIN_PATHS[#DEFAULT_BIN_PATHS]
+  return _cachedBinPath
 end
 
 local function getClientId()
@@ -131,6 +236,9 @@ local function getUserAgent()
   local ver = hs.execute(
     shellQuote(claudeBinPath()) .. " --version 2>/dev/null"):gsub("%s+$", "")
   local v  = ver:match("^([0-9]+%.[0-9]+%.[0-9]+)")
+  if not v then
+    print("[ClaudeUsage] WARNING: could not discover version from binary, using fallback")
+  end
   _cachedUserAgent = v and ("claude-code/" .. v) or "claude-code/1.0.0"
   return _cachedUserAgent
 end
@@ -346,13 +454,24 @@ end
 
 -- Returns (accessToken, planDisplay, error, refreshToken).
 -- refreshToken is returned even on "expired" so callers can attempt a refresh.
+--
+-- Both stores hold more than the Claude.ai session: Claude Code keeps per-server
+-- MCP OAuth under mcpOAuth in the same blob, and that section is serialised
+-- first. Pattern-matching the flat text would therefore return whichever
+-- accessToken appears earliest — an MCP server's token, which the usage endpoint
+-- rejects with "Invalid bearer token", carrying an unrelated expiresAt that lets
+-- it sail past the expiry check. Decode and read claudeAiOauth by name.
 local function parseCredentials(raw)
   if not raw or raw:match("^%s*$") then return nil, nil, "empty", nil end
-  local token   = raw:match('"accessToken"%s*:%s*"([^"]+)"')
-  local plan    = raw:match('"subscriptionType"%s*:%s*"([^"]+)"')
-  local expMs   = tonumber(raw:match('"expiresAt"%s*:%s*(%d+)'))
-  local refresh = raw:match('"refreshToken"%s*:%s*"([^"]+)"')
-  if not token then return nil, nil, "no_token", nil end
+  local ok, creds = pcall(hs.json.decode, raw)
+  if not (ok and type(creds) == "table") then return nil, nil, "unparsable", nil end
+  local oauth = creds.claudeAiOauth
+  if type(oauth) ~= "table" then return nil, nil, "no_token", nil end
+  local token   = type(oauth.accessToken)  == "string" and oauth.accessToken  or nil
+  local refresh = type(oauth.refreshToken) == "string" and oauth.refreshToken or nil
+  local plan    = type(oauth.subscriptionType) == "string" and oauth.subscriptionType or nil
+  local expMs   = tonumber(oauth.expiresAt)
+  if not token or token == "" then return nil, nil, "no_token", refresh end
   if expMs then
     local expSec = math.floor(expMs / 1000)
     if expSec <= os.time() then
@@ -378,16 +497,25 @@ local function loadCredentials()
   return parseCredentials(raw)
 end
 
--- Returns (accessToken, planDisplay, error, refreshToken).
+-- Returns (accessToken, planDisplay, error, refreshToken, source), where source
+-- is "keychain" or "file".
+--
+-- The Keychain entry belongs to Claude Code and is authoritative whenever it
+-- exists — expired or malformed included. The file is not even opened in that
+-- case, so the two stores can never disagree.
+--
+-- Treating them as interchangeable is what causes damage: a refresh rotates the
+-- refresh token server-side, so refreshing a Keychain-sourced token and
+-- persisting the result to the file would leave Claude Code reading a Keychain
+-- entry whose refresh token the server has already invalidated. Its next
+-- refresh fails with invalid_grant and the user is logged out of Claude Code by
+-- a menu bar widget. Writing the file also creates a plaintext copy of an OAuth
+-- token for a user who had chosen to keep it in the Keychain.
 local function resolveToken()
   local token, pd, err, rt = getClaudeKeychain()
-  if token then return token, pd, nil, rt end
+  if err ~= "empty" then return token, pd, err, rt, "keychain" end
   local fToken, fPd, fErr, fRt = loadCredentials()
-  if fToken then return fToken, fPd, nil, fRt end
-  -- Both failed. Surface the most actionable error; prefer keychain "expired"
-  -- over file "no_file" since it tells the user what actually happened.
-  if err == "expired" then return nil, nil, err, rt end
-  return nil, nil, fErr, fRt
+  return fToken, fPd, fErr, fRt, "file"
 end
 
 -- ── Menu bar icon ──────────────────────────────────────────────────────
@@ -847,8 +975,10 @@ local function saveRefreshedToken(usedRefreshToken, newAccess, newRefresh, expir
   if not newJson then return false end
   -- Write to a sibling temp file then rename so a crash mid-write never truncates
   -- the live credentials file. os.rename is atomic on the same filesystem.
-  -- Intentionally not writing to the Keychain: the Keychain entry is owned by
-  -- Claude Code; passing a token as a CLI argument would expose it in `ps`.
+  -- The Keychain is never written, and resolveToken guarantees this function is
+  -- only reached when the file was also the source: mirroring a refresh into
+  -- Claude Code's Keychain entry would mean passing the token as a CLI argument
+  -- to `security`, exposing it in `ps`.
   local tmp = CREDS_PATH .. ".tmp"
   local fw = io.open(tmp, "w")
   if not fw then return false end
@@ -968,22 +1098,31 @@ function obj:fetch()
   if os.time() < rateLimitedUntil then return end
   isFetching = true
 
-  local token, pd, err, rt = resolveToken()
+  local token, pd, err, rt, source = resolveToken()
   if pd then planName = pd end
 
   if not token then
-    print("[ClaudeUsage] no token, err=" .. tostring(err))
+    print(string.format("[ClaudeUsage] no token from %s, err=%s", source, tostring(err)))
     if err == "expired" then
-      if obj.autoRefreshToken and rt then
+      -- Only file-sourced credentials may be refreshed: doTokenRefresh persists
+      -- to the file, which is not where a Keychain-sourced token is read from.
+      if obj.autoRefreshToken and rt and source == "file" then
         isFetching = false  -- must clear before handing off; doTokenRefresh calls fetch() on completion
         doTokenRefresh(rt)
         return
+      end
+      if obj.autoRefreshToken and source == "keychain" then
+        print("[ClaudeUsage] not auto-refreshing: credentials are Keychain-owned")
       end
       fetchError = "Token expired — waiting for Claude Code to refresh"
     elseif err == "no_file" then
       fetchError = "Credentials not found: " .. CREDS_PATH
     else
-      fetchError = "No token found in credentials file"
+      local store = (source == "keychain")
+        and 'Keychain entry "Claude Code-credentials"' or CREDS_PATH
+      fetchError = (err == "unparsable")
+        and ("Could not parse " .. store)
+        or  ("No claudeAiOauth token in " .. store)
     end
     if menubar then menubar:setIcon(); menubar:setTitle("⚠") end
     isFetching = false
