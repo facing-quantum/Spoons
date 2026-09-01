@@ -9,6 +9,10 @@
 --- API at status.claude.com: per-component status, a rolling incident summary,
 --- and a submenu of recent incidents linking to their status page entries.
 ---
+--- A model roster sits alongside it, built by intersecting the /v1/models list
+--- for the signed-in account with the model catalog baked into the local
+--- `claude` binary. See modelRows for what the three resulting states mean.
+---
 --- Credentials come from the macOS Keychain entry "Claude Code-credentials"
 --- (set by Claude Code). That entry is authoritative when it exists: the spoon
 --- neither reads nor writes ~/.claude/.credentials.json in that case. The file
@@ -62,6 +66,13 @@ obj.statusPollInterval = 300
 --- changes rarely, so it is polled far less often.
 obj.incidentsPollInterval = 900
 
+--- ClaudeUsage.modelsPollInterval
+--- Variable
+--- Minimum seconds between api.anthropic.com model list fetches. Default 3600.
+--- The roster only changes when Anthropic launches or retires a model, or when
+--- the account's plan changes, so it is polled far less often than anything else.
+obj.modelsPollInterval = 3600
+
 --- ClaudeUsage.claudeBinPaths
 --- Variable
 --- Extra locations to search for the `claude` binary, tried in order before the
@@ -99,18 +110,82 @@ local menubar, timer
 local lastData, lastFetchTime, fetchError, planName
 local statusData, statusFetchTime, statusError, statusAttemptTime
 local incidentsData, incidentsError, incidentsAttemptTime
+local modelsData, modelsFetchTime, modelsError, modelsAttemptTime
 local tsCache     = {}
 local isFetching       = false
-local rateLimitedUntil = 0
+
+-- ── Backoff ────────────────────────────────────────────────────────────
+-- Every transient failure against api.anthropic.com shares one ladder, because
+-- they share one cause: the host does not want to hear from us right now. A
+-- 429, a connection timeout and a 5xx all mean wait longer before asking again.
+--
+-- Honouring Retry-After alone is not enough. The server advises ~4 minutes and
+-- keeps advising it, so a client that only ever waits that long resumes full
+-- rate polling and is throttled again a few polls later — a sawtooth that never
+-- settles. Taking the larger of the server's floor and our own escalation keeps
+-- the advice authoritative while still converging when it proves insufficient.
+local backoffUntil    = 0
+local backoffFailures = 0
+local backoffReason   = nil
+
+local BACKOFF_CAP   = 3600
+local BACKOFF_LABEL = {
+  ratelimit = "Rate limited",
+  network   = "Connection failed",
+  server    = "Server error",
+}
+
+-- Doubles each strike up to an hour, so the first failure costs no more than an
+-- ordinary poll and a lone blip is not punished, while a persistent one settles
+-- at hourly.
+--
+-- floor is a server-supplied Retry-After, and it sets the scale to escalate
+-- from rather than merely a one-off minimum. Escalating from pollInterval
+-- instead would spend the first two strikes below the server's own advice —
+-- against the logged storm, where the host kept advising ~250s and ~250s kept
+-- proving too short, doubling its figure converges in one strike where doubling
+-- ours takes three.
+--
+-- Jitter keeps the spoon from lining up with Claude Code, which polls the same
+-- endpoint on its own schedule, and is applied before the floor so a downward
+-- nudge can never take us under what the server asked for. math.random is left
+-- unseeded — Lua seeds it per process, and seeding here would reach into every
+-- other spoon sharing this Lua state.
+local function backoffSeconds(failures, floor)
+  local growth   = 2 ^ math.max(0, failures - 1)
+  local nominal  = math.max(obj.pollInterval, floor or 0) * growth
+  local jittered = math.floor(math.min(nominal, BACKOFF_CAP) * (0.9 + math.random() * 0.2))
+  return math.min(math.max(jittered, floor or 0), BACKOFF_CAP)
+end
+
+-- Returns the seconds waited, for logging.
+local function enterBackoff(reason, atLeast)
+  backoffFailures = backoffFailures + 1
+  local secs = backoffSeconds(backoffFailures, atLeast)
+  backoffUntil  = os.time() + secs
+  backoffReason = reason
+  return secs
+end
+
+local function clearBackoff()
+  backoffFailures = 0
+  backoffUntil    = 0
+  backoffReason   = nil
+end
 
 -- Assigned in the Fetch section; declared here so buildMenu can close over them.
-local fetchStatus, fetchIncidents
+local fetchStatus, fetchIncidents, fetchModels
 
 local CREDS_PATH    = os.getenv("HOME") .. "/.claude/.credentials.json"
 local USAGE_URL     = "https://api.anthropic.com/api/oauth/usage"
 local TOKEN_URL     = "https://platform.claude.com/v1/oauth/token"
 local STATUS_URL    = "https://status.claude.com/api/v2/summary.json"
 local INCIDENTS_URL = "https://status.claude.com/api/v2/incidents.json"
+local MODELS_URL    = "https://api.anthropic.com/v1/models?limit=100"
+
+-- Printed in the binary's own "not available for your account" copy, so it is
+-- the page Claude Code itself points at for model availability questions.
+local MODEL_DOCS_URL = "https://code.claude.com/docs/en/model-config"
 
 -- status.claude.com is Atlassian Statuspage, not Anthropic infrastructure
 -- (CNAME → tymt9n04zgry.stspg-customer.com). These endpoints are public and are
@@ -124,6 +199,7 @@ local _cachedBinPath   = nil
 local _cachedClientId  = nil
 local _cachedUserAgent = nil
 local _cachedOauthBeta = nil
+local _cachedCatalog   = nil
 
 local function shellQuote(s)
   return "'" .. s:gsub("'", "'\\''") .. "'"
@@ -255,6 +331,42 @@ local function getOauthBeta()
   end
   _cachedOauthBeta = val
   return val
+end
+
+-- The binary carries a hand-maintained catalog of every model this build knows
+-- how to select. It is a JavaScript object literal, not JSON, so it cannot be
+-- decoded — but only three fields per model are wanted, and grep can lift each
+-- entry out as a single chunk.
+--
+-- first_party is the join key rather than id, because /v1/models reports dated
+-- ids for the older models (claude-opus-4-5-20251101) where the catalog keys on
+-- undated ones. Matching on id alone would report Opus 4.5, Sonnet 4.5 and Haiku
+-- 4.5 as models this build has never heard of.
+--
+-- [^}]* between display_name and provider_ids cannot cross into the next entry,
+-- since a closing brace ends every entry before the next id appears.
+local CATALOG_GREP = [[grep -oE 'id:"claude-[a-z0-9.-]+",family:"[a-z]+",display_name:"[^"]+"[^}]*provider_ids:\{first_party:"[^"]+"']]
+
+local function claudeModelCatalog()
+  if _cachedCatalog then return _cachedCatalog end
+  local out = hs.execute("strings -n 6 " .. shellQuote(claudeBinPath()) ..
+                         " 2>/dev/null | " .. CATALOG_GREP)
+  local catalog = {byFirstParty = {}, order = {}}
+  for line in tostring(out):gmatch("[^\n]+") do
+    local id, displayName, firstParty =
+      line:match('id:"([^"]+)",family:"[^"]+",display_name:"([^"]+)".-first_party:"([^"]+)"')
+    if id then
+      local entry = {id=id, displayName=displayName, firstParty=firstParty}
+      catalog.byFirstParty[firstParty] = entry
+      table.insert(catalog.order, entry)
+    end
+  end
+  if #catalog.order == 0 then
+    print("[ClaudeUsage] WARNING: could not read the model catalog from the claude " ..
+          "binary — models will be listed without an availability check")
+  end
+  _cachedCatalog = catalog
+  return catalog
 end
 
 -- ── Color ──────────────────────────────────────────────────────────────
@@ -448,6 +560,67 @@ local function incidentStats(incidents)
   end
   if oldest then stats.windowDays = math.floor((now - oldest) / 86400) end
   return stats
+end
+
+-- ── Claude models ──────────────────────────────────────────────────────
+-- Availability has two independent halves, and the /model picker shows them
+-- through the same greyed-out row. Separating them matters because the fix
+-- differs: one is a plan or account limit, the other is a stale local install.
+
+local MODEL_STATE = {
+  available   = {glyph="✓", color=SAGE_CLR},
+  needsUpdate = {glyph="▲", color=AMBER, label="update Claude Code to use"},
+  unavailable = {glyph="·",              label="not available to your account"},
+}
+
+-- Rendering order, which is also the order the submenu groups its separators by.
+local MODEL_STATE_ORDER = {"available", "needsUpdate", "unavailable"}
+
+-- The catalog says "Opus 5" where the API says "Claude Opus 5".
+local function stripClaudePrefix(name)
+  return (tostring(name):gsub("^Claude%s+", ""))
+end
+
+-- /v1/models is what the account may call; the binary catalog is what this
+-- build can select. Intersecting them yields the three states above:
+--   in both                → available
+--   API only               → the account has it but this build predates it
+--   catalog only           → this build knows it but the account cannot call it
+--
+-- Requires modelsData; callers render the fetching or error state instead when
+-- it is nil. An unreadable catalog degrades to listing every model as available
+-- rather than inventing a roster the account has supposedly lost.
+local function modelRows()
+  local catalog     = claudeModelCatalog()
+  local haveCatalog = #catalog.order > 0
+  local grouped     = {available={}, needsUpdate={}, unavailable={}}
+  local seen        = {}
+
+  for _, model in ipairs(modelsData) do
+    local entry = catalog.byFirstParty[model.id]
+    if entry then seen[entry.id] = true end
+    local state = (entry or not haveCatalog) and "available" or "needsUpdate"
+    table.insert(grouped[state], {
+      state = state,
+      name  = entry and entry.displayName
+                     or stripClaudePrefix(model.display_name or model.id),
+    })
+  end
+
+  if haveCatalog then
+    for _, entry in ipairs(catalog.order) do
+      if not seen[entry.id] then
+        table.insert(grouped.unavailable, {state="unavailable", name=entry.displayName})
+      end
+    end
+  end
+
+  local rows, counts = {}, {}
+  for _, state in ipairs(MODEL_STATE_ORDER) do
+    counts[state] = #grouped[state]
+    for _, row in ipairs(grouped[state]) do table.insert(rows, row) end
+  end
+  return rows, counts
 end
 
 -- ── Auth ───────────────────────────────────────────────────────────────
@@ -737,6 +910,33 @@ local function buildIncidentSubmenu(dim, bold)
   return entries
 end
 
+-- Mirrors the component rows in the status section: the third column is filled
+-- only when something needs saying, so a healthy roster stays two columns wide.
+local function modelRowText(row, ps, lc, dim)
+  local state = MODEL_STATE[row.state]
+  local color = state.color or dim
+  local text = hs.styledtext.new("  " .. state.glyph, {color=color, paragraphStyle=ps})
+    .. hs.styledtext.new("\t" .. row.name,
+         {color = row.state == "unavailable" and dim or lc, paragraphStyle=ps})
+  if state.label then
+    text = text .. hs.styledtext.new("\t" .. state.label, {color=color, paragraphStyle=ps})
+  end
+  return text
+end
+
+local function buildModelSubmenu(rows, ps, lc, dim)
+  local entries, lastState = {}, nil
+  for _, row in ipairs(rows) do
+    if lastState and row.state ~= lastState then table.insert(entries, {title="-"}) end
+    lastState = row.state
+    table.insert(entries, {title=modelRowText(row, ps, lc, dim), disabled=true})
+  end
+  table.insert(entries, {title="-"})
+  table.insert(entries, {title="Open model docs",
+    fn=function() hs.urlevent.openURL(MODEL_DOCS_URL) end})
+  return entries
+end
+
 local function buildMenu()
   local lc   = labelColor()
   local dim  = lc.white > 0.5 and {white=0.55, alpha=0.85} or {white=0.45, alpha=0.85}
@@ -908,6 +1108,41 @@ local function buildMenu()
         {menu=buildIncidentSubmenu(dim, bold)})
   end
 
+  -- ── Models ──────────────────────────────────────────────────────────
+  -- The full roster lives in a submenu because it runs to a dozen-odd rows, but
+  -- anything needing action is lifted into the dropdown itself: a model the
+  -- account can already call and only a stale install is holding back.
+  sep()
+  local modelPS = {tabStops={{location=24,  alignment="left"},
+                             {location=176, alignment="left"}}}
+  add(hs.styledtext.new("MODELS", {font={name=bold, size=10}, color=lc}), {disabled=true})
+
+  if modelsError then
+    local lastOk = modelsFetchTime
+      and (" · last ok " .. humanDuration(os.time() - modelsFetchTime) .. " ago") or ""
+    add(hs.styledtext.new("  " .. modelsError .. lastOk, {color=dim}), {disabled=true})
+  elseif not modelsData then
+    add(hs.styledtext.new("  Fetching…", {color=dim}), {disabled=true})
+  else
+    local rows, counts = modelRows()
+    for _, row in ipairs(rows) do
+      if row.state == "needsUpdate" then
+        add(modelRowText(row, modelPS, lc, dim), {disabled=true})
+      end
+    end
+    local summary = {}
+    if counts.available   > 0 then
+      table.insert(summary, counts.available .. " available") end
+    if counts.needsUpdate > 0 then
+      table.insert(summary, counts.needsUpdate .. " need an update") end
+    if counts.unavailable > 0 then
+      table.insert(summary, counts.unavailable .. " unavailable") end
+    add(hs.styledtext.new("  " .. table.concat(summary, " · "), {color=dim}),
+        {disabled=true})
+    add(hs.styledtext.new("  All models", {color=lc}),
+        {menu=buildModelSubmenu(rows, modelPS, lc, dim)})
+  end
+
   -- ── Footer ──────────────────────────────────────────────────────────
   sep()
   if lastFetchTime then
@@ -915,9 +1150,13 @@ local function buildMenu()
       "Updated " .. humanDuration(os.time() - lastFetchTime) .. " ago",
       {color=dim}), {disabled=true})
   end
-  local rlSecs = math.ceil(rateLimitedUntil - os.time())
-  if rlSecs > 0 then
-    add(hs.styledtext.new("Rate limited — retry in " .. humanDuration(rlSecs),
+  -- "Refresh now" is deliberately absent while backing off: the wait is the
+  -- point, and a button that reopens the request would undo it.
+  local waitSecs = math.ceil(backoffUntil - os.time())
+  if waitSecs > 0 then
+    add(hs.styledtext.new(
+      (BACKOFF_LABEL[backoffReason] or "Backing off")
+        .. " — retry in " .. humanDuration(waitSecs),
       {color=dim}), {disabled=true})
   elseif isFetching then
     add(hs.styledtext.new("Fetching…", {color=dim}), {disabled=true})
@@ -926,6 +1165,7 @@ local function buildMenu()
       obj:fetch()
       fetchStatus()
       fetchIncidents()
+      fetchModels()
     end})
   end
 
@@ -1082,6 +1322,57 @@ function fetchIncidents()
     end)
 end
 
+-- Shares the usage endpoint's OAuth token. Like the status fetches, a failure
+-- here never sets fetchError or the ⚠ title: the roster is context, and losing
+-- it says nothing about the plan usage the icon exists to report. An expired
+-- token is left alone rather than triggering a refresh, since obj:fetch owns
+-- that lifecycle and runs far more often.
+function fetchModels()
+  -- Shares a host with the usage endpoint, so it shares the backoff. Checked
+  -- before modelsAttemptTime is stamped, so a roster skipped during a backoff is
+  -- retried as soon as the window clears rather than an hour later.
+  if os.time() < backoffUntil then return end
+  modelsAttemptTime = os.time()
+  local token = resolveToken()
+  if not token then
+    modelsError = "model list needs a valid token"
+    return
+  end
+  hs.http.asyncGet(MODELS_URL, {
+    ["Authorization"]     = "Bearer " .. token,
+    ["anthropic-beta"]    = getOauthBeta(),
+    ["anthropic-version"] = "2023-06-01",
+    ["User-Agent"]        = getUserAgent(),
+  }, function(status, body, headers)
+    if not menubar then return end  -- stop() fired while request was in-flight
+    -- Escalates the shared ladder but never clears it: a roster that loads says
+    -- nothing about whether the usage endpoint is still being throttled, and
+    -- only obj:fetch succeeding is evidence of that.
+    if status == 429 then
+      local _ra = tonumber(headers and (headers["Retry-After"] or headers["retry-after"]))
+      local secs = enterBackoff("ratelimit", _ra)
+      print(string.format("[ClaudeUsage] models fetch HTTP 429 (%d in a row), retry in %ds",
+        backoffFailures, secs))
+      modelsError = "model list rate limited"
+      return
+    end
+    if status ~= 200 then
+      print(string.format("[ClaudeUsage] models fetch HTTP %d: %s",
+        status, tostring(body):sub(1, 200)))
+      modelsError = string.format("model list unavailable (HTTP %d)", status)
+      return
+    end
+    local ok, parsed = pcall(hs.json.decode, body)
+    if not (ok and type(parsed) == "table" and type(parsed.data) == "table") then
+      modelsError = "model list returned unexpected data"
+      return
+    end
+    modelsData      = parsed.data
+    modelsFetchTime = os.time()
+    modelsError     = nil
+  end)
+end
+
 --- ClaudeUsage:fetch()
 --- Method
 --- Immediately fetches current usage from the Anthropic API and updates the
@@ -1095,7 +1386,7 @@ end
 ---  * The ClaudeUsage object
 function obj:fetch()
   if isFetching then return end
-  if os.time() < rateLimitedUntil then return end
+  if os.time() < backoffUntil then return end
   isFetching = true
 
   local token, pd, err, rt, source = resolveToken()
@@ -1142,6 +1433,7 @@ function obj:fetch()
         lastData      = parsed
         lastFetchTime = os.time()
         fetchError    = nil
+        clearBackoff()
         refreshIcon()
       else
         fetchError = "Bad response from server"
@@ -1149,17 +1441,28 @@ function obj:fetch()
       end
     elseif status == 429 then
       local _ra = tonumber(headers and (headers["Retry-After"] or headers["retry-after"]))
-      local retryAfter = math.min((_ra == nil) and obj.pollInterval or _ra, 3600)
-      rateLimitedUntil = os.time() + retryAfter
-      print(string.format("[ClaudeUsage] HTTP 429 rate limited, retry in %ds", retryAfter))
+      local secs = enterBackoff("ratelimit", _ra)
+      print(string.format("[ClaudeUsage] HTTP 429 rate limited (%d in a row), retry in %ds",
+        backoffFailures, secs))
       menubar:setIcon(); menubar:setTitle("⚠")
     elseif status == 401 then
+      -- Deliberately outside the ladder: the fix is a token refresh, not a
+      -- longer wait, and backing off here would delay recovery once Claude Code
+      -- writes a fresh token.
       print("[ClaudeUsage] HTTP 401 auth error: " .. tostring(body):sub(1, 200))
       fetchError = "Auth failed — re-open Claude Code to refresh token"
       menubar:setIcon(); menubar:setTitle("⚠")
     else
-      print(string.format("[ClaudeUsage] HTTP %d error: %s", status, tostring(body):sub(1, 200)))
-      fetchError = string.format("HTTP %d from usage endpoint", status)
+      -- hs.http reports a connection failure as -1, which is not a status code
+      -- and must not be shown as one.
+      local isNetwork = (status == nil) or (status < 0)
+      local secs = enterBackoff(isNetwork and "network" or "server")
+      print(string.format("[ClaudeUsage] %s (%d in a row), retry in %ds: %s",
+        isNetwork and "connection failed" or ("HTTP " .. tostring(status) .. " error"),
+        backoffFailures, secs, tostring(body):sub(1, 200)))
+      fetchError = isNetwork
+        and ("Connection failed — retrying in " .. humanDuration(secs))
+        or  string.format("HTTP %d from usage endpoint", status)
       menubar:setIcon(); menubar:setTitle("⚠")
     end
   end)
@@ -1200,6 +1503,7 @@ function obj:start()
   self:fetch()
   fetchStatus()
   fetchIncidents()
+  fetchModels()
   timer = hs.timer.new(obj.pollInterval, function()
     self:fetch()
     local now = os.time()
@@ -1208,6 +1512,9 @@ function obj:start()
     end
     if now - (incidentsAttemptTime or 0) >= obj.incidentsPollInterval then
       fetchIncidents()
+    end
+    if now - (modelsAttemptTime or 0) >= obj.modelsPollInterval then
+      fetchModels()
     end
   end)
   timer:start()
@@ -1229,11 +1536,13 @@ function obj:stop()
   lastData, lastFetchTime, fetchError, planName = nil, nil, nil, nil
   statusData, statusFetchTime, statusError, statusAttemptTime = nil, nil, nil, nil
   incidentsData, incidentsError, incidentsAttemptTime = nil, nil, nil
+  modelsData, modelsFetchTime, modelsError, modelsAttemptTime = nil, nil, nil, nil
   tsCache          = {}
   isFetching       = false
-  rateLimitedUntil = 0
   isRefreshing     = false
+  clearBackoff()
   _cachedBinPath, _cachedClientId, _cachedUserAgent, _cachedOauthBeta = nil, nil, nil, nil
+  _cachedCatalog   = nil
   return self
 end
 
