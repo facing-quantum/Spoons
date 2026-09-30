@@ -72,40 +72,46 @@ end
 -- Internal callback to process and store the data from docs.json about a repository
 -- callback is called with repo as arguments, only if the call is successful
 function obj:_storeRepoJSON(repo, callback, status, body, hdrs)
-   local success=nil
-   if (status < 100) or (status >= 400) then
+   local function _finish(success)
+      if callback then callback(repo, success) end
+      return success
+   end
+
+   if status < 100 or status >= 400 then
       self.logger.ef("Error fetching JSON data for repository '%s'. Error code %d: %s", repo, status, body or "<no error message>")
-   else
-      local json = hs.json.decode(body)
-      if json then
-         self.repos[repo].data = {}
-         for i,v in ipairs(json) do
-            v.download_url = self.repos[repo].download_base_url .. v.name .. ".spoon.zip"
-            self.repos[repo].data[v.name] = v
-         end
-         self.logger.df("Updated JSON data for repository '%s'", repo)
-         success=true
-      else
-         self.logger.ef("Invalid JSON received for repository '%s': %s", repo, body)
-      end
+      return _finish(nil)
    end
-   if callback then
-      callback(repo, success)
+
+   local json = hs.json.decode(body)
+   if not json then
+      self.logger.ef("Invalid JSON received for repository '%s': %s", repo, body)
+      return _finish(nil)
    end
-   return success
+
+   local repoEntry = self.repos[repo]
+   repoEntry.data = {}
+   for _, v in ipairs(json) do
+      v.download_url = repoEntry.download_base_url .. v.name .. ".spoon.zip"
+      repoEntry.data[v.name] = v
+   end
+
+   self.logger.df("Updated JSON data for repository '%s'", repo)
+   return _finish(true)
 end
 
 -- Internal function to return the URL of the docs.json file based on the URL of a GitHub repo
 function obj:_build_repo_json_url(repo)
-   if self.repos[repo] and self.repos[repo].url then
-      local branch = self.repos[repo].branch or "master"
-      self.repos[repo].json_url = string.gsub(self.repos[repo].url, "/$", "") .. "/raw/"..branch.."/docs/docs.json"
-      self.repos[repo].download_base_url = string.gsub(self.repos[repo].url, "/$", "") .. "/raw/"..branch.."/Spoons/"
-      return true
-   else
+   local repoEntry = self.repos[repo]
+   if not repoEntry or not repoEntry.url then
       self.logger.ef("Invalid or unknown repository '%s'", repo)
       return nil
    end
+
+   local branch = repoEntry.branch or "master"
+   local baseUrl = string.gsub(repoEntry.url, "/$", "")
+   repoEntry.json_url = baseUrl .. "/raw/" .. branch .. "/docs/docs.json"
+   repoEntry.download_base_url = baseUrl .. "/raw/" .. branch .. "/Spoons/"
+   return true
 end
 
 --- SpoonInstall:asyncUpdateRepo(repo, callback)
@@ -241,45 +247,54 @@ end
 -- --------------------------------------------------------------------
 -- Spoon installation
 
+-- Helper to safely write binary data to a file
+local function _write_file(path, data)
+   local f = io.open(path, "wb")
+   if not f then return false end
+   f:write(data)
+   f:close()
+   return true
+end
+
 -- Internal callback function to finalize the installation of a spoon after the zip file has been downloaded.
 -- callback, if given, is called with (urlparts, success) as arguments
 function obj:_installSpoonFromZipURLgetCallback(urlparts, callback, status, body, headers)
-   local success=nil
-   if (status < 100) or (status >= 400) then
-      self.logger.ef("Error downloading %s. Error code %d: %s", urlparts.absoluteString, status, body or "<none>")
-   else
-      -- Write the zip file to disk in a temporary directory
-      local tmpdir=_x("/usr/bin/mktemp -d", "Error creating temporary directory to download new spoon.")
-      if tmpdir then
-         local outfile = string.format("%s/%s", tmpdir, urlparts.lastPathComponent)
-         local f=assert(io.open(outfile, "w"))
-         f:write(body)
-         f:close()
+   local function _finish(success)
+      if callback then callback(urlparts, success) end
+      return success
+   end
 
-         -- Check its contents - only one *.spoon directory should be in there
-         output = _x(string.format("/usr/bin/unzip -l %s '*.spoon/' | /usr/bin/awk '$NF ~ /\\.spoon\\/$/ { print $NF }' | /usr/bin/wc -l", outfile),
-                     "Error examining downloaded zip file %s, leaving it in place for your examination.", outfile)
-         if output then
-            if (tonumber(output) or 0) == 1 then
-               -- Uncompress the zip file
-               local outdir = string.format("%s/Spoons", hs.configdir)
-               if _x(string.format("/usr/bin/unzip -o %s -d %s 2>&1", outfile, outdir),
-                     "Error uncompressing file %s, leaving it in place for your examination.", outfile) then
-                  -- And finally, install it using Hammerspoon itself
-                  self.logger.f("Downloaded and installed %s", urlparts.absoluteString)
-                  _x(string.format("/bin/rm -rf '%s'", tmpdir), "Error removing directory %s", tmpdir)
-                  success=true
-               end
-            else
-               self.logger.ef("The downloaded zip file %s is invalid - it should contain exactly one spoon. Leaving it in place for your examination.", outfile) 
-            end
-         end
-      end
+   if status < 100 or status >= 400 then
+      self.logger.ef("Error downloading %s. Error code %d: %s", urlparts.absoluteString, status, body or "<none>")
+      return _finish(nil)
    end
-   if callback then
-      callback(urlparts, success)
+
+   local tmpdir = _x("/usr/bin/mktemp -d", "Error creating temporary directory to download new spoon.")
+   if not tmpdir then return _finish(nil) end
+
+   local outfile = string.format("%s/%s", tmpdir, urlparts.lastPathComponent)
+   if not _write_file(outfile, body) then
+      self.logger.ef("Error writing downloaded zip file %s", outfile)
+      _x(string.format("/bin/rm -rf %q", tmpdir), "Error removing directory")
+      return _finish(nil)
    end
-   return success
+
+   -- Check its contents - only one *.spoon directory should be in there
+   local zipCheckCmd = string.format("/usr/bin/unzip -l %q '*.spoon/' | /usr/bin/awk '$NF ~ /\\.spoon\\/$/ { print $NF }' | /usr/bin/wc -l", outfile)
+   local count = _x(zipCheckCmd, "Error examining downloaded zip file %s, leaving it in place for your examination.", outfile)
+   if not count or (tonumber(count) or 0) ~= 1 then
+      self.logger.ef("The downloaded zip file %s is invalid - it should contain exactly one spoon. Leaving it in place for your examination.", outfile)
+      return _finish(nil)
+   end
+
+   local outdir = string.format("%s/Spoons", hs.configdir)
+   if not _x(string.format("/usr/bin/unzip -o %q -d %q 2>&1", outfile, outdir), "Error uncompressing file %s, leaving it in place for your examination.", outfile) then
+      return _finish(nil)
+   end
+
+   self.logger.f("Downloaded and installed %s", urlparts.absoluteString)
+   _x(string.format("/bin/rm -rf %q", tmpdir), "Error removing directory %s", tmpdir)
+   return _finish(true)
 end
 
 --- SpoonInstall:asyncInstallSpoonFromZipURL(url, callback)
@@ -319,7 +334,7 @@ function obj:installSpoonFromZipURL(url)
    local urlparts = hs.http.urlParts(url)
    local dlfile = urlparts.lastPathComponent
    if dlfile and dlfile ~= "" and urlparts.pathExtension == "zip" then
-      a,b,c=hs.http.get(url)
+      local a, b, c = hs.http.get(url)
       return self:_installSpoonFromZipURLgetCallback(urlparts, nil, a, b, c)
    else
       self.logger.ef("Invalid URL %s, must point to a zip file", url)
@@ -329,20 +344,20 @@ end
 
 -- Internal function to check if a Spoon/Repo combination is valid
 function obj:_is_valid_spoon(name, repo)
-   if self.repos[repo] then
-      if self.repos[repo].data then
-         if self.repos[repo].data[name] then
-            return true
-         else
-            self.logger.ef("Spoon '%s' does not exist in repository '%s'. Please check and try again.", name, repo)
-         end
-      else
-         self.logger.ef("Repository data for '%s' not available - call spoon.SpoonInstall:updateRepo('%s'), then try again.", repo, repo)
-      end
-   else
+   local repoEntry = self.repos[repo]
+   if not repoEntry then
       self.logger.ef("Invalid or unknown repository '%s'", repo)
+      return nil
    end
-   return nil
+   if not repoEntry.data then
+      self.logger.ef("Repository data for '%s' not available - call spoon.SpoonInstall:updateRepo('%s'), then try again.", repo, repo)
+      return nil
+   end
+   if not repoEntry.data[name] then
+      self.logger.ef("Spoon '%s' does not exist in repository '%s'. Please check and try again.", name, repo)
+      return nil
+   end
+   return true
 end
 
 --- SpoonInstall:asyncInstallSpoonFromRepo(name, repo, callback)
@@ -402,45 +417,45 @@ end
 --- Returns:
 ---  * None
 function obj:andUse(name, arg)
-   if not arg then arg = {} end
+   arg = arg or {}
    if arg.disable then return true end
-   if hs.spoons.use(name, arg, true) then
-      return true
-   else
-      local repo = arg.repo or "default"
-      if self.repos[repo] then
-         if self.repos[repo].data then
-            local load_and_config = function(_, success)
-               if success then
-                  hs.notify.show("Spoon installed by SpoonInstall", name .. ".spoon is now available", "")
-                  hs.spoons.use(name, arg)
-               else
-                  obj.logger.ef("Error installing Spoon '%s' from repo '%s'", name, repo)
-               end
-            end
-            if self.use_syncinstall then
-               return load_and_config(nil, self:installSpoonFromRepo(name, repo))
-            else
-               self:asyncInstallSpoonFromRepo(name, repo, load_and_config)
-            end
+   if hs.spoons.use(name, arg, true) then return true end
+
+   local repo = arg.repo or "default"
+   local repoEntry = self.repos[repo]
+   if not repoEntry then
+      self.logger.ef("Unknown repository '%s' for Spoon '%s'", repo, name)
+      return nil
+   end
+
+   if repoEntry.data then
+      local function _on_installed(_, success)
+         if success then
+            hs.notify.show("Spoon installed by SpoonInstall", name .. ".spoon is now available", "")
+            hs.spoons.use(name, arg)
          else
-            local update_repo_and_continue = function(_, success)
-               if success then
-                  obj:andUse(name, arg)
-               else
-                  obj.logger.ef("Error updating repository '%s'", repo)
-               end
-            end
-            if self.use_syncinstall then
-               return update_repo_and_continue(nil, self:updateRepo(repo))
-            else
-               self:asyncUpdateRepo(repo, update_repo_and_continue)
-            end
+            self.logger.ef("Error installing Spoon '%s' from repo '%s'", name, repo)
          end
+      end
+
+      if self.use_syncinstall then
+         return _on_installed(nil, self:installSpoonFromRepo(name, repo))
+      end
+      return self:asyncInstallSpoonFromRepo(name, repo, _on_installed)
+   end
+
+   local function _on_updated(_, success)
+      if success then
+         self:andUse(name, arg)
       else
-         obj.logger.ef("Unknown repository '%s' for Spoon", repo, name)
+         self.logger.ef("Error updating repository '%s'", repo)
       end
    end
+
+   if self.use_syncinstall then
+      return _on_updated(nil, self:updateRepo(repo))
+   end
+   return self:asyncUpdateRepo(repo, _on_updated)
 end
 
 return obj
