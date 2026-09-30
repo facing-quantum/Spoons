@@ -512,19 +512,19 @@
     "type": "Variable"
   },
   {
-    "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+    "desc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.",
     "module": "ClaudeUsage",
     "name": "fetch",
     "type": "Method"
   },
   {
-    "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+    "desc": "Prepares the menu bar item.",
     "module": "ClaudeUsage",
     "name": "init",
     "type": "Method"
   },
   {
-    "desc": "Starts background polling. Performs an immediate fetch then schedules",
+    "desc": "Starts background polling.",
     "module": "ClaudeUsage",
     "name": "start",
     "type": "Method"

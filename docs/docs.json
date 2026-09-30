@@ -2642,13 +2642,15 @@
     "Method": [
       {
         "def": "ClaudeUsage:fetch()",
-        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
-        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1376",
+        "lineno": "1450",
         "name": "fetch",
-        "notes": [],
+        "notes": [
+          " * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2656,18 +2658,20 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:fetch()",
-        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage:init()",
-        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
-        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1473",
+        "lineno": "1549",
         "name": "init",
-        "notes": [],
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2675,18 +2679,20 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:init()",
-        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage:start()",
-        "desc": "Starts background polling. Performs an immediate fetch then schedules",
-        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1491",
+        "lineno": "1569",
         "name": "start",
-        "notes": [],
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2694,7 +2700,7 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:start()",
-        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -2703,7 +2709,7 @@
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1524",
+        "lineno": "1605",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -2732,12 +2738,12 @@
       {
         "def": "ClaudeUsage.claudeBinPaths",
         "desc": "Extra locations to search for the `claude` binary, tried in order before the",
-        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then `command -v claude` in your login\nshell, then /opt/homebrew/bin, /usr/local/bin and ~/.local/bin.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
         "file": "Source/ClaudeUsage.spoon/init.lua",
         "lineno": "76",
         "name": "claudeBinPaths",
         "signature": "ClaudeUsage.claudeBinPaths",
-        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then `command -v claude` in your login\nshell, then /opt/homebrew/bin, /usr/local/bin and ~/.local/bin.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
         "type": "Variable"
       },
       {
@@ -2813,23 +2819,25 @@
       {
         "def": "ClaudeUsage.claudeBinPaths",
         "desc": "Extra locations to search for the `claude` binary, tried in order before the",
-        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then `command -v claude` in your login\nshell, then /opt/homebrew/bin, /usr/local/bin and ~/.local/bin.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
         "file": "Source/ClaudeUsage.spoon/init.lua",
         "lineno": "76",
         "name": "claudeBinPaths",
         "signature": "ClaudeUsage.claudeBinPaths",
-        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then `command -v claude` in your login\nshell, then /opt/homebrew/bin, /usr/local/bin and ~/.local/bin.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
         "type": "Variable"
       },
       {
         "def": "ClaudeUsage:fetch()",
-        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
-        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1376",
+        "lineno": "1450",
         "name": "fetch",
-        "notes": [],
+        "notes": [
+          " * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2837,7 +2845,7 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:fetch()",
-        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -2864,13 +2872,15 @@
       },
       {
         "def": "ClaudeUsage:init()",
-        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
-        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1473",
+        "lineno": "1549",
         "name": "init",
-        "notes": [],
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2878,7 +2888,7 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:init()",
-        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -2927,13 +2937,15 @@
       },
       {
         "def": "ClaudeUsage:start()",
-        "desc": "Starts background polling. Performs an immediate fetch then schedules",
-        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds.",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1491",
+        "lineno": "1569",
         "name": "start",
-        "notes": [],
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds."
+        ],
         "parameters": [
           " * None"
         ],
@@ -2941,7 +2953,7 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:start()",
-        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -2961,7 +2973,7 @@
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
         "examples": [],
         "file": "Source/ClaudeUsage.spoon/init.lua",
-        "lineno": "1524",
+        "lineno": "1605",
         "name": "stop",
         "notes": [],
         "parameters": [

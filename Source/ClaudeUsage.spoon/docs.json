@@ -6,8 +6,8 @@
         "def": "ClaudeUsage.author",
         "desc": "The author of this Spoon",
         "doc": "The author of this Spoon",
-        "file": "./init.lua",
-        "lineno": "24",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "35",
         "name": "author",
         "signature": "ClaudeUsage.author",
         "stripped_doc": "",
@@ -17,8 +17,8 @@
         "def": "ClaudeUsage.homepage",
         "desc": "The homepage for this Spoon",
         "doc": "The homepage for this Spoon",
-        "file": "./init.lua",
-        "lineno": "34",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "45",
         "name": "homepage",
         "signature": "ClaudeUsage.homepage",
         "stripped_doc": "",
@@ -28,8 +28,8 @@
         "def": "ClaudeUsage.license",
         "desc": "The license for this Spoon (MIT)",
         "doc": "The license for this Spoon (MIT)",
-        "file": "./init.lua",
-        "lineno": "29",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "40",
         "name": "license",
         "signature": "ClaudeUsage.license",
         "stripped_doc": "",
@@ -39,8 +39,8 @@
         "def": "ClaudeUsage.name",
         "desc": "The name of this Spoon",
         "doc": "The name of this Spoon",
-        "file": "./init.lua",
-        "lineno": "14",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "25",
         "name": "name",
         "signature": "ClaudeUsage.name",
         "stripped_doc": "",
@@ -50,8 +50,8 @@
         "def": "ClaudeUsage.version",
         "desc": "The version of this Spoon",
         "doc": "The version of this Spoon",
-        "file": "./init.lua",
-        "lineno": "19",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "30",
         "name": "version",
         "signature": "ClaudeUsage.version",
         "stripped_doc": "",
@@ -65,13 +65,15 @@
     "Method": [
       {
         "def": "ClaudeUsage:fetch()",
-        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
-        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "524",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1450",
         "name": "fetch",
-        "notes": [],
+        "notes": [
+          " * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item."
+        ],
         "parameters": [
           " * None"
         ],
@@ -79,18 +81,20 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:fetch()",
-        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage:init()",
-        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
-        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "604",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1549",
         "name": "init",
-        "notes": [],
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests."
+        ],
         "parameters": [
           " * None"
         ],
@@ -98,18 +102,20 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:init()",
-        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage:start()",
-        "desc": "Starts background polling. Performs an immediate fetch then schedules",
-        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "622",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1569",
         "name": "start",
-        "notes": [],
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds."
+        ],
         "parameters": [
           " * None"
         ],
@@ -117,7 +123,7 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:start()",
-        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -125,8 +131,8 @@
         "desc": "Stops background polling and removes the menu bar item.",
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "640",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1605",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -144,35 +150,79 @@
       {
         "def": "ClaudeUsage.autoRefreshToken",
         "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
-        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
-        "file": "./init.lua",
-        "lineno": "44",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.\n\nHas no effect when the credentials came from the Keychain — see resolveToken.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "99",
         "name": "autoRefreshToken",
         "signature": "ClaudeUsage.autoRefreshToken",
-        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.\nHas no effect when the credentials came from the Keychain — see resolveToken.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.claudeBinPaths",
+        "desc": "Extra locations to search for the `claude` binary, tried in order before the",
+        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "76",
+        "name": "claudeBinPaths",
+        "signature": "ClaudeUsage.claudeBinPaths",
+        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.incidentsPollInterval",
+        "desc": "Minimum seconds between status.claude.com incident history fetches.",
+        "doc": "Minimum seconds between status.claude.com incident history fetches.\nDefault 900. This response is much larger than the component summary and\nchanges rarely, so it is polled far less often.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "62",
+        "name": "incidentsPollInterval",
+        "signature": "ClaudeUsage.incidentsPollInterval",
+        "stripped_doc": "Default 900. This response is much larger than the component summary and\nchanges rarely, so it is polled far less often.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.modelsPollInterval",
+        "desc": "Minimum seconds between api.anthropic.com model list fetches. Default 3600.",
+        "doc": "Minimum seconds between api.anthropic.com model list fetches. Default 3600.\nThe roster only changes when Anthropic launches or retires a model, or when\nthe account's plan changes, so it is polled far less often than anything else.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "69",
+        "name": "modelsPollInterval",
+        "signature": "ClaudeUsage.modelsPollInterval",
+        "stripped_doc": "The roster only changes when Anthropic launches or retires a model, or when\nthe account's plan changes, so it is polled far less often than anything else.",
         "type": "Variable"
       },
       {
         "def": "ClaudeUsage.pollInterval",
         "desc": "Seconds between usage API fetches. Default 120.",
         "doc": "Seconds between usage API fetches. Default 120.",
-        "file": "./init.lua",
-        "lineno": "39",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "50",
         "name": "pollInterval",
         "signature": "ClaudeUsage.pollInterval",
         "stripped_doc": "",
         "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.statusPollInterval",
+        "desc": "Minimum seconds between status.claude.com component fetches. Default 300.",
+        "doc": "Minimum seconds between status.claude.com component fetches. Default 300.\nChecked on each poll tick, so the effective interval is rounded up to the\nnext multiple of ClaudeUsage.pollInterval.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "55",
+        "name": "statusPollInterval",
+        "signature": "ClaudeUsage.statusPollInterval",
+        "stripped_doc": "Checked on each poll tick, so the effective interval is rounded up to the\nnext multiple of ClaudeUsage.pollInterval.",
+        "type": "Variable"
       }
     ],
     "desc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked",
-    "doc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked\nsegmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "doc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked\nsegmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nThe dropdown also reports Claude service health from the public Statuspage\nAPI at status.claude.com: per-component status, a rolling incident summary,\nand a submenu of recent incidents linking to their status page entries.\n\nA model roster sits alongside it, built by intersecting the /v1/models list\nfor the signed-in account with the model catalog baked into the local\n`claude` binary. See modelRows for what the three resulting states mean.\n\nCredentials come from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code). That entry is authoritative when it exists: the spoon\nneither reads nor writes ~/.claude/.credentials.json in that case. The file\nis used only by installs that have no Keychain entry at all. The status\nendpoints are public and need no authentication.",
     "items": [
       {
         "def": "ClaudeUsage.author",
         "desc": "The author of this Spoon",
         "doc": "The author of this Spoon",
-        "file": "./init.lua",
-        "lineno": "24",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "35",
         "name": "author",
         "signature": "ClaudeUsage.author",
         "stripped_doc": "",
@@ -181,23 +231,36 @@
       {
         "def": "ClaudeUsage.autoRefreshToken",
         "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
-        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
-        "file": "./init.lua",
-        "lineno": "44",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.\n\nHas no effect when the credentials came from the Keychain — see resolveToken.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "99",
         "name": "autoRefreshToken",
         "signature": "ClaudeUsage.autoRefreshToken",
-        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.\nHas no effect when the credentials came from the Keychain — see resolveToken.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.claudeBinPaths",
+        "desc": "Extra locations to search for the `claude` binary, tried in order before the",
+        "doc": "Extra locations to search for the `claude` binary, tried in order before the\nPATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\n\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\n\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\n\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\n\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "76",
+        "name": "claudeBinPaths",
+        "signature": "ClaudeUsage.claudeBinPaths",
+        "stripped_doc": "PATH lookup, so an entry here overrides whatever PATH would have found. Each\nentry is an absolute path to the binary or to a symlink pointing at it.\nEntries that do not exist are skipped with a console note, so one list can\ncover several machines. Accepts a string or a table of strings. Default {}.\nFull search order: these entries, then /opt/homebrew/bin, /usr/local/bin\nand ~/.local/bin, then `command -v claude` in your login shell.\nOnly needed when `claude` is installed somewhere the spoon cannot find on its\nown; the binary supplies the client_id, version and anthropic-beta headers,\nand the spoon falls back to pinned values when it cannot be read.\nResolved once and cached on first use, so set this before ClaudeUsage:start().\nTo change it later, call ClaudeUsage:stop() then ClaudeUsage:start(), or\nreload Hammerspoon.\nExample:\n  spoon.ClaudeUsage.claudeBinPaths = {\"/opt/custom/bin/claude\"}",
         "type": "Variable"
       },
       {
         "def": "ClaudeUsage:fetch()",
-        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
-        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the menu bar.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "524",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1450",
         "name": "fetch",
-        "notes": [],
+        "notes": [
+          " * Called automatically on start and by the poll timer; can also be triggered manually via the \"Refresh now\" menu item."
+        ],
         "parameters": [
           " * None"
         ],
@@ -205,29 +268,42 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:fetch()",
-        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage.homepage",
         "desc": "The homepage for this Spoon",
         "doc": "The homepage for this Spoon",
-        "file": "./init.lua",
-        "lineno": "34",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "45",
         "name": "homepage",
         "signature": "ClaudeUsage.homepage",
         "stripped_doc": "",
         "type": "Constant"
       },
       {
+        "def": "ClaudeUsage.incidentsPollInterval",
+        "desc": "Minimum seconds between status.claude.com incident history fetches.",
+        "doc": "Minimum seconds between status.claude.com incident history fetches.\nDefault 900. This response is much larger than the component summary and\nchanges rarely, so it is polled far less often.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "62",
+        "name": "incidentsPollInterval",
+        "signature": "ClaudeUsage.incidentsPollInterval",
+        "stripped_doc": "Default 900. This response is much larger than the component summary and\nchanges rarely, so it is polled far less often.",
+        "type": "Variable"
+      },
+      {
         "def": "ClaudeUsage:init()",
-        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
-        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "604",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1549",
         "name": "init",
-        "notes": [],
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests."
+        ],
         "parameters": [
           " * None"
         ],
@@ -235,26 +311,37 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:init()",
-        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "ClaudeUsage.license",
         "desc": "The license for this Spoon (MIT)",
         "doc": "The license for this Spoon (MIT)",
-        "file": "./init.lua",
-        "lineno": "29",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "40",
         "name": "license",
         "signature": "ClaudeUsage.license",
         "stripped_doc": "",
         "type": "Constant"
       },
       {
+        "def": "ClaudeUsage.modelsPollInterval",
+        "desc": "Minimum seconds between api.anthropic.com model list fetches. Default 3600.",
+        "doc": "Minimum seconds between api.anthropic.com model list fetches. Default 3600.\nThe roster only changes when Anthropic launches or retires a model, or when\nthe account's plan changes, so it is polled far less often than anything else.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "69",
+        "name": "modelsPollInterval",
+        "signature": "ClaudeUsage.modelsPollInterval",
+        "stripped_doc": "The roster only changes when Anthropic launches or retires a model, or when\nthe account's plan changes, so it is polled far less often than anything else.",
+        "type": "Variable"
+      },
+      {
         "def": "ClaudeUsage.name",
         "desc": "The name of this Spoon",
         "doc": "The name of this Spoon",
-        "file": "./init.lua",
-        "lineno": "14",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "25",
         "name": "name",
         "signature": "ClaudeUsage.name",
         "stripped_doc": "",
@@ -264,8 +351,8 @@
         "def": "ClaudeUsage.pollInterval",
         "desc": "Seconds between usage API fetches. Default 120.",
         "doc": "Seconds between usage API fetches. Default 120.",
-        "file": "./init.lua",
-        "lineno": "39",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "50",
         "name": "pollInterval",
         "signature": "ClaudeUsage.pollInterval",
         "stripped_doc": "",
@@ -273,13 +360,15 @@
       },
       {
         "def": "ClaudeUsage:start()",
-        "desc": "Starts background polling. Performs an immediate fetch then schedules",
-        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds.",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "622",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1569",
         "name": "start",
-        "notes": [],
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds."
+        ],
         "parameters": [
           " * None"
         ],
@@ -287,16 +376,27 @@
           " * The ClaudeUsage object"
         ],
         "signature": "ClaudeUsage:start()",
-        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "stripped_doc": "",
         "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.statusPollInterval",
+        "desc": "Minimum seconds between status.claude.com component fetches. Default 300.",
+        "doc": "Minimum seconds between status.claude.com component fetches. Default 300.\nChecked on each poll tick, so the effective interval is rounded up to the\nnext multiple of ClaudeUsage.pollInterval.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "55",
+        "name": "statusPollInterval",
+        "signature": "ClaudeUsage.statusPollInterval",
+        "stripped_doc": "Checked on each poll tick, so the effective interval is rounded up to the\nnext multiple of ClaudeUsage.pollInterval.",
+        "type": "Variable"
       },
       {
         "def": "ClaudeUsage:stop()",
         "desc": "Stops background polling and removes the menu bar item.",
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
         "examples": [],
-        "file": "./init.lua",
-        "lineno": "640",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "1605",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -313,8 +413,8 @@
         "def": "ClaudeUsage.version",
         "desc": "The version of this Spoon",
         "doc": "The version of this Spoon",
-        "file": "./init.lua",
-        "lineno": "19",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "30",
         "name": "version",
         "signature": "ClaudeUsage.version",
         "stripped_doc": "",
@@ -322,7 +422,7 @@
       }
     ],
     "name": "ClaudeUsage",
-    "stripped_doc": "segmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "stripped_doc": "segmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nThe dropdown also reports Claude service health from the public Statuspage\nAPI at status.claude.com: per-component status, a rolling incident summary,\nand a submenu of recent incidents linking to their status page entries.\n\nA model roster sits alongside it, built by intersecting the /v1/models list\nfor the signed-in account with the model catalog baked into the local\n`claude` binary. See modelRows for what the three resulting states mean.\n\nCredentials come from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code). That entry is authoritative when it exists: the spoon\nneither reads nor writes ~/.claude/.credentials.json in that case. The file\nis used only by installs that have no Keychain entry at all. The status\nendpoints are public and need no authentication.",
     "submodules": [],
     "type": "Module"
   }
