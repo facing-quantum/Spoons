@@ -86,6 +86,11 @@ obj.geminiApiKey = nil
 --- Default `~/.gemini/antigravity-cli/cache/quota_state.json`.
 obj.quotaCachePath = os.getenv("HOME") .. "/.gemini/antigravity-cli/cache/quota_state.json"
 
+--- GeminiUsage.planName
+--- Variable
+--- Plan or subscription tier display name override. Default nil (auto-resolved).
+obj.planName = nil
+
 local menubar, timer
 local lastData, lastFetchTime, fetchError, planName
 local statusData, statusFetchTime, statusError, statusAttemptTime
@@ -163,7 +168,7 @@ local CODE_ASSIST_URL       = "https://daily-cloudcode-pa.googleapis.com/v1inter
 local MODEL_DOCS_URL        = "https://ai.google.dev/gemini-api/docs/models/gemini"
 
 -- Assigned in the Fetch section; declared here for menu callbacks
-local fetchStatus, fetchIncidents, fetchModels
+local fetchStatus, fetchIncidents, fetchModels, fetchPlan
 
 -- ── Time & Date Helpers ────────────────────────────────────────────────
 
@@ -285,6 +290,69 @@ end
 local function getQuotaResetVal(q)
   if not q then return nil end
   return q.reset_in_seconds or q.reset_time
+end
+
+local function extractPlanName(data, override)
+  if override and override ~= "" then
+    return override
+  end
+  if not data then return nil end
+
+  -- 1. Check direct plan_tier field (e.g. from agy StatusLineData)
+  if type(data.plan_tier) == "string" and data.plan_tier ~= "" then
+    return data.plan_tier
+  end
+
+  -- 2. Check paidTier from Google Code Assist API response
+  local pt = data.paidTier or data.paid_tier
+  if type(pt) == "table" then
+    if type(pt.name) == "string" and pt.name ~= "" then
+      return pt.name
+    end
+    if pt.id == "g1-pro-tier" then
+      return "Google AI Pro"
+    elseif pt.id == "g1-ultra-tier" then
+      return "Google AI Ultra"
+    end
+  end
+
+  -- 3. Check g1Tier / g1_tier
+  local g1 = data.g1Tier or data.g1_tier
+  if type(g1) == "string" and g1 ~= "" then
+    return g1
+  end
+
+  -- 4. Check explicit plan or tier if not generic "antigravity"
+  if type(data.plan) == "string" and data.plan ~= "" and data.plan:lower() ~= "antigravity" then
+    return data.plan
+  end
+  if type(data.tier) == "string" and data.tier ~= "" and data.tier:lower() ~= "antigravity" and data.tier:lower() ~= "free-tier" then
+    return data.tier
+  end
+
+  -- 5. Check allowedTiers for standard / enterprise tiers
+  local tiers = data.allowedTiers or data.allowed_tiers
+  if type(tiers) == "table" then
+    for _, t in ipairs(tiers) do
+      if t.id == "standard-tier" and not t.isDefault then
+        return "Gemini Code Assist Standard"
+      elseif t.id == "enterprise-tier" then
+        return "Gemini Code Assist Enterprise"
+      end
+    end
+  end
+
+  -- 6. Check currentTier
+  local ct = data.currentTier or data.current_tier
+  if type(ct) == "table" and ct.name and ct.name:lower() ~= "antigravity" then
+    return ct.name
+  end
+
+  if type(data.product) == "string" and data.product ~= "" then
+    return "Antigravity"
+  end
+
+  return nil
 end
 
 -- ── Binary & Tool Discovery ────────────────────────────────────────────
@@ -847,6 +915,7 @@ local function buildMenu()
   else
     add("Refresh now", {fn=function()
       obj:fetch()
+      fetchPlan()
       fetchStatus()
       fetchIncidents()
       fetchModels()
@@ -857,6 +926,33 @@ local function buildMenu()
 end
 
 -- ── Network Fetching ───────────────────────────────────────────────────
+
+function fetchPlan()
+  if obj.planName and obj.planName ~= "" then
+    planName = obj.planName
+    return
+  end
+  local token, src = resolveAuthToken()
+  if not (token and (src == "keychain" or src == "file")) then return end
+
+  local body = hs.json.encode({mode = 1}) or "{}"
+  hs.http.asyncPost(CODE_ASSIST_URL, body, {
+    ["Authorization"] = "Bearer " .. token,
+    ["Content-Type"]  = "application/json",
+    ["User-Agent"]    = "Antigravity/1.0",
+  }, function(status, respBody, _)
+    if status == 200 then
+      local ok, parsed = pcall(hs.json.decode, respBody)
+      if ok and type(parsed) == "table" then
+        local resolved = extractPlanName(parsed, obj.planName)
+        if resolved and resolved ~= planName then
+          planName = resolved
+          refreshIcon()
+        end
+      end
+    end
+  end)
+end
 
 function fetchStatus()
   statusAttemptTime = os.time()
@@ -947,16 +1043,13 @@ function obj:fetch()
     lastData = cached
     lastFetchTime = os.time()
     fetchError = nil
-    if not planName then
-      if cached.product == "antigravity" then
-        planName = "Antigravity"
-      else
-        planName = cached.plan or "Antigravity"
-      end
-    end
+    planName = obj.planName or extractPlanName(cached, obj.planName) or planName
     clearBackoff()
     refreshIcon()
     isFetching = false
+    if not planName or planName == "Antigravity" then
+      fetchPlan()
+    end
     return self
   end
 
@@ -973,11 +1066,7 @@ function obj:fetch()
       if status == 200 then
         local ok, parsed = pcall(hs.json.decode, respBody)
         if ok and type(parsed) == "table" then
-          if parsed.allowedTiers and parsed.allowedTiers[1] then
-            planName = parsed.allowedTiers[1].name or "Antigravity"
-          elseif parsed.currentTier then
-            planName = parsed.currentTier.name or "Antigravity"
-          end
+          planName = obj.planName or extractPlanName(parsed, obj.planName) or planName or "Antigravity"
           if not lastData then
             lastData = {
               plan = planName,
@@ -1055,12 +1144,16 @@ function obj:start()
   if timer then timer:stop(); timer = nil end
   self:init()
   self:fetch()
+  fetchPlan()
   fetchStatus()
   fetchIncidents()
   fetchModels()
 
   timer = hs.timer.new(obj.pollInterval, function()
     self:fetch()
+    if not planName or planName == "Antigravity" then
+      fetchPlan()
+    end
     local now = os.time()
     if now - (statusAttemptTime or 0) >= obj.statusPollInterval then
       fetchStatus()

@@ -69,7 +69,7 @@
         "doc": "Immediately fetches current quota and usage data.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "927",
+        "lineno": "1023",
         "name": "fetch",
         "notes": [
           " * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu."
@@ -90,7 +90,7 @@
         "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1020",
+        "lineno": "1109",
         "name": "init",
         "notes": [
           " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests."
@@ -111,7 +111,7 @@
         "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1042",
+        "lineno": "1131",
         "name": "start",
         "notes": [
           " * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds."
@@ -132,7 +132,7 @@
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1079",
+        "lineno": "1172",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -203,6 +203,17 @@
         "type": "Variable"
       },
       {
+        "def": "GeminiUsage.planName",
+        "desc": "Plan or subscription tier display name override. Default nil (auto-resolved).",
+        "doc": "Plan or subscription tier display name override. Default nil (auto-resolved).",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "89",
+        "name": "planName",
+        "signature": "GeminiUsage.planName",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "GeminiUsage.pollInterval",
         "desc": "Seconds between quota and usage data checks. Default 120.",
         "doc": "Seconds between quota and usage data checks. Default 120.",
@@ -267,7 +278,7 @@
         "doc": "Immediately fetches current quota and usage data.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "927",
+        "lineno": "1023",
         "name": "fetch",
         "notes": [
           " * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu."
@@ -332,7 +343,7 @@
         "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1020",
+        "lineno": "1109",
         "name": "init",
         "notes": [
           " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests."
@@ -381,6 +392,17 @@
         "type": "Constant"
       },
       {
+        "def": "GeminiUsage.planName",
+        "desc": "Plan or subscription tier display name override. Default nil (auto-resolved).",
+        "doc": "Plan or subscription tier display name override. Default nil (auto-resolved).",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "89",
+        "name": "planName",
+        "signature": "GeminiUsage.planName",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "GeminiUsage.pollInterval",
         "desc": "Seconds between quota and usage data checks. Default 120.",
         "doc": "Seconds between quota and usage data checks. Default 120.",
@@ -408,7 +430,7 @@
         "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds.",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1042",
+        "lineno": "1131",
         "name": "start",
         "notes": [
           " * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds."
@@ -440,7 +462,7 @@
         "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object",
         "examples": [],
         "file": "Source/GeminiUsage.spoon/init.lua",
-        "lineno": "1079",
+        "lineno": "1172",
         "name": "stop",
         "notes": [],
         "parameters": [
