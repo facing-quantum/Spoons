@@ -482,9 +482,33 @@
     "type": "Variable"
   },
   {
+    "desc": "Extra locations to search for the `claude` binary, tried in order before the",
+    "module": "ClaudeUsage",
+    "name": "claudeBinPaths",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between status.claude.com incident history fetches.",
+    "module": "ClaudeUsage",
+    "name": "incidentsPollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between api.anthropic.com model list fetches. Default 3600.",
+    "module": "ClaudeUsage",
+    "name": "modelsPollInterval",
+    "type": "Variable"
+  },
+  {
     "desc": "Seconds between usage API fetches. Default 120.",
     "module": "ClaudeUsage",
     "name": "pollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between status.claude.com component fetches. Default 300.",
+    "module": "ClaudeUsage",
+    "name": "statusPollInterval",
     "type": "Variable"
   },
   {
@@ -1338,6 +1362,113 @@
     "type": "Method"
   },
   {
+    "desc": "Displays Google Gemini and partner AI plan usage limits in a single unified macOS menu bar item.",
+    "name": "GeminiUsage",
+    "type": "Module"
+  },
+  {
+    "desc": "The author of this Spoon",
+    "module": "GeminiUsage",
+    "name": "author",
+    "type": "Constant"
+  },
+  {
+    "desc": "The homepage for this Spoon",
+    "module": "GeminiUsage",
+    "name": "homepage",
+    "type": "Constant"
+  },
+  {
+    "desc": "The license for this Spoon (MIT)",
+    "module": "GeminiUsage",
+    "name": "license",
+    "type": "Constant"
+  },
+  {
+    "desc": "The name of this Spoon",
+    "module": "GeminiUsage",
+    "name": "name",
+    "type": "Constant"
+  },
+  {
+    "desc": "The version of this Spoon",
+    "module": "GeminiUsage",
+    "name": "version",
+    "type": "Constant"
+  },
+  {
+    "desc": "Extra locations to search for the `agy` or `gemini` binary, tried in order",
+    "module": "GeminiUsage",
+    "name": "agyBinPaths",
+    "type": "Variable"
+  },
+  {
+    "desc": "Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY",
+    "module": "GeminiUsage",
+    "name": "geminiApiKey",
+    "type": "Variable"
+  },
+  {
+    "desc": "Menu bar icon display style: \"dual\" (default, both Gemini and Claude side-by-side in one icon),",
+    "module": "GeminiUsage",
+    "name": "iconStyle",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between Google incident history fetches. Default 900.",
+    "module": "GeminiUsage",
+    "name": "incidentsPollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between model roster updates. Default 3600.",
+    "module": "GeminiUsage",
+    "name": "modelsPollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Seconds between quota and usage data checks. Default 120.",
+    "module": "GeminiUsage",
+    "name": "pollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Path to check for cached statusline quota JSON.",
+    "module": "GeminiUsage",
+    "name": "quotaCachePath",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum seconds between Google service status fetches. Default 300.",
+    "module": "GeminiUsage",
+    "name": "statusPollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Immediately fetches current quota and usage data.",
+    "module": "GeminiUsage",
+    "name": "fetch",
+    "type": "Method"
+  },
+  {
+    "desc": "Prepares the menu bar item.",
+    "module": "GeminiUsage",
+    "name": "init",
+    "type": "Method"
+  },
+  {
+    "desc": "Starts background polling.",
+    "module": "GeminiUsage",
+    "name": "start",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops background polling and removes the menu bar item.",
+    "module": "GeminiUsage",
+    "name": "stop",
+    "type": "Method"
+  },
+  {
     "desc": "A horizonal calendar inset into the desktop",
     "name": "HCalendar",
     "type": "Module"
@@ -1443,7 +1574,7 @@
     "type": "Method"
   },
   {
-    "desc": "Instead of pressing \u2318Q, hold \u2318Q to close applications.",
+    "desc": "Instead of pressing ⌘Q, hold ⌘Q to close applications.",
     "name": "HoldToQuit",
     "type": "Module"
   },
@@ -1549,7 +1680,7 @@
     "type": "Method"
   },
   {
-    "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.",
+    "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
     "module": "HSaria2",
     "name": "togglePanel",
     "type": "Method"
@@ -1646,6 +1777,12 @@
     "type": "Module"
   },
   {
+    "desc": "Retrieve an item from the Login Keychain, returns nil if not found.",
+    "module": "Keychain",
+    "name": "login_keychain",
+    "type": "Deprecated"
+  },
+  {
     "desc": "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
     "module": "Keychain",
     "name": "logger",
@@ -1662,12 +1799,6 @@
     "module": "Keychain",
     "name": "getItem",
     "type": "Method"
-  },
-  {
-    "desc": "Retrieve an item from the Login Keychain, returns nil if not found.",
-    "module": "Keychain",
-    "name": "login_keychain",
-    "type": "Deprecated"
   },
   {
     "desc": "Keybindings cheatsheet for current application",
@@ -2545,7 +2676,7 @@
     "type": "Variable"
   },
   {
-    "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".",
+    "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".",
     "module": "PersonalHotspot",
     "name": "hotspotName",
     "type": "Variable"
@@ -3181,7 +3312,7 @@
     "type": "Module"
   },
   {
-    "desc": "Redetect the active interface, darkmode \u2026And redraw everything.",
+    "desc": "Redetect the active interface, darkmode …And redraw everything.",
     "module": "SpeedMenu",
     "name": "rescan",
     "type": "Method"

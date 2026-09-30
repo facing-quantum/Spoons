@@ -1,0 +1,473 @@
+[
+  {
+    "Command": [],
+    "Constant": [
+      {
+        "def": "GeminiUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "30",
+        "name": "author",
+        "signature": "GeminiUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "40",
+        "name": "homepage",
+        "signature": "GeminiUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "35",
+        "name": "license",
+        "signature": "GeminiUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "20",
+        "name": "name",
+        "signature": "GeminiUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "25",
+        "name": "version",
+        "signature": "GeminiUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "Constructor": [],
+    "Deprecated": [],
+    "Field": [],
+    "Function": [],
+    "Method": [
+      {
+        "def": "GeminiUsage:fetch()",
+        "desc": "Immediately fetches current quota and usage data.",
+        "doc": "Immediately fetches current quota and usage data.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "927",
+        "name": "fetch",
+        "notes": [
+          " * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:fetch()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage:init()",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1020",
+        "name": "init",
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:init()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage:start()",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1042",
+        "name": "start",
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1079",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      }
+    ],
+    "Variable": [
+      {
+        "def": "GeminiUsage.agyBinPaths",
+        "desc": "Extra locations to search for the `agy` or `gemini` binary, tried in order",
+        "doc": "Extra locations to search for the `agy` or `gemini` binary, tried in order\nbefore PATH lookup. Accepts a string or a table of strings. Default {}.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "71",
+        "name": "agyBinPaths",
+        "signature": "GeminiUsage.agyBinPaths",
+        "stripped_doc": "before PATH lookup. Accepts a string or a table of strings. Default {}.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.geminiApiKey",
+        "desc": "Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY",
+        "doc": "Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY\nenvironment variable or Keychain/OAuth credentials. Default nil.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "77",
+        "name": "geminiApiKey",
+        "signature": "GeminiUsage.geminiApiKey",
+        "stripped_doc": "environment variable or Keychain/OAuth credentials. Default nil.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.iconStyle",
+        "desc": "Menu bar icon display style: \"dual\" (default, both Gemini and Claude side-by-side in one icon),",
+        "doc": "Menu bar icon display style: \"dual\" (default, both Gemini and Claude side-by-side in one icon),\n\"split\" (top bar Gemini 5h, bottom bar Claude 5h), or \"active\" (active model family 5h and weekly).",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "65",
+        "name": "iconStyle",
+        "signature": "GeminiUsage.iconStyle",
+        "stripped_doc": "\"split\" (top bar Gemini 5h, bottom bar Claude 5h), or \"active\" (active model family 5h and weekly).",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.incidentsPollInterval",
+        "desc": "Minimum seconds between Google incident history fetches. Default 900.",
+        "doc": "Minimum seconds between Google incident history fetches. Default 900.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "55",
+        "name": "incidentsPollInterval",
+        "signature": "GeminiUsage.incidentsPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.modelsPollInterval",
+        "desc": "Minimum seconds between model roster updates. Default 3600.",
+        "doc": "Minimum seconds between model roster updates. Default 3600.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "60",
+        "name": "modelsPollInterval",
+        "signature": "GeminiUsage.modelsPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.pollInterval",
+        "desc": "Seconds between quota and usage data checks. Default 120.",
+        "doc": "Seconds between quota and usage data checks. Default 120.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "45",
+        "name": "pollInterval",
+        "signature": "GeminiUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.quotaCachePath",
+        "desc": "Path to check for cached statusline quota JSON.",
+        "doc": "Path to check for cached statusline quota JSON.\nDefault `~/.gemini/antigravity-cli/cache/quota_state.json`.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "83",
+        "name": "quotaCachePath",
+        "signature": "GeminiUsage.quotaCachePath",
+        "stripped_doc": "Default `~/.gemini/antigravity-cli/cache/quota_state.json`.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.statusPollInterval",
+        "desc": "Minimum seconds between Google service status fetches. Default 300.",
+        "doc": "Minimum seconds between Google service status fetches. Default 300.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "50",
+        "name": "statusPollInterval",
+        "signature": "GeminiUsage.statusPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      }
+    ],
+    "desc": "Displays Google Gemini and partner AI plan usage limits in a single unified macOS menu bar item.",
+    "doc": "Displays Google Gemini and partner AI plan usage limits in a single unified macOS menu bar item.\nThe icon renders a dual-column layout side-by-side:\n  * Left column: Gemini models (5-hour session and weekly progress bars).\n  * Right column: Claude & 3P partner models (5-hour session and weekly progress bars).\n\nFeatures 8-segment gradient progress bars with sqrt-scaled reset proximity countdown lines,\nusage percentages, and a service health indicator dot. Clicking the menu bar item expands\na rich dropdown detailing quota usage for both pools, countdowns, reset times in the local\ntimezone, session context window metrics, Google Cloud / Vertex AI service health, and\na model roster.\n\nCredentials and quota data are automatically resolved from Antigravity CLI (`agy`), macOS\nKeychain, local quota cache files, and Google Cloud endpoints.",
+    "items": [
+      {
+        "def": "GeminiUsage.agyBinPaths",
+        "desc": "Extra locations to search for the `agy` or `gemini` binary, tried in order",
+        "doc": "Extra locations to search for the `agy` or `gemini` binary, tried in order\nbefore PATH lookup. Accepts a string or a table of strings. Default {}.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "71",
+        "name": "agyBinPaths",
+        "signature": "GeminiUsage.agyBinPaths",
+        "stripped_doc": "before PATH lookup. Accepts a string or a table of strings. Default {}.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "30",
+        "name": "author",
+        "signature": "GeminiUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage:fetch()",
+        "desc": "Immediately fetches current quota and usage data.",
+        "doc": "Immediately fetches current quota and usage data.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "927",
+        "name": "fetch",
+        "notes": [
+          " * Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:fetch()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage.geminiApiKey",
+        "desc": "Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY",
+        "doc": "Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY\nenvironment variable or Keychain/OAuth credentials. Default nil.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "77",
+        "name": "geminiApiKey",
+        "signature": "GeminiUsage.geminiApiKey",
+        "stripped_doc": "environment variable or Keychain/OAuth credentials. Default nil.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "40",
+        "name": "homepage",
+        "signature": "GeminiUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.iconStyle",
+        "desc": "Menu bar icon display style: \"dual\" (default, both Gemini and Claude side-by-side in one icon),",
+        "doc": "Menu bar icon display style: \"dual\" (default, both Gemini and Claude side-by-side in one icon),\n\"split\" (top bar Gemini 5h, bottom bar Claude 5h), or \"active\" (active model family 5h and weekly).",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "65",
+        "name": "iconStyle",
+        "signature": "GeminiUsage.iconStyle",
+        "stripped_doc": "\"split\" (top bar Gemini 5h, bottom bar Claude 5h), or \"active\" (active model family 5h and weekly).",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.incidentsPollInterval",
+        "desc": "Minimum seconds between Google incident history fetches. Default 900.",
+        "doc": "Minimum seconds between Google incident history fetches. Default 900.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "55",
+        "name": "incidentsPollInterval",
+        "signature": "GeminiUsage.incidentsPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage:init()",
+        "desc": "Prepares the menu bar item.",
+        "doc": "Prepares the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1020",
+        "name": "init",
+        "notes": [
+          " * Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:init()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "35",
+        "name": "license",
+        "signature": "GeminiUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.modelsPollInterval",
+        "desc": "Minimum seconds between model roster updates. Default 3600.",
+        "doc": "Minimum seconds between model roster updates. Default 3600.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "60",
+        "name": "modelsPollInterval",
+        "signature": "GeminiUsage.modelsPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "20",
+        "name": "name",
+        "signature": "GeminiUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "GeminiUsage.pollInterval",
+        "desc": "Seconds between quota and usage data checks. Default 120.",
+        "doc": "Seconds between quota and usage data checks. Default 120.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "45",
+        "name": "pollInterval",
+        "signature": "GeminiUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage.quotaCachePath",
+        "desc": "Path to check for cached statusline quota JSON.",
+        "doc": "Path to check for cached statusline quota JSON.\nDefault `~/.gemini/antigravity-cli/cache/quota_state.json`.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "83",
+        "name": "quotaCachePath",
+        "signature": "GeminiUsage.quotaCachePath",
+        "stripped_doc": "Default `~/.gemini/antigravity-cli/cache/quota_state.json`.",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage:start()",
+        "desc": "Starts background polling.",
+        "doc": "Starts background polling.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object\n\nNotes:\n * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds.",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1042",
+        "name": "start",
+        "notes": [
+          " * Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds."
+        ],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage.statusPollInterval",
+        "desc": "Minimum seconds between Google service status fetches. Default 300.",
+        "doc": "Minimum seconds between Google service status fetches. Default 300.",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "50",
+        "name": "statusPollInterval",
+        "signature": "GeminiUsage.statusPollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "GeminiUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The GeminiUsage object",
+        "examples": [],
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "1079",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The GeminiUsage object"
+        ],
+        "signature": "GeminiUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "GeminiUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/GeminiUsage.spoon/init.lua",
+        "lineno": "25",
+        "name": "version",
+        "signature": "GeminiUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "name": "GeminiUsage",
+    "stripped_doc": "The icon renders a dual-column layout side-by-side:\n  * Left column: Gemini models (5-hour session and weekly progress bars).\n  * Right column: Claude & 3P partner models (5-hour session and weekly progress bars).\n\nFeatures 8-segment gradient progress bars with sqrt-scaled reset proximity countdown lines,\nusage percentages, and a service health indicator dot. Clicking the menu bar item expands\na rich dropdown detailing quota usage for both pools, countdowns, reset times in the local\ntimezone, session context window metrics, Google Cloud / Vertex AI service health, and\na model roster.\n\nCredentials and quota data are automatically resolved from Antigravity CLI (`agy`), macOS\nKeychain, local quota cache files, and Google Cloud endpoints.",
+    "submodules": [],
+    "type": "Module"
+  }
+]
