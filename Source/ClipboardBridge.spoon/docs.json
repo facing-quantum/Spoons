@@ -1,0 +1,297 @@
+[
+  {
+    "Command": [],
+    "Constant": [
+      {
+        "def": "ClipboardBridge.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "./init.lua",
+        "lineno": "33",
+        "name": "author",
+        "signature": "ClipboardBridge.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "./init.lua",
+        "lineno": "38",
+        "name": "homepage",
+        "signature": "ClipboardBridge.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "./init.lua",
+        "lineno": "43",
+        "name": "license",
+        "signature": "ClipboardBridge.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "./init.lua",
+        "lineno": "23",
+        "name": "name",
+        "signature": "ClipboardBridge.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "./init.lua",
+        "lineno": "28",
+        "name": "version",
+        "signature": "ClipboardBridge.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "Constructor": [],
+    "Deprecated": [],
+    "Field": [],
+    "Function": [],
+    "Method": [
+      {
+        "def": "ClipboardBridge:start()",
+        "desc": "Starts the clipboard watcher and Unix socket server.",
+        "doc": "Starts the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "211",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge:stop()",
+        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "260",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:stop()",
+        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "type": "Method"
+      }
+    ],
+    "Variable": [
+      {
+        "def": "ClipboardBridge.authToken",
+        "desc": "Bearer token required by clients when set.",
+        "doc": "Bearer token required by clients when set.\nDefault: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "file": "./init.lua",
+        "lineno": "55",
+        "name": "authToken",
+        "signature": "ClipboardBridge.authToken",
+        "stripped_doc": "Default: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.maxAge",
+        "desc": "Seconds after which a clipboard image is considered stale and a 204 is",
+        "doc": "Seconds after which a clipboard image is considered stale and a 204 is\nreturned instead. Default 60 (1 minute).",
+        "file": "./init.lua",
+        "lineno": "62",
+        "name": "maxAge",
+        "signature": "ClipboardBridge.maxAge",
+        "stripped_doc": "returned instead. Default 60 (1 minute).",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.socketPath",
+        "desc": "Path to the Unix domain socket file.",
+        "doc": "Path to the Unix domain socket file.\nDefault: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "file": "./init.lua",
+        "lineno": "48",
+        "name": "socketPath",
+        "signature": "ClipboardBridge.socketPath",
+        "stripped_doc": "Default: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "desc": "Minimum number of seconds between unauthorized access notifications.",
+        "doc": "Minimum number of seconds between unauthorized access notifications.\nDefault: 60. Set to 0/nil to disable unauthorized notifications.",
+        "file": "./init.lua",
+        "lineno": "68",
+        "name": "unauthorizedNotificationRateLimit",
+        "signature": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "stripped_doc": "Default: 60. Set to 0/nil to disable unauthorized notifications.",
+        "type": "Variable"
+      }
+    ],
+    "desc": "Serves the current clipboard image over a Unix domain socket so that",
+    "doc": "Serves the current clipboard image over a Unix domain socket so that\nexternal tools (e.g. AI agents in Docker containers) can read screenshots\nwithout any network exposure. The socket is a plain file; it is invisible\nto the network and cannot be reached from another machine.\n\nDocker containers access the socket via a bind-mount (see compose.yaml) and use:\n  curl -sf \\\n    --unix-socket \"$CLIPBOARD_BRIDGE_SOCK\" \\\n    -H \"Authorization: Bearer $CLIPBOARD_BRIDGE_TOKEN\" \\\n    http://localhost/\n\nSecurity default:\n  - Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.\n  - Set authToken to empty/nil to allow unauthenticated requests.\n  - Unauthorized requests can trigger a local notification.\n  - Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.",
+    "items": [
+      {
+        "def": "ClipboardBridge.authToken",
+        "desc": "Bearer token required by clients when set.",
+        "doc": "Bearer token required by clients when set.\nDefault: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "file": "./init.lua",
+        "lineno": "55",
+        "name": "authToken",
+        "signature": "ClipboardBridge.authToken",
+        "stripped_doc": "Default: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "./init.lua",
+        "lineno": "33",
+        "name": "author",
+        "signature": "ClipboardBridge.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "./init.lua",
+        "lineno": "38",
+        "name": "homepage",
+        "signature": "ClipboardBridge.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "./init.lua",
+        "lineno": "43",
+        "name": "license",
+        "signature": "ClipboardBridge.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.maxAge",
+        "desc": "Seconds after which a clipboard image is considered stale and a 204 is",
+        "doc": "Seconds after which a clipboard image is considered stale and a 204 is\nreturned instead. Default 60 (1 minute).",
+        "file": "./init.lua",
+        "lineno": "62",
+        "name": "maxAge",
+        "signature": "ClipboardBridge.maxAge",
+        "stripped_doc": "returned instead. Default 60 (1 minute).",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "./init.lua",
+        "lineno": "23",
+        "name": "name",
+        "signature": "ClipboardBridge.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.socketPath",
+        "desc": "Path to the Unix domain socket file.",
+        "doc": "Path to the Unix domain socket file.\nDefault: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "file": "./init.lua",
+        "lineno": "48",
+        "name": "socketPath",
+        "signature": "ClipboardBridge.socketPath",
+        "stripped_doc": "Default: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge:start()",
+        "desc": "Starts the clipboard watcher and Unix socket server.",
+        "doc": "Starts the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "211",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge:stop()",
+        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "./init.lua",
+        "lineno": "260",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:stop()",
+        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "desc": "Minimum number of seconds between unauthorized access notifications.",
+        "doc": "Minimum number of seconds between unauthorized access notifications.\nDefault: 60. Set to 0/nil to disable unauthorized notifications.",
+        "file": "./init.lua",
+        "lineno": "68",
+        "name": "unauthorizedNotificationRateLimit",
+        "signature": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "stripped_doc": "Default: 60. Set to 0/nil to disable unauthorized notifications.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "./init.lua",
+        "lineno": "28",
+        "name": "version",
+        "signature": "ClipboardBridge.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "name": "ClipboardBridge",
+    "stripped_doc": "external tools (e.g. AI agents in Docker containers) can read screenshots\nwithout any network exposure. The socket is a plain file; it is invisible\nto the network and cannot be reached from another machine.\n\nDocker containers access the socket via a bind-mount (see compose.yaml) and use:\n  curl -sf \\\n    --unix-socket \"$CLIPBOARD_BRIDGE_SOCK\" \\\n    -H \"Authorization: Bearer $CLIPBOARD_BRIDGE_TOKEN\" \\\n    http://localhost/\n\nSecurity default:\n  - Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.\n  - Set authToken to empty/nil to allow unauthenticated requests.\n  - Unauthorized requests can trigger a local notification.\n  - Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.",
+    "submodules": [],
+    "type": "Module"
+  }
+]
