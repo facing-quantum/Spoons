@@ -2578,6 +2578,628 @@
   },
   {
     "Command": [],
+    "Constant": [
+      {
+        "def": "ClaudeUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "24",
+        "name": "author",
+        "signature": "ClaudeUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "34",
+        "name": "homepage",
+        "signature": "ClaudeUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "29",
+        "name": "license",
+        "signature": "ClaudeUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "14",
+        "name": "name",
+        "signature": "ClaudeUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "19",
+        "name": "version",
+        "signature": "ClaudeUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "Constructor": [],
+    "Deprecated": [],
+    "Field": [],
+    "Function": [],
+    "Method": [
+      {
+        "def": "ClaudeUsage:fetch()",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "524",
+        "name": "fetch",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:fetch()",
+        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:init()",
+        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "604",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:init()",
+        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:start()",
+        "desc": "Starts background polling. Performs an immediate fetch then schedules",
+        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "622",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:start()",
+        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "640",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      }
+    ],
+    "Variable": [
+      {
+        "def": "ClaudeUsage.autoRefreshToken",
+        "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "44",
+        "name": "autoRefreshToken",
+        "signature": "ClaudeUsage.autoRefreshToken",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage.pollInterval",
+        "desc": "Seconds between usage API fetches. Default 120.",
+        "doc": "Seconds between usage API fetches. Default 120.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "39",
+        "name": "pollInterval",
+        "signature": "ClaudeUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      }
+    ],
+    "desc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked",
+    "doc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked\nsegmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "items": [
+      {
+        "def": "ClaudeUsage.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "24",
+        "name": "author",
+        "signature": "ClaudeUsage.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.autoRefreshToken",
+        "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
+        "doc": "When true, the spoon will attempt to refresh an expired OAuth token itself\nand write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "44",
+        "name": "autoRefreshToken",
+        "signature": "ClaudeUsage.autoRefreshToken",
+        "stripped_doc": "and write the result back to ~/.claude/.credentials.json. Disabled by default:\nClaude Code owns the token lifecycle and will refresh it on its next run.\nEnable only if the spoon is running without Claude Code active.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage:fetch()",
+        "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+        "doc": "Immediately fetches current usage from the Anthropic API and updates the\nmenu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "524",
+        "name": "fetch",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:fetch()",
+        "stripped_doc": "menu bar icon and dropdown. Called automatically on start and by the poll\ntimer; can also be triggered manually via the \"Refresh now\" menu item.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "34",
+        "name": "homepage",
+        "signature": "ClaudeUsage.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage:init()",
+        "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+        "doc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not\ncall manually. Does not start background polling or make any network requests.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "604",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:init()",
+        "stripped_doc": "call manually. Does not start background polling or make any network requests.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "29",
+        "name": "license",
+        "signature": "ClaudeUsage.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "14",
+        "name": "name",
+        "signature": "ClaudeUsage.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClaudeUsage.pollInterval",
+        "desc": "Seconds between usage API fetches. Default 120.",
+        "doc": "Seconds between usage API fetches. Default 120.",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "39",
+        "name": "pollInterval",
+        "signature": "ClaudeUsage.pollInterval",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "ClaudeUsage:start()",
+        "desc": "Starts background polling. Performs an immediate fetch then schedules",
+        "doc": "Starts background polling. Performs an immediate fetch then schedules\nsubsequent fetches every ClaudeUsage.pollInterval seconds.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "622",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:start()",
+        "stripped_doc": "subsequent fetches every ClaudeUsage.pollInterval seconds.",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage:stop()",
+        "desc": "Stops background polling and removes the menu bar item.",
+        "doc": "Stops background polling and removes the menu bar item.\n\nParameters:\n * None\n\nReturns:\n * The ClaudeUsage object",
+        "examples": [],
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "640",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClaudeUsage object"
+        ],
+        "signature": "ClaudeUsage:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClaudeUsage.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/ClaudeUsage.spoon/init.lua",
+        "lineno": "19",
+        "name": "version",
+        "signature": "ClaudeUsage.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "name": "ClaudeUsage",
+    "stripped_doc": "segmented progress bars (current session and weekly). Clicking the icon\nexpands a dropdown mirroring the platform.claude.com usage page with\nreset times in the local timezone.\n\nCredentials are read from the macOS Keychain entry \"Claude Code-credentials\"\n(set by Claude Code) with a fallback to ~/.claude/.credentials.json.",
+    "submodules": [],
+    "type": "Module"
+  },
+  {
+    "Command": [],
+    "Constant": [
+      {
+        "def": "ClipboardBridge.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "33",
+        "name": "author",
+        "signature": "ClipboardBridge.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "38",
+        "name": "homepage",
+        "signature": "ClipboardBridge.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "43",
+        "name": "license",
+        "signature": "ClipboardBridge.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "23",
+        "name": "name",
+        "signature": "ClipboardBridge.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "28",
+        "name": "version",
+        "signature": "ClipboardBridge.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "Constructor": [],
+    "Deprecated": [],
+    "Field": [],
+    "Function": [],
+    "Method": [
+      {
+        "def": "ClipboardBridge:start()",
+        "desc": "Starts the clipboard watcher and Unix socket server.",
+        "doc": "Starts the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "211",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge:stop()",
+        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "260",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:stop()",
+        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "type": "Method"
+      }
+    ],
+    "Variable": [
+      {
+        "def": "ClipboardBridge.authToken",
+        "desc": "Bearer token required by clients when set.",
+        "doc": "Bearer token required by clients when set.\nDefault: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "55",
+        "name": "authToken",
+        "signature": "ClipboardBridge.authToken",
+        "stripped_doc": "Default: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.maxAge",
+        "desc": "Seconds after which a clipboard image is considered stale and a 204 is",
+        "doc": "Seconds after which a clipboard image is considered stale and a 204 is\nreturned instead. Default 60 (1 minute).",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "62",
+        "name": "maxAge",
+        "signature": "ClipboardBridge.maxAge",
+        "stripped_doc": "returned instead. Default 60 (1 minute).",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.socketPath",
+        "desc": "Path to the Unix domain socket file.",
+        "doc": "Path to the Unix domain socket file.\nDefault: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "48",
+        "name": "socketPath",
+        "signature": "ClipboardBridge.socketPath",
+        "stripped_doc": "Default: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "desc": "Minimum number of seconds between unauthorized access notifications.",
+        "doc": "Minimum number of seconds between unauthorized access notifications.\nDefault: 60. Set to 0/nil to disable unauthorized notifications.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "68",
+        "name": "unauthorizedNotificationRateLimit",
+        "signature": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "stripped_doc": "Default: 60. Set to 0/nil to disable unauthorized notifications.",
+        "type": "Variable"
+      }
+    ],
+    "desc": "Serves the current clipboard image over a Unix domain socket so that",
+    "doc": "Serves the current clipboard image over a Unix domain socket so that\nexternal tools (e.g. AI agents in Docker containers) can read screenshots\nwithout any network exposure. The socket is a plain file; it is invisible\nto the network and cannot be reached from another machine.\n\nDocker containers access the socket via a bind-mount (see compose.yaml) and use:\n  curl -sf \\\n    --unix-socket \"$CLIPBOARD_BRIDGE_SOCK\" \\\n    -H \"Authorization: Bearer $CLIPBOARD_BRIDGE_TOKEN\" \\\n    http://localhost/\n\nSecurity default:\n  - Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.\n  - Set authToken to empty/nil to allow unauthenticated requests.\n  - Unauthorized requests can trigger a local notification.\n  - Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.",
+    "items": [
+      {
+        "def": "ClipboardBridge.authToken",
+        "desc": "Bearer token required by clients when set.",
+        "doc": "Bearer token required by clients when set.\nDefault: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "55",
+        "name": "authToken",
+        "signature": "ClipboardBridge.authToken",
+        "stripped_doc": "Default: CLIPBOARD_BRIDGE_TOKEN environment variable.\nSet to empty/nil to disable auth checks.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.author",
+        "desc": "The author of this Spoon",
+        "doc": "The author of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "33",
+        "name": "author",
+        "signature": "ClipboardBridge.author",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.homepage",
+        "desc": "The homepage for this Spoon",
+        "doc": "The homepage for this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "38",
+        "name": "homepage",
+        "signature": "ClipboardBridge.homepage",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.license",
+        "desc": "The license for this Spoon (MIT)",
+        "doc": "The license for this Spoon (MIT)",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "43",
+        "name": "license",
+        "signature": "ClipboardBridge.license",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.maxAge",
+        "desc": "Seconds after which a clipboard image is considered stale and a 204 is",
+        "doc": "Seconds after which a clipboard image is considered stale and a 204 is\nreturned instead. Default 60 (1 minute).",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "62",
+        "name": "maxAge",
+        "signature": "ClipboardBridge.maxAge",
+        "stripped_doc": "returned instead. Default 60 (1 minute).",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.name",
+        "desc": "The name of this Spoon",
+        "doc": "The name of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "23",
+        "name": "name",
+        "signature": "ClipboardBridge.name",
+        "stripped_doc": "",
+        "type": "Constant"
+      },
+      {
+        "def": "ClipboardBridge.socketPath",
+        "desc": "Path to the Unix domain socket file.",
+        "doc": "Path to the Unix domain socket file.\nDefault: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "48",
+        "name": "socketPath",
+        "signature": "ClipboardBridge.socketPath",
+        "stripped_doc": "Default: ~/.hammerspoon/clipboard-bridge.sock\nVolume-mount the parent directory into Docker containers to allow access.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge:start()",
+        "desc": "Starts the clipboard watcher and Unix socket server.",
+        "doc": "Starts the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "211",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge:stop()",
+        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "examples": [],
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "260",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The ClipboardBridge object"
+        ],
+        "signature": "ClipboardBridge:stop()",
+        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "type": "Method"
+      },
+      {
+        "def": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "desc": "Minimum number of seconds between unauthorized access notifications.",
+        "doc": "Minimum number of seconds between unauthorized access notifications.\nDefault: 60. Set to 0/nil to disable unauthorized notifications.",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "68",
+        "name": "unauthorizedNotificationRateLimit",
+        "signature": "ClipboardBridge.unauthorizedNotificationRateLimit",
+        "stripped_doc": "Default: 60. Set to 0/nil to disable unauthorized notifications.",
+        "type": "Variable"
+      },
+      {
+        "def": "ClipboardBridge.version",
+        "desc": "The version of this Spoon",
+        "doc": "The version of this Spoon",
+        "file": "Source/ClipboardBridge.spoon/init.lua",
+        "lineno": "28",
+        "name": "version",
+        "signature": "ClipboardBridge.version",
+        "stripped_doc": "",
+        "type": "Constant"
+      }
+    ],
+    "name": "ClipboardBridge",
+    "stripped_doc": "external tools (e.g. AI agents in Docker containers) can read screenshots\nwithout any network exposure. The socket is a plain file; it is invisible\nto the network and cannot be reached from another machine.\n\nDocker containers access the socket via a bind-mount (see compose.yaml) and use:\n  curl -sf \\\n    --unix-socket \"$CLIPBOARD_BRIDGE_SOCK\" \\\n    -H \"Authorization: Bearer $CLIPBOARD_BRIDGE_TOKEN\" \\\n    http://localhost/\n\nSecurity default:\n  - Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.\n  - Set authToken to empty/nil to allow unauthenticated requests.\n  - Unauthorized requests can trigger a local notification.\n  - Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.",
+    "submodules": [],
+    "type": "Module"
+  },
+  {
+    "Command": [],
     "Constant": [],
     "Constructor": [],
     "Deprecated": [],
@@ -6843,8 +7465,8 @@
         "type": "Variable"
       }
     ],
-    "desc": "Instead of pressing ⌘Q, hold ⌘Q to close applications.",
-    "doc": "Instead of pressing ⌘Q, hold ⌘Q to close applications.",
+    "desc": "Instead of pressing \u2318Q, hold \u2318Q to close applications.",
+    "doc": "Instead of pressing \u2318Q, hold \u2318Q to close applications.",
     "items": [
       {
         "def": "HoldToQuit:bindHotkeys(mapping)",
@@ -7083,8 +7705,8 @@
       },
       {
         "def": "HSaria2:togglePanel()",
-        "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
-        "doc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.\n\nParameters:\n * None\n",
+        "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.",
+        "doc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.\n\nParameters:\n * None\n",
         "examples": [],
         "file": "Source/HSaria2.spoon/init.lua",
         "lineno": "551",
@@ -7208,8 +7830,8 @@
       },
       {
         "def": "HSaria2:togglePanel()",
-        "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
-        "doc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.\n\nParameters:\n * None\n",
+        "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.",
+        "doc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.\n\nParameters:\n * None\n",
         "examples": [],
         "file": "Source/HSaria2.spoon/init.lua",
         "lineno": "551",
@@ -8521,7 +9143,7 @@
       {
         "def": "LeftRightHotkey:bind(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> LeftRightHotkeyObject",
         "desc": "Create and enable a new hotkey with the specified left/right specific modifiers.",
-        "doc": "Create and enable a new hotkey with the specified left/right specific modifiers.\n\nParameters:\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new enabled hotkey with the specified left/right modifiers.\n\nNotes:\n * This function is just a wrapper that performs `LeftRightHotkey:new(...):enable()`\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here.",
+        "doc": "Create and enable a new hotkey with the specified left/right specific modifiers.\n\nParameters:\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new enabled hotkey with the specified left/right modifiers.\n\nNotes:\n * This function is just a wrapper that performs `LeftRightHotkey:new(...):enable()`\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here.",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "415",
@@ -8531,7 +9153,7 @@
           " * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here."
         ],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number",
           " * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown",
           " * pressedfn - A function that will be called when the hotkey has been pressed, or nil",
@@ -8548,14 +9170,14 @@
       {
         "def": "LeftRightHotkey:deleteAll(mods, key)",
         "desc": "Deletes all previously set callbacks for a given keyboard combination",
-        "doc": "Deletes all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
+        "doc": "Deletes all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "326",
         "name": "deleteAll",
         "notes": [],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number"
         ],
         "returns": [
@@ -8568,14 +9190,14 @@
       {
         "def": "LeftRightHotkey:disableAll(mods, key)",
         "desc": "Disables all previously set callbacks for a given keyboard combination",
-        "doc": "Disables all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
+        "doc": "Disables all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "373",
         "name": "disableAll",
         "notes": [],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number"
         ],
         "returns": [
@@ -8588,7 +9210,7 @@
       {
         "def": "LeftRightHotkey:new(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> LeftRightHotkeyObject",
         "desc": "Create a new hotkey with the specified left/right specific modifiers.",
-        "doc": "Create a new hotkey with the specified left/right specific modifiers.\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new, initially disabled, hotkey with the specified left/right modifiers.\n\nNotes:\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here.",
+        "doc": "Create a new hotkey with the specified left/right specific modifiers.\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new, initially disabled, hotkey with the specified left/right modifiers.\n\nNotes:\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here.",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "263",
@@ -8597,7 +9219,7 @@
           " * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here."
         ],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number",
           " * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown",
           " * pressedfn - A function that will be called when the hotkey has been pressed, or nil",
@@ -8656,12 +9278,12 @@
     ],
     "Variable": [],
     "desc": "This spoon addresses a limitation within the [hs.hotkey](hs.hotkey.html) module that allows the creation of hotkeys bound to specific left or right keyboard modifiers while leaving the other side free.",
-    "doc": "This spoon addresses a limitation within the [hs.hotkey](hs.hotkey.html) module that allows the creation of hotkeys bound to specific left or right keyboard modifiers while leaving the other side free.\n\nThis is accomplished by creating unactivated hotkeys for each definition and using an [hs.eventtap](hs.eventtap.html) watcher to detect when modifier keys are pressed and conditionally activating only those hotkeys which correspond to the left or right modifiers currently active as specified by the `bind` and `new` methods of this spoon.\n\nThe `LeftRightHotkeyObject` that is returned by [LeftRightHotkey:new](#new) and [LeftRightHotkey:bind](#bind) supports the following methods in a manner similar to the [hs.hotkey](hs.hotkey.html) equivalents:\n\n * `LeftRightHotkeyObject:enable()`   -- enables the registered hotkey.\n * `LeftRightHotkeyObject:disable()`  -- disables the registered hotkey.\n * `LeftRightHotkeyObject:delete()`   -- deletes the registered hotkey.\n * `LeftRightHotkeyObject:isEnabled() -- returns a boolean value specifying whether the hotkey is currently enabled (true) or disabled (false)\n\nThe following modifiers are recognized by this spoon in the modifier table when setting up hotkeys with this spoon:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n\nThe modifiers table for any given hotkey is all inclusive; this means that if you specify `{ \"rShift\", \"lShift\" }` then *both* the left and right shift keys *must* be pressed to trigger the hotkey -- if you want either/or, then stick with [hs.hotkey](hs.hotkey.html).\n\nAlternatively, if you want to setup a hotkey when *either* command key is pressed with *only* the right shift, you would need to set up two hotkeys with this spoon:\n e.g. `LeftRightHotkey:bind({ \"rCmd\", \"rShift\" }, \"a\", myFunction)` *and* `LeftRightHotkey:bind({ \"lCmd\", \"rShift\" }, \"a\", myFunction)`\n\nThis spoon works by using an eventtap to detect flag changes (modifier keys) and when they change, the appropriate hotkeys are enabled or disabled. This means that you should be aware of the following:\n * like all eventtaps, if the Hammerspoon application is particularly busy with some other task, it is possible for the flag change to be missed or for the macOS to disable the eventtap entirely.\n * behind the scenes, when a given set of flag changes occur that match a defined hotkey, the hotkey is actually enabled through `hs.hotkey:enable()` -- this means that in truth, either side's modifiers would trigger the callback. Under normal circumstances this won't be noticed because as soon as you switch to the alternate side's modifier, the flag change event will be detected and the hotkey will be disabled. However, as noted above, if Hammerspoon is particularly busy, it is possible for this event to be missed.\n   * a timer runs (once this Spoon has been started the first time) which will check to see if the eventtap has been internally disabled and re-enable it if necessary; alternatively you can re-issue [LeftRightHotkey:start()](#start) to force the eventtap to be reset if necessary.\n   * if your hotkeys seem out of sync, try pressing and releasing any modifier key -- this will reset the enabled/disabled hotkeys if a previous flag change was missed, but the eventtap is still running or has been reset by one of the methods described above.\n\nLike all Spoons, don't forget to use the [LeftRightHotkey:start()](#start) method to activate the modifier key watcher.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip)",
+    "doc": "This spoon addresses a limitation within the [hs.hotkey](hs.hotkey.html) module that allows the creation of hotkeys bound to specific left or right keyboard modifiers while leaving the other side free.\n\nThis is accomplished by creating unactivated hotkeys for each definition and using an [hs.eventtap](hs.eventtap.html) watcher to detect when modifier keys are pressed and conditionally activating only those hotkeys which correspond to the left or right modifiers currently active as specified by the `bind` and `new` methods of this spoon.\n\nThe `LeftRightHotkeyObject` that is returned by [LeftRightHotkey:new](#new) and [LeftRightHotkey:bind](#bind) supports the following methods in a manner similar to the [hs.hotkey](hs.hotkey.html) equivalents:\n\n * `LeftRightHotkeyObject:enable()`   -- enables the registered hotkey.\n * `LeftRightHotkeyObject:disable()`  -- disables the registered hotkey.\n * `LeftRightHotkeyObject:delete()`   -- deletes the registered hotkey.\n * `LeftRightHotkeyObject:isEnabled() -- returns a boolean value specifying whether the hotkey is currently enabled (true) or disabled (false)\n\nThe following modifiers are recognized by this spoon in the modifier table when setting up hotkeys with this spoon:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n\nThe modifiers table for any given hotkey is all inclusive; this means that if you specify `{ \"rShift\", \"lShift\" }` then *both* the left and right shift keys *must* be pressed to trigger the hotkey -- if you want either/or, then stick with [hs.hotkey](hs.hotkey.html).\n\nAlternatively, if you want to setup a hotkey when *either* command key is pressed with *only* the right shift, you would need to set up two hotkeys with this spoon:\n e.g. `LeftRightHotkey:bind({ \"rCmd\", \"rShift\" }, \"a\", myFunction)` *and* `LeftRightHotkey:bind({ \"lCmd\", \"rShift\" }, \"a\", myFunction)`\n\nThis spoon works by using an eventtap to detect flag changes (modifier keys) and when they change, the appropriate hotkeys are enabled or disabled. This means that you should be aware of the following:\n * like all eventtaps, if the Hammerspoon application is particularly busy with some other task, it is possible for the flag change to be missed or for the macOS to disable the eventtap entirely.\n * behind the scenes, when a given set of flag changes occur that match a defined hotkey, the hotkey is actually enabled through `hs.hotkey:enable()` -- this means that in truth, either side's modifiers would trigger the callback. Under normal circumstances this won't be noticed because as soon as you switch to the alternate side's modifier, the flag change event will be detected and the hotkey will be disabled. However, as noted above, if Hammerspoon is particularly busy, it is possible for this event to be missed.\n   * a timer runs (once this Spoon has been started the first time) which will check to see if the eventtap has been internally disabled and re-enable it if necessary; alternatively you can re-issue [LeftRightHotkey:start()](#start) to force the eventtap to be reset if necessary.\n   * if your hotkeys seem out of sync, try pressing and releasing any modifier key -- this will reset the enabled/disabled hotkeys if a previous flag change was missed, but the eventtap is still running or has been reset by one of the methods described above.\n\nLike all Spoons, don't forget to use the [LeftRightHotkey:start()](#start) method to activate the modifier key watcher.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip)",
     "items": [
       {
         "def": "LeftRightHotkey:bind(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> LeftRightHotkeyObject",
         "desc": "Create and enable a new hotkey with the specified left/right specific modifiers.",
-        "doc": "Create and enable a new hotkey with the specified left/right specific modifiers.\n\nParameters:\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new enabled hotkey with the specified left/right modifiers.\n\nNotes:\n * This function is just a wrapper that performs `LeftRightHotkey:new(...):enable()`\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here.",
+        "doc": "Create and enable a new hotkey with the specified left/right specific modifiers.\n\nParameters:\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new enabled hotkey with the specified left/right modifiers.\n\nNotes:\n * This function is just a wrapper that performs `LeftRightHotkey:new(...):enable()`\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here.",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "415",
@@ -8671,7 +9293,7 @@
           " * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.bind](hs.hotkey.html#bind) as is and any caveats or considerations outlined there also apply here."
         ],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number",
           " * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown",
           " * pressedfn - A function that will be called when the hotkey has been pressed, or nil",
@@ -8688,14 +9310,14 @@
       {
         "def": "LeftRightHotkey:deleteAll(mods, key)",
         "desc": "Deletes all previously set callbacks for a given keyboard combination",
-        "doc": "Deletes all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
+        "doc": "Deletes all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "326",
         "name": "deleteAll",
         "notes": [],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number"
         ],
         "returns": [
@@ -8708,14 +9330,14 @@
       {
         "def": "LeftRightHotkey:disableAll(mods, key)",
         "desc": "Disables all previously set callbacks for a given keyboard combination",
-        "doc": "Disables all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
+        "doc": "Disables all previously set callbacks for a given keyboard combination\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "373",
         "name": "disableAll",
         "notes": [],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number"
         ],
         "returns": [
@@ -8728,7 +9350,7 @@
       {
         "def": "LeftRightHotkey:new(mods, key, [message,] pressedfn, releasedfn, repeatfn) -> LeftRightHotkeyObject",
         "desc": "Create a new hotkey with the specified left/right specific modifiers.",
-        "doc": "Create a new hotkey with the specified left/right specific modifiers.\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new, initially disabled, hotkey with the specified left/right modifiers.\n\nNotes:\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here.",
+        "doc": "Create a new hotkey with the specified left/right specific modifiers.\n\nParameters:\n * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number\n * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown\n * pressedfn - A function that will be called when the hotkey has been pressed, or nil\n * releasedfn - A function that will be called when the hotkey has been released, or nil\n * repeatfn - A function that will be called when a pressed hotkey is repeating, or nil\n\nReturns:\n * a new, initially disabled, hotkey with the specified left/right modifiers.\n\nNotes:\n * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here.",
         "examples": [],
         "file": "Source/LeftRightHotkey.spoon/init.lua",
         "lineno": "263",
@@ -8737,7 +9359,7 @@
           " * The modifiers table is adjusted for use when conditionally activating the appropriate hotkeys based on the current modifiers in effect, but the other arguments are passed to [hs.hotkey.new](hs.hotkey.html#new) as is and any caveats or considerations outlined there also apply here."
         ],
         "parameters": [
-          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier",
+          " * mods - A table containing as elements the keyboard modifiers required, which should be one or more of the following:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier",
           " * key - A string containing the name of a keyboard key (as found in [hs.keycodes.map](hs.keycodes.html#map) ), or a raw keycode number",
           " * message - (optional) A string containing a message to be displayed via [hs.alert()](hs.alert.html) when the hotkey has been triggered; if omitted, no alert will be shown",
           " * pressedfn - A function that will be called when the hotkey has been pressed, or nil",
@@ -8795,7 +9417,7 @@
       }
     ],
     "name": "LeftRightHotkey",
-    "stripped_doc": "\nThis is accomplished by creating unactivated hotkeys for each definition and using an [hs.eventtap](hs.eventtap.html) watcher to detect when modifier keys are pressed and conditionally activating only those hotkeys which correspond to the left or right modifiers currently active as specified by the `bind` and `new` methods of this spoon.\n\nThe `LeftRightHotkeyObject` that is returned by [LeftRightHotkey:new](#new) and [LeftRightHotkey:bind](#bind) supports the following methods in a manner similar to the [hs.hotkey](hs.hotkey.html) equivalents:\n\n * `LeftRightHotkeyObject:enable()`   -- enables the registered hotkey.\n * `LeftRightHotkeyObject:disable()`  -- disables the registered hotkey.\n * `LeftRightHotkeyObject:delete()`   -- deletes the registered hotkey.\n * `LeftRightHotkeyObject:isEnabled() -- returns a boolean value specifying whether the hotkey is currently enabled (true) or disabled (false)\n\nThe following modifiers are recognized by this spoon in the modifier table when setting up hotkeys with this spoon:\n   * \"lCmd\", \"lCommand\", or \"l⌘\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r⌘\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l⌃\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r⌃\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l⌥\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r⌥\" for the right Option modifier\n   * \"lShift\" or \"l⇧\" for the left Shift modifier\n   * \"rShift\" or \"r⇧\" for the right Shift modifier\n\nThe modifiers table for any given hotkey is all inclusive; this means that if you specify `{ \"rShift\", \"lShift\" }` then *both* the left and right shift keys *must* be pressed to trigger the hotkey -- if you want either/or, then stick with [hs.hotkey](hs.hotkey.html).\n\nAlternatively, if you want to setup a hotkey when *either* command key is pressed with *only* the right shift, you would need to set up two hotkeys with this spoon:\n e.g. `LeftRightHotkey:bind({ \"rCmd\", \"rShift\" }, \"a\", myFunction)` *and* `LeftRightHotkey:bind({ \"lCmd\", \"rShift\" }, \"a\", myFunction)`\n\nThis spoon works by using an eventtap to detect flag changes (modifier keys) and when they change, the appropriate hotkeys are enabled or disabled. This means that you should be aware of the following:\n * like all eventtaps, if the Hammerspoon application is particularly busy with some other task, it is possible for the flag change to be missed or for the macOS to disable the eventtap entirely.\n * behind the scenes, when a given set of flag changes occur that match a defined hotkey, the hotkey is actually enabled through `hs.hotkey:enable()` -- this means that in truth, either side's modifiers would trigger the callback. Under normal circumstances this won't be noticed because as soon as you switch to the alternate side's modifier, the flag change event will be detected and the hotkey will be disabled. However, as noted above, if Hammerspoon is particularly busy, it is possible for this event to be missed.\n   * a timer runs (once this Spoon has been started the first time) which will check to see if the eventtap has been internally disabled and re-enable it if necessary; alternatively you can re-issue [LeftRightHotkey:start()](#start) to force the eventtap to be reset if necessary.\n   * if your hotkeys seem out of sync, try pressing and releasing any modifier key -- this will reset the enabled/disabled hotkeys if a previous flag change was missed, but the eventtap is still running or has been reset by one of the methods described above.\n\nLike all Spoons, don't forget to use the [LeftRightHotkey:start()](#start) method to activate the modifier key watcher.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip)",
+    "stripped_doc": "\nThis is accomplished by creating unactivated hotkeys for each definition and using an [hs.eventtap](hs.eventtap.html) watcher to detect when modifier keys are pressed and conditionally activating only those hotkeys which correspond to the left or right modifiers currently active as specified by the `bind` and `new` methods of this spoon.\n\nThe `LeftRightHotkeyObject` that is returned by [LeftRightHotkey:new](#new) and [LeftRightHotkey:bind](#bind) supports the following methods in a manner similar to the [hs.hotkey](hs.hotkey.html) equivalents:\n\n * `LeftRightHotkeyObject:enable()`   -- enables the registered hotkey.\n * `LeftRightHotkeyObject:disable()`  -- disables the registered hotkey.\n * `LeftRightHotkeyObject:delete()`   -- deletes the registered hotkey.\n * `LeftRightHotkeyObject:isEnabled() -- returns a boolean value specifying whether the hotkey is currently enabled (true) or disabled (false)\n\nThe following modifiers are recognized by this spoon in the modifier table when setting up hotkeys with this spoon:\n   * \"lCmd\", \"lCommand\", or \"l\u2318\" for the left Command modifier\n   * \"rCmd\", \"rCommand\", or \"r\u2318\" for the right Command modifier\n   * \"lCtrl\", \"lControl\" or \"l\u2303\" for the left Control modifier\n   * \"rCtrl\", \"rControl\" or \"r\u2303\" for the right Control modifier\n   * \"lAlt\", \"lOpt\", \"lOption\" or \"l\u2325\" for the left Option modifier\n   * \"rAlt\", \"rOpt\", \"rOption\" or \"r\u2325\" for the right Option modifier\n   * \"lShift\" or \"l\u21e7\" for the left Shift modifier\n   * \"rShift\" or \"r\u21e7\" for the right Shift modifier\n\nThe modifiers table for any given hotkey is all inclusive; this means that if you specify `{ \"rShift\", \"lShift\" }` then *both* the left and right shift keys *must* be pressed to trigger the hotkey -- if you want either/or, then stick with [hs.hotkey](hs.hotkey.html).\n\nAlternatively, if you want to setup a hotkey when *either* command key is pressed with *only* the right shift, you would need to set up two hotkeys with this spoon:\n e.g. `LeftRightHotkey:bind({ \"rCmd\", \"rShift\" }, \"a\", myFunction)` *and* `LeftRightHotkey:bind({ \"lCmd\", \"rShift\" }, \"a\", myFunction)`\n\nThis spoon works by using an eventtap to detect flag changes (modifier keys) and when they change, the appropriate hotkeys are enabled or disabled. This means that you should be aware of the following:\n * like all eventtaps, if the Hammerspoon application is particularly busy with some other task, it is possible for the flag change to be missed or for the macOS to disable the eventtap entirely.\n * behind the scenes, when a given set of flag changes occur that match a defined hotkey, the hotkey is actually enabled through `hs.hotkey:enable()` -- this means that in truth, either side's modifiers would trigger the callback. Under normal circumstances this won't be noticed because as soon as you switch to the alternate side's modifier, the flag change event will be detected and the hotkey will be disabled. However, as noted above, if Hammerspoon is particularly busy, it is possible for this event to be missed.\n   * a timer runs (once this Spoon has been started the first time) which will check to see if the eventtap has been internally disabled and re-enable it if necessary; alternatively you can re-issue [LeftRightHotkey:start()](#start) to force the eventtap to be reset if necessary.\n   * if your hotkeys seem out of sync, try pressing and releasing any modifier key -- this will reset the enabled/disabled hotkeys if a previous flag change was missed, but the eventtap is still running or has been reset by one of the methods described above.\n\nLike all Spoons, don't forget to use the [LeftRightHotkey:start()](#start) method to activate the modifier key watcher.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/LeftRightHotkey.spoon.zip)",
     "submodules": [],
     "type": "Module"
   },
@@ -13213,8 +13835,8 @@
       },
       {
         "def": "PersonalHotspot.hotspotName (String)",
-        "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".",
-        "doc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".\n\nNotes:\n * You can see the names of available hotspots by clicking on the Wi-Fi icon in the macOS menu bar and looking for menu items under the \"Personal Hotspot(s)\" heading.",
+        "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".",
+        "doc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".\n\nNotes:\n * You can see the names of available hotspots by clicking on the Wi-Fi icon in the macOS menu bar and looking for menu items under the \"Personal Hotspot(s)\" heading.",
         "file": "Source/PersonalHotspot.spoon/init.lua",
         "lineno": "126",
         "name": "hotspotName",
@@ -13238,7 +13860,7 @@
       }
     ],
     "desc": "Connect, disconnect, or toggle connection to/from a personal hotspot. Optionally kills/opens a list of apps on connect/disconnect respectively.",
-    "doc": "Connect, disconnect, or toggle connection to/from a personal hotspot. Optionally kills/opens a list of apps on connect/disconnect respectively.\n\nExample configuration (using SpoonInstall.spoon):\n```\nspoon.SpoonInstall:andUse(\n  \"PersonalHotspot\",\n  {\n    config = {\n      hotspotName = \"John Appleseed’s iPhone\",\n      appsToKill = {\n        \"Arq\",\n        \"Arq Agent\",\n        \"Dropbox\"\n      }\n    },\n    hotkeys = {\n      toggle = {{\"cmd\", \"option\", \"ctrl\"}, \"h\"}\n    }\n  }\n)\n```\n\nIf `PersonalHotspot.hotspotName` isn't set, the first personal hotspot in the Wi-Fi menu will be selected, and `PersonalHotspot.hotspotName` will be set to the name of that hotspot.",
+    "doc": "Connect, disconnect, or toggle connection to/from a personal hotspot. Optionally kills/opens a list of apps on connect/disconnect respectively.\n\nExample configuration (using SpoonInstall.spoon):\n```\nspoon.SpoonInstall:andUse(\n  \"PersonalHotspot\",\n  {\n    config = {\n      hotspotName = \"John Appleseed\u2019s iPhone\",\n      appsToKill = {\n        \"Arq\",\n        \"Arq Agent\",\n        \"Dropbox\"\n      }\n    },\n    hotkeys = {\n      toggle = {{\"cmd\", \"option\", \"ctrl\"}, \"h\"}\n    }\n  }\n)\n```\n\nIf `PersonalHotspot.hotspotName` isn't set, the first personal hotspot in the Wi-Fi menu will be selected, and `PersonalHotspot.hotspotName` will be set to the name of that hotspot.",
     "items": [
       {
         "def": "PersonalHotspot.appsToKill (List)",
@@ -13317,8 +13939,8 @@
       },
       {
         "def": "PersonalHotspot.hotspotName (String)",
-        "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".",
-        "doc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".\n\nNotes:\n * You can see the names of available hotspots by clicking on the Wi-Fi icon in the macOS menu bar and looking for menu items under the \"Personal Hotspot(s)\" heading.",
+        "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".",
+        "doc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".\n\nNotes:\n * You can see the names of available hotspots by clicking on the Wi-Fi icon in the macOS menu bar and looking for menu items under the \"Personal Hotspot(s)\" heading.",
         "file": "Source/PersonalHotspot.spoon/init.lua",
         "lineno": "126",
         "name": "hotspotName",
@@ -13363,7 +13985,7 @@
       }
     ],
     "name": "PersonalHotspot",
-    "stripped_doc": "\nExample configuration (using SpoonInstall.spoon):\n```\nspoon.SpoonInstall:andUse(\n  \"PersonalHotspot\",\n  {\n    config = {\n      hotspotName = \"John Appleseed’s iPhone\",\n      appsToKill = {\n        \"Arq\",\n        \"Arq Agent\",\n        \"Dropbox\"\n      }\n    },\n    hotkeys = {\n      toggle = {{\"cmd\", \"option\", \"ctrl\"}, \"h\"}\n    }\n  }\n)\n```\n\nIf `PersonalHotspot.hotspotName` isn't set, the first personal hotspot in the Wi-Fi menu will be selected, and `PersonalHotspot.hotspotName` will be set to the name of that hotspot.",
+    "stripped_doc": "\nExample configuration (using SpoonInstall.spoon):\n```\nspoon.SpoonInstall:andUse(\n  \"PersonalHotspot\",\n  {\n    config = {\n      hotspotName = \"John Appleseed\u2019s iPhone\",\n      appsToKill = {\n        \"Arq\",\n        \"Arq Agent\",\n        \"Dropbox\"\n      }\n    },\n    hotkeys = {\n      toggle = {{\"cmd\", \"option\", \"ctrl\"}, \"h\"}\n    }\n  }\n)\n```\n\nIf `PersonalHotspot.hotspotName` isn't set, the first personal hotspot in the Wi-Fi menu will be selected, and `PersonalHotspot.hotspotName` will be set to the name of that hotspot.",
     "submodules": [],
     "type": "Module"
   },
@@ -13902,16 +14524,16 @@
       {
         "def": "RecursiveBinder.helperModifierMapping()",
         "desc": "The mapping used to display modifiers on helper.",
-        "doc": "The mapping used to display modifiers on helper.\n\nNotes:\n * Default to {\n command = '⌘',\n control = '⌃',\n option = '⌥',\n shift = '⇧',\n}",
+        "doc": "The mapping used to display modifiers on helper.\n\nNotes:\n * Default to {\n command = '\u2318',\n control = '\u2303',\n option = '\u2325',\n shift = '\u21e7',\n}",
         "file": "Source/RecursiveBinder.spoon/init.lua",
         "lineno": "54",
         "name": "helperModifierMapping",
         "notes": [
           " * Default to {",
-          " command = '⌘',",
-          " control = '⌃',",
-          " option = '⌥',",
-          " shift = '⇧',",
+          " command = '\u2318',",
+          " control = '\u2303',",
+          " option = '\u2325',",
+          " shift = '\u21e7',",
           "}"
         ],
         "signature": "RecursiveBinder.helperModifierMapping()",
@@ -13986,16 +14608,16 @@
       {
         "def": "RecursiveBinder.helperModifierMapping()",
         "desc": "The mapping used to display modifiers on helper.",
-        "doc": "The mapping used to display modifiers on helper.\n\nNotes:\n * Default to {\n command = '⌘',\n control = '⌃',\n option = '⌥',\n shift = '⇧',\n}",
+        "doc": "The mapping used to display modifiers on helper.\n\nNotes:\n * Default to {\n command = '\u2318',\n control = '\u2303',\n option = '\u2325',\n shift = '\u21e7',\n}",
         "file": "Source/RecursiveBinder.spoon/init.lua",
         "lineno": "54",
         "name": "helperModifierMapping",
         "notes": [
           " * Default to {",
-          " command = '⌘',",
-          " control = '⌃',",
-          " option = '⌥',",
-          " shift = '⇧',",
+          " command = '\u2318',",
+          " control = '\u2303',",
+          " option = '\u2325',",
+          " shift = '\u21e7',",
           "}"
         ],
         "signature": "RecursiveBinder.helperModifierMapping()",
@@ -16166,16 +16788,16 @@
       {
         "def": "SleepCorners.immediateSleepModifiers",
         "desc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.",
-        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (⌘) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed\n  * `shift` - Set to true to require that the Shift (⇧) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect.",
+        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed\n  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect.",
         "file": "Source/SleepCorners.spoon/init.lua",
         "lineno": "120",
         "name": "immediateSleepModifiers",
         "notes": [
           " * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:",
           "  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.",
-          "  * `cmd`   - Set to true to require that the Command (⌘) key be pressed",
-          "  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed",
-          "  * `shift` - Set to true to require that the Shift (⇧) key be pressed",
+          "  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed",
+          "  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed",
+          "  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed",
           "  * `ctrl`  - Set to true to require that the Control (^) key be pressed",
           " * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect."
         ],
@@ -16212,16 +16834,16 @@
       {
         "def": "SleepCorners.neverSleepLockModifiers",
         "desc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.",
-        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (⌘) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed\n  * `shift` - Set to true to require that the Shift (⇧) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered.",
+        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed\n  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered.",
         "file": "Source/SleepCorners.spoon/init.lua",
         "lineno": "152",
         "name": "neverSleepLockModifiers",
         "notes": [
           " * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:",
           "  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.",
-          "  * `cmd`   - Set to true to require that the Command (⌘) key be pressed",
-          "  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed",
-          "  * `shift` - Set to true to require that the Shift (⇧) key be pressed",
+          "  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed",
+          "  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed",
+          "  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed",
           "  * `ctrl`  - Set to true to require that the Control (^) key be pressed",
           " * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered."
         ],
@@ -16341,16 +16963,16 @@
       {
         "def": "SleepCorners.immediateSleepModifiers",
         "desc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.",
-        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (⌘) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed\n  * `shift` - Set to true to require that the Shift (⇧) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect.",
+        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the sleep now hot corner will trigger sleep immediately rather then delay for [SleepCorners.sleepDelay](#sleepDelay) seconds.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed\n  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect.",
         "file": "Source/SleepCorners.spoon/init.lua",
         "lineno": "120",
         "name": "immediateSleepModifiers",
         "notes": [
           " * This variable may be set to nil or an empty table, disabling the immediate sleep option, or a table containing one or more of the following keys:",
           "  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.",
-          "  * `cmd`   - Set to true to require that the Command (⌘) key be pressed",
-          "  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed",
-          "  * `shift` - Set to true to require that the Shift (⇧) key be pressed",
+          "  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed",
+          "  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed",
+          "  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed",
           "  * `ctrl`  - Set to true to require that the Control (^) key be pressed",
           " * If this table contains multiple keys, then all of the specified modifiers must be pressed for immediate sleep to take affect."
         ],
@@ -16409,16 +17031,16 @@
       {
         "def": "SleepCorners.neverSleepLockModifiers",
         "desc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.",
-        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (⌘) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed\n  * `shift` - Set to true to require that the Shift (⇧) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered.",
+        "doc": "A table, default `{ fn = true }`, specifying keyboard modifiers which if held when the mouse pointer enters the never sleep hot corner will disable display sleep and leave it disabled even if the mouse pointer leaves the hot corner. While the never sleep lock is in effect the never sleep visual feedback will remain visible in the appropriate corner of the screen. The never sleep lock may is unlocked when you move the mouse pointer back into the never sleep corner with the modifiers held down a second time or move the mouse pointer into the sleep now corner.\n\nNotes:\n * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:\n  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.\n  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed\n  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed\n  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed\n  * `ctrl`  - Set to true to require that the Control (^) key be pressed\n * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered.",
         "file": "Source/SleepCorners.spoon/init.lua",
         "lineno": "152",
         "name": "neverSleepLockModifiers",
         "notes": [
           " * This variable may be set to nil or an empty table, disabling the never sleep lock option, or a table containing one or more of the following keys:",
           "  * `fn`    - Set to true to require that the `Fn` key be pressed. May not be available on all keyboards, especially non-Apple ones.",
-          "  * `cmd`   - Set to true to require that the Command (⌘) key be pressed",
-          "  * `alt`   - Set to true to require that the Alt (or Option) (⌥) key be pressed",
-          "  * `shift` - Set to true to require that the Shift (⇧) key be pressed",
+          "  * `cmd`   - Set to true to require that the Command (\u2318) key be pressed",
+          "  * `alt`   - Set to true to require that the Alt (or Option) (\u2325) key be pressed",
+          "  * `shift` - Set to true to require that the Shift (\u21e7) key be pressed",
           "  * `ctrl`  - Set to true to require that the Control (^) key be pressed",
           " * If this table contains multiple keys, then all of the specified modifiers must be pressed for the never sleep lock to be triggered."
         ],
@@ -16599,8 +17221,8 @@
     "Method": [
       {
         "def": "SpeedMenu:rescan()",
-        "desc": "Redetect the active interface, darkmode …And redraw everything.",
-        "doc": "Redetect the active interface, darkmode …And redraw everything.\n\nParameters:\n * None\n",
+        "desc": "Redetect the active interface, darkmode \u2026And redraw everything.",
+        "doc": "Redetect the active interface, darkmode \u2026And redraw everything.\n\nParameters:\n * None\n",
         "examples": [],
         "file": "Source/SpeedMenu.spoon/init.lua",
         "lineno": "65",
@@ -16621,8 +17243,8 @@
     "items": [
       {
         "def": "SpeedMenu:rescan()",
-        "desc": "Redetect the active interface, darkmode …And redraw everything.",
-        "doc": "Redetect the active interface, darkmode …And redraw everything.\n\nParameters:\n * None\n",
+        "desc": "Redetect the active interface, darkmode \u2026And redraw everything.",
+        "doc": "Redetect the active interface, darkmode \u2026And redraw everything.\n\nParameters:\n * None\n",
         "examples": [],
         "file": "Source/SpeedMenu.spoon/init.lua",
         "lineno": "65",

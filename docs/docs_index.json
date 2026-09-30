@@ -441,6 +441,148 @@
     "type": "Module"
   },
   {
+    "desc": "Displays Claude AI plan usage limits in the macOS menu bar as two stacked",
+    "name": "ClaudeUsage",
+    "type": "Module"
+  },
+  {
+    "desc": "The author of this Spoon",
+    "module": "ClaudeUsage",
+    "name": "author",
+    "type": "Constant"
+  },
+  {
+    "desc": "The homepage for this Spoon",
+    "module": "ClaudeUsage",
+    "name": "homepage",
+    "type": "Constant"
+  },
+  {
+    "desc": "The license for this Spoon (MIT)",
+    "module": "ClaudeUsage",
+    "name": "license",
+    "type": "Constant"
+  },
+  {
+    "desc": "The name of this Spoon",
+    "module": "ClaudeUsage",
+    "name": "name",
+    "type": "Constant"
+  },
+  {
+    "desc": "The version of this Spoon",
+    "module": "ClaudeUsage",
+    "name": "version",
+    "type": "Constant"
+  },
+  {
+    "desc": "When true, the spoon will attempt to refresh an expired OAuth token itself",
+    "module": "ClaudeUsage",
+    "name": "autoRefreshToken",
+    "type": "Variable"
+  },
+  {
+    "desc": "Seconds between usage API fetches. Default 120.",
+    "module": "ClaudeUsage",
+    "name": "pollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Immediately fetches current usage from the Anthropic API and updates the",
+    "module": "ClaudeUsage",
+    "name": "fetch",
+    "type": "Method"
+  },
+  {
+    "desc": "Prepares the menu bar item. Called automatically by hs.loadSpoon(); do not",
+    "module": "ClaudeUsage",
+    "name": "init",
+    "type": "Method"
+  },
+  {
+    "desc": "Starts background polling. Performs an immediate fetch then schedules",
+    "module": "ClaudeUsage",
+    "name": "start",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops background polling and removes the menu bar item.",
+    "module": "ClaudeUsage",
+    "name": "stop",
+    "type": "Method"
+  },
+  {
+    "desc": "Serves the current clipboard image over a Unix domain socket so that",
+    "name": "ClipboardBridge",
+    "type": "Module"
+  },
+  {
+    "desc": "The author of this Spoon",
+    "module": "ClipboardBridge",
+    "name": "author",
+    "type": "Constant"
+  },
+  {
+    "desc": "The homepage for this Spoon",
+    "module": "ClipboardBridge",
+    "name": "homepage",
+    "type": "Constant"
+  },
+  {
+    "desc": "The license for this Spoon (MIT)",
+    "module": "ClipboardBridge",
+    "name": "license",
+    "type": "Constant"
+  },
+  {
+    "desc": "The name of this Spoon",
+    "module": "ClipboardBridge",
+    "name": "name",
+    "type": "Constant"
+  },
+  {
+    "desc": "The version of this Spoon",
+    "module": "ClipboardBridge",
+    "name": "version",
+    "type": "Constant"
+  },
+  {
+    "desc": "Bearer token required by clients when set.",
+    "module": "ClipboardBridge",
+    "name": "authToken",
+    "type": "Variable"
+  },
+  {
+    "desc": "Seconds after which a clipboard image is considered stale and a 204 is",
+    "module": "ClipboardBridge",
+    "name": "maxAge",
+    "type": "Variable"
+  },
+  {
+    "desc": "Path to the Unix domain socket file.",
+    "module": "ClipboardBridge",
+    "name": "socketPath",
+    "type": "Variable"
+  },
+  {
+    "desc": "Minimum number of seconds between unauthorized access notifications.",
+    "module": "ClipboardBridge",
+    "name": "unauthorizedNotificationRateLimit",
+    "type": "Variable"
+  },
+  {
+    "desc": "Starts the clipboard watcher and Unix socket server.",
+    "module": "ClipboardBridge",
+    "name": "start",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+    "module": "ClipboardBridge",
+    "name": "stop",
+    "type": "Method"
+  },
+  {
     "desc": "Keep a history of the clipboard for text entries and manage the entries with a context menu",
     "name": "ClipboardTool",
     "type": "Module"
@@ -1301,7 +1443,7 @@
     "type": "Method"
   },
   {
-    "desc": "Instead of pressing ⌘Q, hold ⌘Q to close applications.",
+    "desc": "Instead of pressing \u2318Q, hold \u2318Q to close applications.",
     "name": "HoldToQuit",
     "type": "Module"
   },
@@ -1407,7 +1549,7 @@
     "type": "Method"
   },
   {
-    "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge … etc.",
+    "desc": "Toggle the display of aria2 panel. The panel allows users to interact with aria2, add new tasks, pause them, or remove, purge \u2026 etc.",
     "module": "HSaria2",
     "name": "togglePanel",
     "type": "Method"
@@ -1504,12 +1646,6 @@
     "type": "Module"
   },
   {
-    "desc": "Retrieve an item from the Login Keychain, returns nil if not found.",
-    "module": "Keychain",
-    "name": "login_keychain",
-    "type": "Deprecated"
-  },
-  {
     "desc": "Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
     "module": "Keychain",
     "name": "logger",
@@ -1526,6 +1662,12 @@
     "module": "Keychain",
     "name": "getItem",
     "type": "Method"
+  },
+  {
+    "desc": "Retrieve an item from the Login Keychain, returns nil if not found.",
+    "module": "Keychain",
+    "name": "login_keychain",
+    "type": "Deprecated"
   },
   {
     "desc": "Keybindings cheatsheet for current application",
@@ -2403,7 +2545,7 @@
     "type": "Variable"
   },
   {
-    "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed’s iPhone\".",
+    "desc": "The name of the personal hotspot you want to connect/disconnect from, e.g., \"John Appleseed\u2019s iPhone\".",
     "module": "PersonalHotspot",
     "name": "hotspotName",
     "type": "Variable"
@@ -3039,7 +3181,7 @@
     "type": "Module"
   },
   {
-    "desc": "Redetect the active interface, darkmode …And redraw everything.",
+    "desc": "Redetect the active interface, darkmode \u2026And redraw everything.",
     "module": "SpeedMenu",
     "name": "rescan",
     "type": "Method"
