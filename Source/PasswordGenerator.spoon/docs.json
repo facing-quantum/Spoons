@@ -8,49 +8,413 @@
     "Function": [],
     "Method": [
       {
-        "def": "PasswordGenerator:bindHotkeys(mapping)",
-        "desc": "Binds hotkeys for PasswordGenerator",
-        "doc": "Binds hotkeys for PasswordGenerator\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * copy - Generate password and copy to clipboard\n  * paste - Generate password and paste",
-        "name": "bindHotkeys",
+        "def": "PasswordGenerator:addItem(itemSpec)",
+        "desc": "Adds or updates a configured password item preset.",
+        "doc": "Adds or updates a configured password item preset.\n\nParameters:\n * itemSpec - A table containing item configuration:\n   * `id` - String unique identifier for the item (required)\n   * `title` - Human-readable label displayed in menus (required)\n   * `algorithm` - Name of algorithm: `\"random\"`, `\"diceware\"`, `\"passphrase\"`, `\"pin\"`, `\"pattern\"`, `\"pronounceable\"`, `\"token\"`, or custom (default: `\"random\"`)\n   * `hotkey` - Optional table containing modifier keys and key character for hotkey binding\n   * Algorithm options (e.g. `length`, `separator`, `symbols`, `word_count`, `format`, `pattern`, etc.)\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "892",
+        "name": "addItem",
+        "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey objifier/key details for the following items:",
-          "  * copy - Generate password and copy to clipboard",
-          "  * paste - Generate password and paste"
+          " * itemSpec - A table containing item configuration:\n   * `id` - String unique identifier for the item (required)\n   * `title` - Human-readable label displayed in menus (required)\n   * `algorithm` - Name of algorithm: `\"random\"`, `\"diceware\"`, `\"passphrase\"`, `\"pin\"`, `\"pattern\"`, `\"pronounceable\"`, `\"token\"`, or custom (default: `\"random\"`)\n   * `hotkey` - Optional table containing modifier keys and key character for hotkey binding\n   * Algorithm options (e.g. `length`, `separator`, `symbols`, `word_count`, `format`, `pattern`, etc.)"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:addItem(itemSpec)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:bindHotkeys(mapping)",
+        "desc": "Binds hotkeys for PasswordGenerator.",
+        "doc": "Binds hotkeys for PasswordGenerator.\n\nParameters:\n * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2149",
+        "name": "bindHotkeys",
+        "notes": [],
+        "parameters": [
+          " * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item"
+        ],
+        "returns": [
+          " * None"
         ],
         "signature": "PasswordGenerator:bindHotkeys(mapping)",
         "stripped_doc": "",
         "type": "Method"
       },
       {
-        "def": "PasswordGenerator:copyPassword()",
-        "desc": "Generates a password and copies to clipboard",
-        "doc": "Generates a password and copies to clipboard\n\nParameters:\n * None\n\n Returns:\n  * The generated password",
-        "name": "copyPassword",
+        "def": "PasswordGenerator:calculateEntropy([itemOrOptions], [val])",
+        "desc": "Calculates the Shannon entropy in bits for a given password configuration and length/count.",
+        "doc": "Calculates the Shannon entropy in bits for a given password configuration and length/count.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n * val - Optional integer length or word count override.\n\nReturns:\n * A number representing bits of entropy",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1166",
+        "name": "calculateEntropy",
+        "notes": [],
         "parameters": [
-          " * None"
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.",
+          " * val - Optional integer length or word count override."
         ],
-        "signature": "PasswordGenerator:copyPassword()",
-        "stripped_doc": " Returns:\n  * The generated password",
+        "returns": [
+          " * A number representing bits of entropy"
+        ],
+        "signature": "PasswordGenerator:calculateEntropy([itemOrOptions], [val])",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
-        "def": "PasswordGenerator:pastePassword()",
-        "desc": "Generates a password and types it",
-        "doc": "Generates a password and types it\n\nParameters:\n * None\n\n Returns:\n  * The generated password",
-        "name": "pastePassword",
+        "def": "PasswordGenerator:configure(options)",
+        "desc": "Configures the PasswordGenerator with settings and preset items.",
+        "doc": "Configures the PasswordGenerator with settings and preset items.\n\nParameters:\n * options - Table of configuration options:\n   * `default_item` - Default item ID (e.g. \"strong\", \"diceware\", \"passphrase\")\n   * `show_in_menubar` - Boolean whether to display menubar icon\n   * `interactive_menu` - Boolean whether menubar clicks open the rich interactive dropdown\n   * `clipboard_clear_timeout` - Auto-clear timeout in seconds (0 to disable)\n   * `conceal_clipboard` - Boolean whether to mark pasteboard transient/concealed\n   * `show_notifications` - Boolean whether to show notification alerts\n   * `random_source` - Entropy source (\"csprng\" or \"math_random\")\n   * `items` - Array of item specifications to add or replace\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1019",
+        "name": "configure",
+        "notes": [],
+        "parameters": [
+          " * options - Table of configuration options:\n   * `default_item` - Default item ID (e.g. \"strong\", \"diceware\", \"passphrase\")\n   * `show_in_menubar` - Boolean whether to display menubar icon\n   * `interactive_menu` - Boolean whether menubar clicks open the rich interactive dropdown\n   * `clipboard_clear_timeout` - Auto-clear timeout in seconds (0 to disable)\n   * `conceal_clipboard` - Boolean whether to mark pasteboard transient/concealed\n   * `show_notifications` - Boolean whether to show notification alerts\n   * `random_source` - Entropy source (\"csprng\" or \"math_random\")\n   * `items` - Array of item specifications to add or replace"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:configure(options)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:copyPassword([itemOrOptions])",
+        "desc": "Generates a password and copies it to the system clipboard.",
+        "doc": "Generates a password and copies it to the system clipboard.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1281",
+        "name": "copyPassword",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:copyPassword([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:generate([itemOrOptions])",
+        "desc": "Generates a password string based on an item ID or an options table.",
+        "doc": "Generates a password string based on an item ID or an options table.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses `default_item` (or legacy configuration).\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1073",
+        "name": "generate",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses `default_item` (or legacy configuration)."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:generate([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:getItem(id)",
+        "desc": "Retrieves a configured item preset definition by ID.",
+        "doc": "Retrieves a configured item preset definition by ID.\n\nParameters:\n * id - String identifier of the item\n\nReturns:\n * The item table, or nil if not found",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "955",
+        "name": "getItem",
+        "notes": [],
+        "parameters": [
+          " * id - String identifier of the item"
+        ],
+        "returns": [
+          " * The item table, or nil if not found"
+        ],
+        "signature": "PasswordGenerator:getItem(id)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:getPasswordGenerator()",
+        "desc": "Legacy helper returning the generator function.",
+        "doc": "Legacy helper returning the generator function.\n\nParameters:\n * None\n\nReturns:\n * A function `fn(self)` that generates a password",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1131",
+        "name": "getPasswordGenerator",
+        "notes": [],
         "parameters": [
           " * None"
         ],
-        "signature": "PasswordGenerator:pastePassword()",
-        "stripped_doc": " Returns:\n  * The generated password",
+        "returns": [
+          " * A function `fn(self)` that generates a password"
+        ],
+        "signature": "PasswordGenerator:getPasswordGenerator()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:hideInteractiveMenu()",
+        "desc": "Closes and dismisses the interactive menu dropdown.",
+        "doc": "Closes and dismisses the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1992",
+        "name": "hideInteractiveMenu",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:hideInteractiveMenu()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:listItems()",
+        "desc": "Returns an array of all configured item presets in order.",
+        "doc": "Returns an array of all configured item presets in order.\n\nParameters:\n * None\n\nReturns:\n * Table array of item definitions",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "968",
+        "name": "listItems",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * Table array of item definitions"
+        ],
+        "signature": "PasswordGenerator:listItems()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:pastePassword([itemOrOptions])",
+        "desc": "Generates a password and types it into the active application.",
+        "doc": "Generates a password and types it into the active application.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1389",
+        "name": "pastePassword",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:pastePassword([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:registerAlgorithm(name, generatorFn)",
+        "desc": "Registers a new custom password generation algorithm.",
+        "doc": "Registers a new custom password generation algorithm.\n\nParameters:\n * name - String identifier for the algorithm\n * generatorFn - Function `fn(self, opts)` that returns the generated password string\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "981",
+        "name": "registerAlgorithm",
+        "notes": [],
+        "parameters": [
+          " * name - String identifier for the algorithm",
+          " * generatorFn - Function `fn(self, opts)` that returns the generated password string"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:registerAlgorithm(name, generatorFn)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:registerWordSource(name, loaderOrTable)",
+        "desc": "Registers a new wordlist source for passphrase generation.",
+        "doc": "Registers a new wordlist source for passphrase generation.\n\nParameters:\n * name - String identifier for the word source\n * loaderOrTable - Function returning a table of words, or a table of words\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "998",
+        "name": "registerWordSource",
+        "notes": [],
+        "parameters": [
+          " * name - String identifier for the word source",
+          " * loaderOrTable - Function returning a table of words, or a table of words"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:registerWordSource(name, loaderOrTable)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:removeItem(id)",
+        "desc": "Removes a configured password item preset by ID.",
+        "doc": "Removes a configured password item preset by ID.\n\nParameters:\n * id - String identifier of the item to remove\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "933",
+        "name": "removeItem",
+        "notes": [],
+        "parameters": [
+          " * id - String identifier of the item to remove"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:removeItem(id)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:showInteractiveMenu()",
+        "desc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.",
+        "doc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1852",
+        "name": "showInteractiveMenu",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:showInteractiveMenu()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:start()",
+        "desc": "Starts the menubar display for PasswordGenerator.",
+        "doc": "Starts the menubar display for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2092",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:stop()",
+        "desc": "Stops and removes the menubar item for PasswordGenerator.",
+        "doc": "Stops and removes the menubar item for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2118",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:toggleInteractiveMenu()",
+        "desc": "Toggles visibility of the interactive menu dropdown.",
+        "doc": "Toggles visibility of the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2018",
+        "name": "toggleInteractiveMenu",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:toggleInteractiveMenu()",
+        "stripped_doc": "",
         "type": "Method"
       }
     ],
     "Variable": [
       {
+        "def": "PasswordGenerator.clipboard_clear_timeout",
+        "desc": "Seconds after which the copied password will be automatically cleared from the clipboard.",
+        "doc": "Seconds after which the copied password will be automatically cleared from the clipboard.\nSet to `0` or `nil` to disable auto-clearing. Default is `45`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "767",
+        "name": "clipboard_clear_timeout",
+        "signature": "PasswordGenerator.clipboard_clear_timeout",
+        "stripped_doc": "Set to `0` or `nil` to disable auto-clearing. Default is `45`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.conceal_clipboard",
+        "desc": "If `true`, marks the clipboard entry as concealed/transient to prevent clipboard managers from storing it. Default is `true`.",
+        "doc": "If `true`, marks the clipboard entry as concealed/transient to prevent clipboard managers from storing it. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "773",
+        "name": "conceal_clipboard",
+        "signature": "PasswordGenerator.conceal_clipboard",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.default_item",
+        "desc": "The default item ID to generate when invoking `copyPassword()` or `pastePassword()`.",
+        "doc": "The default item ID to generate when invoking `copyPassword()` or `pastePassword()`.\nDefault is `\"strong\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "750",
+        "name": "default_item",
+        "signature": "PasswordGenerator.default_item",
+        "stripped_doc": "Default is `\"strong\"`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.interactive_hud_width",
+        "desc": "Width of the interactive menu dropdown window in points. Default is `380`.",
+        "doc": "Width of the interactive menu dropdown window in points. Default is `380`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "783",
+        "name": "interactive_hud_width",
+        "signature": "PasswordGenerator.interactive_hud_width",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.interactive_menu",
+        "desc": "Whether clicking the menubar icon displays the rich interactive segmented-bar dropdown menu.",
+        "doc": "Whether clicking the menubar icon displays the rich interactive segmented-bar dropdown menu.\nDefaults to `true`. When set to `false`, falls back to a standard macOS menu.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "761",
+        "name": "interactive_menu",
+        "signature": "PasswordGenerator.interactive_menu",
+        "stripped_doc": "Defaults to `true`. When set to `false`, falls back to a standard macOS menu.",
+        "type": "Variable"
+      },
+      {
         "def": "PasswordGenerator.password_generator_function",
-        "desc": "Explicit function used to generate passwords, if nil style is used instead.",
-        "doc": "Explicit function used to generate passwords, if nil style is used instead.",
+        "desc": "Explicit function used to generate passwords; if set, overrides style/item defaults.",
+        "doc": "Explicit function used to generate passwords; if set, overrides style/item defaults.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "794",
         "name": "password_generator_function",
         "signature": "PasswordGenerator.password_generator_function",
         "stripped_doc": "",
@@ -58,8 +422,10 @@
       },
       {
         "def": "PasswordGenerator.password_length",
-        "desc": "Length of generated passwords. Is ignored by style xkcd.",
-        "doc": "Length of generated passwords. Is ignored by style xkcd.",
+        "desc": "Length of generated passwords. Default is `20`.",
+        "doc": "Length of generated passwords. Default is `20`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "799",
         "name": "password_length",
         "signature": "PasswordGenerator.password_length",
         "stripped_doc": "",
@@ -67,17 +433,54 @@
       },
       {
         "def": "PasswordGenerator.password_style",
-        "desc": "Style for the generated password.",
-        "doc": "Style for the generated password.",
+        "desc": "Legacy style for the generated password: `\"default\"` or `\"xkcd\"`.",
+        "doc": "Legacy style for the generated password: `\"default\"` or `\"xkcd\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "789",
         "name": "password_style",
         "signature": "PasswordGenerator.password_style",
         "stripped_doc": "",
         "type": "Variable"
       },
       {
+        "def": "PasswordGenerator.random_source",
+        "desc": "Randomness source to use for password generation.",
+        "doc": "Randomness source to use for password generation.\nPossible values: `\"csprng\"` (default, uses `/dev/urandom`), `\"math_random\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "744",
+        "name": "random_source",
+        "signature": "PasswordGenerator.random_source",
+        "stripped_doc": "Possible values: `\"csprng\"` (default, uses `/dev/urandom`), `\"math_random\"`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.show_in_menubar",
+        "desc": "Whether to display a menubar dropdown item. Default is `true`.",
+        "doc": "Whether to display a menubar dropdown item. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "756",
+        "name": "show_in_menubar",
+        "signature": "PasswordGenerator.show_in_menubar",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.show_notifications",
+        "desc": "Whether to show a notification when a password is generated. Default is `true`.",
+        "doc": "Whether to show a notification when a password is generated. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "778",
+        "name": "show_notifications",
+        "signature": "PasswordGenerator.show_notifications",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "PasswordGenerator.word_count",
-        "desc": "Number of words in generated passwords. Used by xkcd.",
-        "doc": "Number of words in generated passwords. Used by xkcd.",
+        "desc": "Number of words in generated passwords. Default is `4`.",
+        "doc": "Number of words in generated passwords. Default is `4`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "804",
         "name": "word_count",
         "signature": "PasswordGenerator.word_count",
         "stripped_doc": "",
@@ -85,65 +488,293 @@
       },
       {
         "def": "PasswordGenerator.word_leet",
-        "desc": "Which word number will have its word `733t` transformed.",
-        "doc": "Which word number will have its word `733t` transformed.\nUseful to ensure the word will at least have a one numeric value.\nDefaults to 0",
+        "desc": "Word index to apply leet transformation to. Default is `0`.",
+        "doc": "Word index to apply leet transformation to. Default is `0`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "809",
         "name": "word_leet",
         "signature": "PasswordGenerator.word_leet",
-        "stripped_doc": "Useful to ensure the word will at least have a one numeric value.\nDefaults to 0",
+        "stripped_doc": "",
         "type": "Variable"
       },
       {
         "def": "PasswordGenerator.word_separators",
-        "desc": "String of separators to use between words.",
-        "doc": "String of separators to use between words.\nIf multiple characters one will be chosen by random.\nUsed by xkcd. Default is \" _-,$\"",
+        "desc": "Separator characters between words. Default is `\" _-,$\"`.",
+        "doc": "Separator characters between words. Default is `\" _-,$\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "814",
         "name": "word_separators",
         "signature": "PasswordGenerator.word_separators",
-        "stripped_doc": "If multiple characters one will be chosen by random.\nUsed by xkcd. Default is \" _-,$\"",
+        "stripped_doc": "",
         "type": "Variable"
       },
       {
         "def": "PasswordGenerator.word_uppercase",
-        "desc": "Number of words to uppercase the first letter.",
-        "doc": "Number of words to uppercase the first letter.\nUsed by xkcd. Default is 1.",
+        "desc": "Number of words to uppercase the first letter. Default is `1`.",
+        "doc": "Number of words to uppercase the first letter. Default is `1`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "819",
         "name": "word_uppercase",
         "signature": "PasswordGenerator.word_uppercase",
-        "stripped_doc": "Used by xkcd. Default is 1.",
+        "stripped_doc": "",
         "type": "Variable"
       }
     ],
-    "desc": "Generate a password and copy to the clipboard.",
-    "doc": "Generate a password and copy to the clipboard.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PasswordGenerator.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PasswordGenerator.spoon.zip)",
+    "desc": "Multi-algorithm, cryptographically secure password and passphrase generator with configurable preset items, interactive menubar dropdown menu, and segmented-bar length selector.",
+    "doc": "Multi-algorithm, cryptographically secure password and passphrase generator with configurable preset items, interactive menubar dropdown menu, and segmented-bar length selector.\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PasswordGenerator.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/PasswordGenerator.spoon.zip)",
     "items": [
       {
-        "def": "PasswordGenerator:bindHotkeys(mapping)",
-        "desc": "Binds hotkeys for PasswordGenerator",
-        "doc": "Binds hotkeys for PasswordGenerator\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * copy - Generate password and copy to clipboard\n  * paste - Generate password and paste",
-        "name": "bindHotkeys",
+        "def": "PasswordGenerator:addItem(itemSpec)",
+        "desc": "Adds or updates a configured password item preset.",
+        "doc": "Adds or updates a configured password item preset.\n\nParameters:\n * itemSpec - A table containing item configuration:\n   * `id` - String unique identifier for the item (required)\n   * `title` - Human-readable label displayed in menus (required)\n   * `algorithm` - Name of algorithm: `\"random\"`, `\"diceware\"`, `\"passphrase\"`, `\"pin\"`, `\"pattern\"`, `\"pronounceable\"`, `\"token\"`, or custom (default: `\"random\"`)\n   * `hotkey` - Optional table containing modifier keys and key character for hotkey binding\n   * Algorithm options (e.g. `length`, `separator`, `symbols`, `word_count`, `format`, `pattern`, etc.)\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "892",
+        "name": "addItem",
+        "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey objifier/key details for the following items:",
-          "  * copy - Generate password and copy to clipboard",
-          "  * paste - Generate password and paste"
+          " * itemSpec - A table containing item configuration:\n   * `id` - String unique identifier for the item (required)\n   * `title` - Human-readable label displayed in menus (required)\n   * `algorithm` - Name of algorithm: `\"random\"`, `\"diceware\"`, `\"passphrase\"`, `\"pin\"`, `\"pattern\"`, `\"pronounceable\"`, `\"token\"`, or custom (default: `\"random\"`)\n   * `hotkey` - Optional table containing modifier keys and key character for hotkey binding\n   * Algorithm options (e.g. `length`, `separator`, `symbols`, `word_count`, `format`, `pattern`, etc.)"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:addItem(itemSpec)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:bindHotkeys(mapping)",
+        "desc": "Binds hotkeys for PasswordGenerator.",
+        "doc": "Binds hotkeys for PasswordGenerator.\n\nParameters:\n * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2149",
+        "name": "bindHotkeys",
+        "notes": [],
+        "parameters": [
+          " * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item"
+        ],
+        "returns": [
+          " * None"
         ],
         "signature": "PasswordGenerator:bindHotkeys(mapping)",
         "stripped_doc": "",
         "type": "Method"
       },
       {
-        "def": "PasswordGenerator:copyPassword()",
-        "desc": "Generates a password and copies to clipboard",
-        "doc": "Generates a password and copies to clipboard\n\nParameters:\n * None\n\n Returns:\n  * The generated password",
+        "def": "PasswordGenerator:calculateEntropy([itemOrOptions], [val])",
+        "desc": "Calculates the Shannon entropy in bits for a given password configuration and length/count.",
+        "doc": "Calculates the Shannon entropy in bits for a given password configuration and length/count.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n * val - Optional integer length or word count override.\n\nReturns:\n * A number representing bits of entropy",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1166",
+        "name": "calculateEntropy",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.",
+          " * val - Optional integer length or word count override."
+        ],
+        "returns": [
+          " * A number representing bits of entropy"
+        ],
+        "signature": "PasswordGenerator:calculateEntropy([itemOrOptions], [val])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator.clipboard_clear_timeout",
+        "desc": "Seconds after which the copied password will be automatically cleared from the clipboard.",
+        "doc": "Seconds after which the copied password will be automatically cleared from the clipboard.\nSet to `0` or `nil` to disable auto-clearing. Default is `45`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "767",
+        "name": "clipboard_clear_timeout",
+        "signature": "PasswordGenerator.clipboard_clear_timeout",
+        "stripped_doc": "Set to `0` or `nil` to disable auto-clearing. Default is `45`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.conceal_clipboard",
+        "desc": "If `true`, marks the clipboard entry as concealed/transient to prevent clipboard managers from storing it. Default is `true`.",
+        "doc": "If `true`, marks the clipboard entry as concealed/transient to prevent clipboard managers from storing it. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "773",
+        "name": "conceal_clipboard",
+        "signature": "PasswordGenerator.conceal_clipboard",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator:configure(options)",
+        "desc": "Configures the PasswordGenerator with settings and preset items.",
+        "doc": "Configures the PasswordGenerator with settings and preset items.\n\nParameters:\n * options - Table of configuration options:\n   * `default_item` - Default item ID (e.g. \"strong\", \"diceware\", \"passphrase\")\n   * `show_in_menubar` - Boolean whether to display menubar icon\n   * `interactive_menu` - Boolean whether menubar clicks open the rich interactive dropdown\n   * `clipboard_clear_timeout` - Auto-clear timeout in seconds (0 to disable)\n   * `conceal_clipboard` - Boolean whether to mark pasteboard transient/concealed\n   * `show_notifications` - Boolean whether to show notification alerts\n   * `random_source` - Entropy source (\"csprng\" or \"math_random\")\n   * `items` - Array of item specifications to add or replace\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1019",
+        "name": "configure",
+        "notes": [],
+        "parameters": [
+          " * options - Table of configuration options:\n   * `default_item` - Default item ID (e.g. \"strong\", \"diceware\", \"passphrase\")\n   * `show_in_menubar` - Boolean whether to display menubar icon\n   * `interactive_menu` - Boolean whether menubar clicks open the rich interactive dropdown\n   * `clipboard_clear_timeout` - Auto-clear timeout in seconds (0 to disable)\n   * `conceal_clipboard` - Boolean whether to mark pasteboard transient/concealed\n   * `show_notifications` - Boolean whether to show notification alerts\n   * `random_source` - Entropy source (\"csprng\" or \"math_random\")\n   * `items` - Array of item specifications to add or replace"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:configure(options)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:copyPassword([itemOrOptions])",
+        "desc": "Generates a password and copies it to the system clipboard.",
+        "doc": "Generates a password and copies it to the system clipboard.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1281",
         "name": "copyPassword",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:copyPassword([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator.default_item",
+        "desc": "The default item ID to generate when invoking `copyPassword()` or `pastePassword()`.",
+        "doc": "The default item ID to generate when invoking `copyPassword()` or `pastePassword()`.\nDefault is `\"strong\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "750",
+        "name": "default_item",
+        "signature": "PasswordGenerator.default_item",
+        "stripped_doc": "Default is `\"strong\"`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator:generate([itemOrOptions])",
+        "desc": "Generates a password string based on an item ID or an options table.",
+        "doc": "Generates a password string based on an item ID or an options table.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses `default_item` (or legacy configuration).\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1073",
+        "name": "generate",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses `default_item` (or legacy configuration)."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:generate([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:getItem(id)",
+        "desc": "Retrieves a configured item preset definition by ID.",
+        "doc": "Retrieves a configured item preset definition by ID.\n\nParameters:\n * id - String identifier of the item\n\nReturns:\n * The item table, or nil if not found",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "955",
+        "name": "getItem",
+        "notes": [],
+        "parameters": [
+          " * id - String identifier of the item"
+        ],
+        "returns": [
+          " * The item table, or nil if not found"
+        ],
+        "signature": "PasswordGenerator:getItem(id)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:getPasswordGenerator()",
+        "desc": "Legacy helper returning the generator function.",
+        "doc": "Legacy helper returning the generator function.\n\nParameters:\n * None\n\nReturns:\n * A function `fn(self)` that generates a password",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1131",
+        "name": "getPasswordGenerator",
+        "notes": [],
         "parameters": [
           " * None"
         ],
-        "signature": "PasswordGenerator:copyPassword()",
-        "stripped_doc": " Returns:\n  * The generated password",
+        "returns": [
+          " * A function `fn(self)` that generates a password"
+        ],
+        "signature": "PasswordGenerator:getPasswordGenerator()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:hideInteractiveMenu()",
+        "desc": "Closes and dismisses the interactive menu dropdown.",
+        "doc": "Closes and dismisses the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1992",
+        "name": "hideInteractiveMenu",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:hideInteractiveMenu()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator.interactive_hud_width",
+        "desc": "Width of the interactive menu dropdown window in points. Default is `380`.",
+        "doc": "Width of the interactive menu dropdown window in points. Default is `380`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "783",
+        "name": "interactive_hud_width",
+        "signature": "PasswordGenerator.interactive_hud_width",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.interactive_menu",
+        "desc": "Whether clicking the menubar icon displays the rich interactive segmented-bar dropdown menu.",
+        "doc": "Whether clicking the menubar icon displays the rich interactive segmented-bar dropdown menu.\nDefaults to `true`. When set to `false`, falls back to a standard macOS menu.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "761",
+        "name": "interactive_menu",
+        "signature": "PasswordGenerator.interactive_menu",
+        "stripped_doc": "Defaults to `true`. When set to `false`, falls back to a standard macOS menu.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator:listItems()",
+        "desc": "Returns an array of all configured item presets in order.",
+        "doc": "Returns an array of all configured item presets in order.\n\nParameters:\n * None\n\nReturns:\n * Table array of item definitions",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "968",
+        "name": "listItems",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * Table array of item definitions"
+        ],
+        "signature": "PasswordGenerator:listItems()",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "PasswordGenerator.password_generator_function",
-        "desc": "Explicit function used to generate passwords, if nil style is used instead.",
-        "doc": "Explicit function used to generate passwords, if nil style is used instead.",
+        "desc": "Explicit function used to generate passwords; if set, overrides style/item defaults.",
+        "doc": "Explicit function used to generate passwords; if set, overrides style/item defaults.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "794",
         "name": "password_generator_function",
         "signature": "PasswordGenerator.password_generator_function",
         "stripped_doc": "",
@@ -151,8 +782,10 @@
       },
       {
         "def": "PasswordGenerator.password_length",
-        "desc": "Length of generated passwords. Is ignored by style xkcd.",
-        "doc": "Length of generated passwords. Is ignored by style xkcd.",
+        "desc": "Length of generated passwords. Default is `20`.",
+        "doc": "Length of generated passwords. Default is `20`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "799",
         "name": "password_length",
         "signature": "PasswordGenerator.password_length",
         "stripped_doc": "",
@@ -160,29 +793,208 @@
       },
       {
         "def": "PasswordGenerator.password_style",
-        "desc": "Style for the generated password.",
-        "doc": "Style for the generated password.",
+        "desc": "Legacy style for the generated password: `\"default\"` or `\"xkcd\"`.",
+        "doc": "Legacy style for the generated password: `\"default\"` or `\"xkcd\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "789",
         "name": "password_style",
         "signature": "PasswordGenerator.password_style",
         "stripped_doc": "",
         "type": "Variable"
       },
       {
-        "def": "PasswordGenerator:pastePassword()",
-        "desc": "Generates a password and types it",
-        "doc": "Generates a password and types it\n\nParameters:\n * None\n\n Returns:\n  * The generated password",
+        "def": "PasswordGenerator:pastePassword([itemOrOptions])",
+        "desc": "Generates a password and types it into the active application.",
+        "doc": "Generates a password and types it into the active application.\n\nParameters:\n * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.\n\nReturns:\n * The generated password string",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1389",
         "name": "pastePassword",
+        "notes": [],
+        "parameters": [
+          " * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item."
+        ],
+        "returns": [
+          " * The generated password string"
+        ],
+        "signature": "PasswordGenerator:pastePassword([itemOrOptions])",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator.random_source",
+        "desc": "Randomness source to use for password generation.",
+        "doc": "Randomness source to use for password generation.\nPossible values: `\"csprng\"` (default, uses `/dev/urandom`), `\"math_random\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "744",
+        "name": "random_source",
+        "signature": "PasswordGenerator.random_source",
+        "stripped_doc": "Possible values: `\"csprng\"` (default, uses `/dev/urandom`), `\"math_random\"`.",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator:registerAlgorithm(name, generatorFn)",
+        "desc": "Registers a new custom password generation algorithm.",
+        "doc": "Registers a new custom password generation algorithm.\n\nParameters:\n * name - String identifier for the algorithm\n * generatorFn - Function `fn(self, opts)` that returns the generated password string\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "981",
+        "name": "registerAlgorithm",
+        "notes": [],
+        "parameters": [
+          " * name - String identifier for the algorithm",
+          " * generatorFn - Function `fn(self, opts)` that returns the generated password string"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:registerAlgorithm(name, generatorFn)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:registerWordSource(name, loaderOrTable)",
+        "desc": "Registers a new wordlist source for passphrase generation.",
+        "doc": "Registers a new wordlist source for passphrase generation.\n\nParameters:\n * name - String identifier for the word source\n * loaderOrTable - Function returning a table of words, or a table of words\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "998",
+        "name": "registerWordSource",
+        "notes": [],
+        "parameters": [
+          " * name - String identifier for the word source",
+          " * loaderOrTable - Function returning a table of words, or a table of words"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:registerWordSource(name, loaderOrTable)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:removeItem(id)",
+        "desc": "Removes a configured password item preset by ID.",
+        "doc": "Removes a configured password item preset by ID.\n\nParameters:\n * id - String identifier of the item to remove\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "933",
+        "name": "removeItem",
+        "notes": [],
+        "parameters": [
+          " * id - String identifier of the item to remove"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:removeItem(id)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator.show_in_menubar",
+        "desc": "Whether to display a menubar dropdown item. Default is `true`.",
+        "doc": "Whether to display a menubar dropdown item. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "756",
+        "name": "show_in_menubar",
+        "signature": "PasswordGenerator.show_in_menubar",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator.show_notifications",
+        "desc": "Whether to show a notification when a password is generated. Default is `true`.",
+        "doc": "Whether to show a notification when a password is generated. Default is `true`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "778",
+        "name": "show_notifications",
+        "signature": "PasswordGenerator.show_notifications",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "PasswordGenerator:showInteractiveMenu()",
+        "desc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.",
+        "doc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "1852",
+        "name": "showInteractiveMenu",
+        "notes": [],
         "parameters": [
           " * None"
         ],
-        "signature": "PasswordGenerator:pastePassword()",
-        "stripped_doc": " Returns:\n  * The generated password",
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:showInteractiveMenu()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:start()",
+        "desc": "Starts the menubar display for PasswordGenerator.",
+        "doc": "Starts the menubar display for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2092",
+        "name": "start",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:start()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:stop()",
+        "desc": "Stops and removes the menubar item for PasswordGenerator.",
+        "doc": "Stops and removes the menubar item for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2118",
+        "name": "stop",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:stop()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "PasswordGenerator:toggleInteractiveMenu()",
+        "desc": "Toggles visibility of the interactive menu dropdown.",
+        "doc": "Toggles visibility of the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
+        "examples": [],
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "2018",
+        "name": "toggleInteractiveMenu",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The PasswordGenerator object for method chaining"
+        ],
+        "signature": "PasswordGenerator:toggleInteractiveMenu()",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
         "def": "PasswordGenerator.word_count",
-        "desc": "Number of words in generated passwords. Used by xkcd.",
-        "doc": "Number of words in generated passwords. Used by xkcd.",
+        "desc": "Number of words in generated passwords. Default is `4`.",
+        "doc": "Number of words in generated passwords. Default is `4`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "804",
         "name": "word_count",
         "signature": "PasswordGenerator.word_count",
         "stripped_doc": "",
@@ -190,29 +1002,35 @@
       },
       {
         "def": "PasswordGenerator.word_leet",
-        "desc": "Which word number will have its word `733t` transformed.",
-        "doc": "Which word number will have its word `733t` transformed.\nUseful to ensure the word will at least have a one numeric value.\nDefaults to 0",
+        "desc": "Word index to apply leet transformation to. Default is `0`.",
+        "doc": "Word index to apply leet transformation to. Default is `0`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "809",
         "name": "word_leet",
         "signature": "PasswordGenerator.word_leet",
-        "stripped_doc": "Useful to ensure the word will at least have a one numeric value.\nDefaults to 0",
+        "stripped_doc": "",
         "type": "Variable"
       },
       {
         "def": "PasswordGenerator.word_separators",
-        "desc": "String of separators to use between words.",
-        "doc": "String of separators to use between words.\nIf multiple characters one will be chosen by random.\nUsed by xkcd. Default is \" _-,$\"",
+        "desc": "Separator characters between words. Default is `\" _-,$\"`.",
+        "doc": "Separator characters between words. Default is `\" _-,$\"`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "814",
         "name": "word_separators",
         "signature": "PasswordGenerator.word_separators",
-        "stripped_doc": "If multiple characters one will be chosen by random.\nUsed by xkcd. Default is \" _-,$\"",
+        "stripped_doc": "",
         "type": "Variable"
       },
       {
         "def": "PasswordGenerator.word_uppercase",
-        "desc": "Number of words to uppercase the first letter.",
-        "doc": "Number of words to uppercase the first letter.\nUsed by xkcd. Default is 1.",
+        "desc": "Number of words to uppercase the first letter. Default is `1`.",
+        "doc": "Number of words to uppercase the first letter. Default is `1`.",
+        "file": "Source/PasswordGenerator.spoon/init.lua",
+        "lineno": "819",
         "name": "word_uppercase",
         "signature": "PasswordGenerator.word_uppercase",
-        "stripped_doc": "Used by xkcd. Default is 1.",
+        "stripped_doc": "",
         "type": "Variable"
       }
     ],
