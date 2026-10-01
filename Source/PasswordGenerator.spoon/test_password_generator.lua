@@ -496,11 +496,33 @@ assert_equal(128, pg:calculateEntropy("hex_token", 32), "hex token 32 chars entr
 assert_true(pg:calculateEntropy("alphanumeric", 16) >= 90, "alphanumeric 16 chars entropy >= 90 bits")
 assert_true(pg:calculateEntropy("pronounceable", 12) >= 40, "pronounceable 12 chars entropy >= 40 bits")
 
--- Verify all items display entropy and have uniform slider color
+-- Verify crack time estimation
+assert_equal("instant", pg:calculateCrackTime(0), "0 bits crack time is instant")
+assert_equal("instant", pg:calculateCrackTime(19.9), "pin 6 digits crack time is instant")
+assert_match("minute", pg:calculateCrackTime(43.2), "43 bits crack time in minutes")
+assert_match("day", pg:calculateCrackTime(51.7), "51.7 bits crack time in days")
+assert_match("year", pg:calculateCrackTime(64.6), "64.6 bits crack time in years")
+assert_equal(">100m years", pg:calculateCrackTime(126.4), "126 bits crack time >100m years")
+assert_equal(">100m years", pg:calculateCrackTime(164.5), "164.5 bits crack time >100m years")
+
+-- Verify strength info calculation
+local pinStr = pg:getStrengthInfo("pin", 6)
+assert_equal("Very Weak", pinStr.rating, "pin 6 rating is Very Weak")
+assert_equal(1, pinStr.score, "pin 6 score is 1")
+assert_equal("instant", pinStr.crackTime, "pin 6 crack time is instant")
+assert_match("Very Weak %(6 / 19%.9 bits / instant%)", pinStr.label, "pin strength label format")
+
+local strongStr = pg:getStrengthInfo("strong", 20)
+assert_equal("Very Strong", strongStr.rating, "strong 20 rating is Very Strong")
+assert_equal(5, strongStr.score, "strong 20 score is 5")
+assert_equal(">100m years", strongStr.crackTime, "strong 20 crack time is >100m years")
+assert_match("Very Strong %(20 / 126%.4 bits / >100m years%)", strongStr.label, "strong strength label format")
+
+-- Verify all items display bits and crack time in strength label, and have uniform slider color
 for idx, item in ipairs(pg.items) do
   pg.interactiveState.activeItemIndex = idx
   local _, _, spec = pg:_getInteractiveItemOpts()
-  assert_match("bits entropy", spec.formatLabel(spec.defaultVal), "item " .. item.id .. " formatLabel displays entropy")
+  assert_match("bits", spec.formatLabel(spec.defaultVal), "item " .. item.id .. " formatLabel displays bits")
   assert_equal(1.0, spec.color.blue, "item " .. item.id .. " uses uniform pastel sky blue slider")
   assert_equal(0.65, spec.color.red, "item " .. item.id .. " does not use odd-out green slider")
 end
@@ -510,6 +532,16 @@ pg:showInteractiveMenu()
 assert_true(pg.interactiveCanvas ~= nil, "interactive menu canvas initialized")
 assert_true(pg.interactiveCanvas._visible == true, "interactive menu visible")
 assert_true(#pg.interactiveCanvas._elements > 20, "interactive menu has rendered rich elements: " .. #pg.interactiveCanvas._elements)
+
+-- Verify strength meter bar is rendered above readout
+local strengthMeterFound = false
+for _, el in ipairs(pg.interactiveCanvas._elements) do
+  if el.type == "rectangle" and el.action == "fill" and el.frame.y == 37 and el.frame.h == 3 then
+    strengthMeterFound = true
+    break
+  end
+end
+assert_true(strengthMeterFound, "horizontal strength meter bar rendered at y=37, h=3")
 
 -- Verify distinct high-contrast button styling and equal padding on active row
 local activeBtnFound = false

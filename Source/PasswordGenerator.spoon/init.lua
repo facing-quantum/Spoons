@@ -1395,6 +1395,120 @@ function obj:calculateEntropy(itemOrOptions, val)
   end
 end
 
+--- PasswordGenerator:calculateCrackTime(entropy)
+--- Method
+--- Estimates brute-force crack time under an offline attack.
+---
+--- Parameters:
+---  * entropy - A number representing Shannon entropy in bits.
+---
+--- Returns:
+---  * A string human-readable duration (e.g. "instant", "3 seconds", "1 day", "89 years", ">100m years")
+function obj:calculateCrackTime(entropy)
+  if not entropy or entropy <= 0 then return "instant" end
+  -- 10 billion (1e10) guesses/second offline attack assumption
+  local log2Sec = entropy - 33.21928094887362
+  if log2Sec <= 0 then
+    return "instant"
+  end
+
+  if log2Sec < 5.90689 then -- < 60 seconds
+    local s = math.max(1, math.floor(2 ^ log2Sec + 0.5))
+    return string.format("%d second%s", s, s == 1 and "" or "s")
+  elseif log2Sec < 11.81378 then -- < 3600 seconds
+    local m = math.max(1, math.floor(2 ^ (log2Sec - 5.90689) + 0.5))
+    return string.format("%d minute%s", m, m == 1 and "" or "s")
+  elseif log2Sec < 16.39875 then -- < 86400 seconds
+    local h = math.max(1, math.floor(2 ^ (log2Sec - 11.81378) + 0.5))
+    return string.format("%d hour%s", h, h == 1 and "" or "s")
+  elseif log2Sec < 21.30605 then -- < 30 days
+    local d = math.max(1, math.floor(2 ^ (log2Sec - 16.39875) + 0.5))
+    return string.format("%d day%s", d, d == 1 and "" or "s")
+  elseif log2Sec < 24.91104 then -- < 365.25 days
+    local mo = math.max(1, math.floor(2 ^ (log2Sec - 21.30605) + 0.5))
+    return string.format("%d month%s", mo, mo == 1 and "" or "s")
+  end
+
+  local log2Years = log2Sec - 24.91104
+  if log2Years >= 26.57542 then -- >= 100 million years
+    return ">100m years"
+  end
+
+  local years = 2 ^ log2Years
+  if years >= 1000000 then
+    return string.format("%dm years", math.floor(years / 1000000 + 0.5))
+  elseif years >= 1000 then
+    return string.format("%dk years", math.floor(years / 1000 + 0.5))
+  else
+    local y = math.max(1, math.floor(years + 0.5))
+    return string.format("%d year%s", y, y == 1 and "" or "s")
+  end
+end
+
+--- PasswordGenerator:getStrengthInfo([itemOrOptions], [val])
+--- Method
+--- Returns password strength rating, color, crack time, and formatted summary string.
+---
+--- Parameters:
+---  * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.
+---  * val - Optional integer length or word count override.
+---
+--- Returns:
+---  * A table with fields `entropy`, `crackTime`, `rating`, `color`, `score`, `label`
+function obj:getStrengthInfo(itemOrOptions, val)
+  local ent = self:calculateEntropy(itemOrOptions, val)
+  local crackTime = self:calculateCrackTime(ent)
+  local rating, color, score
+
+  if ent < 36 then
+    rating = "Very Weak"
+    color = { red = 0.90, green = 0.22, blue = 0.20, alpha = 1.0 } -- Red (#e53835)
+    score = 1
+  elseif ent < 60 then
+    rating = "Weak"
+    color = { red = 0.95, green = 0.50, blue = 0.15, alpha = 1.0 } -- Orange (#f28026)
+    score = 2
+  elseif ent < 80 then
+    rating = "Fair"
+    color = { red = 0.92, green = 0.75, blue = 0.18, alpha = 1.0 } -- Amber/Yellow (#ebbf2e)
+    score = 3
+  elseif ent < 100 then
+    rating = "Strong"
+    color = { red = 0.30, green = 0.75, blue = 0.35, alpha = 1.0 } -- Light Green (#4dbf59)
+    score = 4
+  else
+    rating = "Very Strong"
+    color = { red = 0.0, green = 0.69, blue = 0.10, alpha = 1.0 }  -- Vibrant Green (#00af1a)
+    score = 5
+  end
+
+  local item = nil
+  if type(itemOrOptions) == "string" then
+    item = self:getItem(itemOrOptions)
+  elseif type(itemOrOptions) == "table" then
+    item = itemOrOptions
+  end
+  local algo = (item and item.algorithm) or "random"
+
+  local countDesc
+  if isWordListAlgo(algo) then
+    countDesc = string.format("%d words", val or (item and item.word_count) or 5)
+  else
+    local len = val or (item and item.length) or 20
+    countDesc = tostring(len)
+  end
+
+  local label = string.format("%s (%s / %.1f bits / %s)", rating, countDesc, ent, crackTime)
+  return {
+    entropy = ent,
+    crackTime = crackTime,
+    rating = rating,
+    color = color,
+    score = score,
+    label = label
+  }
+end
+
 --- PasswordGenerator:copyPassword([itemOrOptions])
 --- Method
 --- Generates a password and copies it to the system clipboard.
@@ -1550,8 +1664,7 @@ local function getItemSliderSpec(item)
       defaultVal = (item and item.word_count) or 5,
       color = sliderColor,
       formatLabel = function(val)
-        local ent = obj:calculateEntropy(item, val)
-        return string.format("%d words (~%.1f bits entropy)", val, ent)
+        return obj:getStrengthInfo(item, val).label
       end,
       applyVal = function(opts, val) opts.word_count = val end
     }
@@ -1564,8 +1677,7 @@ local function getItemSliderSpec(item)
       defaultVal = (item and item.length) or 6,
       color = sliderColor,
       formatLabel = function(val)
-        local ent = obj:calculateEntropy(item, val)
-        return string.format("%d digits (~%.1f bits entropy)", val, ent)
+        return obj:getStrengthInfo(item, val).label
       end,
       applyVal = function(opts, val) opts.length = val end
     }
@@ -1578,8 +1690,7 @@ local function getItemSliderSpec(item)
       defaultVal = (item and item.length) or 32,
       color = sliderColor,
       formatLabel = function(val)
-        local ent = obj:calculateEntropy(item, val)
-        return string.format("%d chars (~%.1f bits entropy)", val, ent)
+        return obj:getStrengthInfo(item, val).label
       end,
       applyVal = function(opts, val) opts.length = val end
     }
@@ -1592,8 +1703,7 @@ local function getItemSliderSpec(item)
       defaultVal = (item and item.length) or 20,
       color = sliderColor,
       formatLabel = function(val)
-        local ent = obj:calculateEntropy(item, val)
-        return string.format("%d chars (~%.1f bits entropy)", val, ent)
+        return obj:getStrengthInfo(item, val).label
       end,
       applyVal = function(opts, val) opts.length = val end
     }
@@ -1630,9 +1740,9 @@ function obj:_renderInteractiveMenu()
 
   local W, H = self:_getInteractiveMenuDimensions()
   local barX = 16
-  local barY = 58
+  local barY = 62
   local barW = W - 32
-  local barH = 20
+  local barH = 18
 
   local opts, item, spec = self:_getInteractiveItemOpts()
   local currentVal = self.interactiveState.currentLength or spec.defaultVal
@@ -1690,14 +1800,23 @@ function obj:_renderInteractiveMenu()
     trackMouseDown = true
   })
 
-  -- 3. Length / Word count readout
+  -- 3. Strength Meter Bar & Comprehensive Readout
+  local st = self:getStrengthInfo(item, currentVal)
+  table.insert(elements, {
+    type = "rectangle",
+    action = "fill",
+    fillColor = st.color,
+    roundedRectRadii = { xRadius = 1.5, yRadius = 1.5 },
+    frame = { x = barX, y = 37, w = barW, h = 3 }
+  })
+
   table.insert(elements, {
     type = "text",
-    text = spec.formatLabel(currentVal),
-    textColor = { red = 0.78, green = 0.82, blue = 0.92, alpha = 1.0 },
-    textSize = 12,
-    textAlignment = "left",
-    frame = { x = barX, y = 38, w = barW, h = 16 }
+    text = st.label,
+    textColor = { white = 0.95 },
+    textSize = 11,
+    textAlignment = "center",
+    frame = { x = barX, y = 43, w = barW, h = 16 }
   })
 
   -- 4. Segmented Bar (Discrete vertical slices matching user image)
@@ -1837,7 +1956,7 @@ function obj:_renderInteractiveMenu()
       textColor = btnTextCol,
       textSize = 10,
       textAlignment = "center",
-      frame = { x = W - 62, y = rowY + 5, w = 46, h = 16 },
+      frame = { x = W - 62, y = rowY + 7, w = 46, h = 14 },
       trackMouseDown = true
     })
 
@@ -1926,7 +2045,7 @@ function obj:_handleInteractiveMouse(canvas, eventName, id, x, y)
   end
 
   -- 3. Segmented Bar Hover & Click
-  if id == "slider_bar" or (id == "_canvas_" and y >= 56 and y <= 80) then
+  if id == "slider_bar" or (id == "_canvas_" and y >= 60 and y <= 82) then
     local opts, _, spec = self:_getInteractiveItemOpts()
     local segs = math.floor((spec.max - spec.min) / spec.step) + 1
     local f = math.max(0, math.min(1, (x - barX) / barW))
