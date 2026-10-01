@@ -851,6 +851,21 @@ obj.show_notifications = getSetting("show_notifications", true)
 --- Width of the interactive menu dropdown window in points. Default is `380`.
 obj.interactive_hud_width = getSetting("interactive_hud_width", 380)
 
+--- PasswordGenerator.theme
+--- Variable
+--- Color theme for the interactive menu: `"system"` (default, dynamically tracks macOS Light/Dark Mode), `"dark"`, or `"light"`.
+obj.theme = getSetting("theme", "system")
+
+--- PasswordGenerator.menu_opacity
+--- Variable
+--- Background opacity (alpha) of the interactive menu dropdown panel (number between `0.0` and `1.0`). If `nil` (default), uses `0.95` in dark mode and `0.96` in light mode to provide a solid, non-see-through surface.
+obj.menu_opacity = getSetting("menu_opacity", nil)
+
+--- PasswordGenerator.menu_corner_radius
+--- Variable
+--- Corner radius of the interactive menu dropdown window in points. Default is `14` (matching macOS native menus).
+obj.menu_corner_radius = getSetting("menu_corner_radius", 14)
+
 -- Legacy configuration variables (preserved for 100% backward compatibility)
 --- PasswordGenerator.password_style
 --- Variable
@@ -1445,40 +1460,56 @@ function obj:calculateCrackTime(entropy)
   end
 end
 
---- PasswordGenerator:getStrengthInfo([itemOrOptions], [val])
+function obj:_isDarkMode()
+  if self.theme == "dark" then return true end
+  if self.theme == "light" then return false end
+  if has_hs and hs.host and hs.host.interfaceStyle then
+    return (hs.host.interfaceStyle() == "Dark")
+  end
+  return true
+end
+
+--- PasswordGenerator:getStrengthInfo([itemOrOptions], [val], [isDark])
 --- Method
 --- Returns password strength rating, color, crack time, and formatted summary string.
 ---
 --- Parameters:
 ---  * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.
 ---  * val - Optional integer length or word count override.
+---  * isDark - Optional boolean indicating dark mode color palette. Defaults to current theme.
 ---
 --- Returns:
 ---  * A table with fields `entropy`, `crackTime`, `rating`, `color`, `score`, `label`
-function obj:getStrengthInfo(itemOrOptions, val)
+function obj:getStrengthInfo(itemOrOptions, val, isDark)
   local ent = self:calculateEntropy(itemOrOptions, val)
   local crackTime = self:calculateCrackTime(ent)
+  if isDark == nil then isDark = self:_isDarkMode() end
   local rating, color, score
 
   if ent < 36 then
     rating = "Very Weak"
-    color = { red = 0.90, green = 0.22, blue = 0.20, alpha = 1.0 } -- Red (#e53835)
+    color = isDark and { red = 0.90, green = 0.22, blue = 0.20, alpha = 1.0 }
+                   or  { red = 0.85, green = 0.18, blue = 0.16, alpha = 1.0 } -- Red (#e53835 / #d92e29)
     score = 1
   elseif ent < 60 then
     rating = "Weak"
-    color = { red = 0.95, green = 0.50, blue = 0.15, alpha = 1.0 } -- Orange (#f28026)
+    color = isDark and { red = 0.95, green = 0.50, blue = 0.15, alpha = 1.0 }
+                   or  { red = 0.90, green = 0.45, blue = 0.10, alpha = 1.0 } -- Orange (#f28026 / #e6731a)
     score = 2
   elseif ent < 80 then
     rating = "Fair"
-    color = { red = 0.92, green = 0.75, blue = 0.18, alpha = 1.0 } -- Amber/Yellow (#ebbf2e)
+    color = isDark and { red = 0.92, green = 0.75, blue = 0.18, alpha = 1.0 }
+                   or  { red = 0.80, green = 0.58, blue = 0.05, alpha = 1.0 } -- Amber (#ebbf2e / #cc940d)
     score = 3
   elseif ent < 100 then
     rating = "Strong"
-    color = { red = 0.30, green = 0.75, blue = 0.35, alpha = 1.0 } -- Light Green (#4dbf59)
+    color = isDark and { red = 0.30, green = 0.75, blue = 0.35, alpha = 1.0 }
+                   or  { red = 0.18, green = 0.65, blue = 0.25, alpha = 1.0 } -- Light Green (#4dbf59 / #2ea640)
     score = 4
   else
     rating = "Very Strong"
-    color = { red = 0.0, green = 0.69, blue = 0.10, alpha = 1.0 }  -- Vibrant Green (#00af1a)
+    color = isDark and { red = 0.0, green = 0.69, blue = 0.10, alpha = 1.0 }
+                   or  { red = 0.0, green = 0.58, blue = 0.10, alpha = 1.0 }  -- Vibrant Green (#00af1a / #00941a)
     score = 5
   end
 
@@ -1509,17 +1540,157 @@ function obj:getStrengthInfo(itemOrOptions, val)
   }
 end
 
---- PasswordGenerator:copyPassword([itemOrOptions])
+--- PasswordGenerator:getThemeColors([isDark])
 --- Method
---- Generates a password and copies it to the system clipboard.
+--- Returns the color palette table for the interactive canvas menu matching macOS system appearance.
+---
+--- Parameters:
+---  * isDark - Optional boolean. If omitted, resolved dynamically from `hs.host.interfaceStyle()` or `self.theme`.
+---
+--- Returns:
+---  * A table containing color definitions for panel background, borders, typography, sliders, buttons, and rows.
+function obj:getThemeColors(isDark)
+  if isDark == nil then isDark = self:_isDarkMode() end
+
+  local bgAlpha
+  if self.menu_opacity and type(self.menu_opacity) == "number" then
+    bgAlpha = math.max(0.1, math.min(1.0, self.menu_opacity))
+  else
+    bgAlpha = isDark and 0.95 or 0.96
+  end
+
+  if isDark then
+    return {
+      isDark = true,
+      panelBg = { red = 0.13, green = 0.13, blue = 0.15, alpha = bgAlpha },
+      panelStroke = { white = 1.0, alpha = 0.16 },
+      headerText = { white = 0.98 },
+      navBtn = { white = 0.70 },
+      strengthText = { white = 0.92 },
+      sliderTrack = { white = 1.0, alpha = 0.15 },
+      sliderDefault = { red = 0.65, green = 0.82, blue = 1.0, alpha = 1.0 },
+      previewBg = { red = 0.08, green = 0.09, blue = 0.11, alpha = 0.90 },
+      previewStroke = { white = 1.0, alpha = 0.12 },
+      previewText = { red = 0.92, green = 0.95, blue = 1.0, alpha = 1.0 },
+      separator = { white = 1.0, alpha = 0.12 },
+      sectionHeader = { white = 0.50 },
+      rowActiveBg = { white = 1.0, alpha = 0.12 },
+      rowActiveStroke = { white = 1.0, alpha = 0.18 },
+      rowActiveDot = { red = 0.35, green = 0.65, blue = 1.0, alpha = 1.0 },
+      itemTitle = { white = 0.88 },
+      itemTitleActive = { white = 1.0 },
+      copyBtnActiveFill = { red = 0.28, green = 0.48, blue = 0.85, alpha = 0.95 },
+      copyBtnActiveStroke = { red = 0.42, green = 0.62, blue = 1.0, alpha = 0.85 },
+      copyBtnActiveText = { white = 1.0 },
+      copyBtnInactiveFill = { white = 1.0, alpha = 0.08 },
+      copyBtnInactiveStroke = { white = 1.0, alpha = 0.14 },
+      copyBtnInactiveText = { white = 0.80 },
+      footerText = { white = 0.75 }
+    }
+  else
+    return {
+      isDark = false,
+      panelBg = { red = 0.96, green = 0.96, blue = 0.97, alpha = bgAlpha },
+      panelStroke = { white = 0.0, alpha = 0.15 },
+      headerText = { white = 0.10 },
+      navBtn = { white = 0.40 },
+      strengthText = { white = 0.25 },
+      sliderTrack = { white = 0.0, alpha = 0.10 },
+      sliderDefault = { red = 0.0, green = 0.48, blue = 1.0, alpha = 0.90 },
+      previewBg = { white = 1.0, alpha = 0.92 },
+      previewStroke = { white = 0.0, alpha = 0.15 },
+      previewText = { red = 0.10, green = 0.12, blue = 0.15, alpha = 1.0 },
+      separator = { white = 0.0, alpha = 0.10 },
+      sectionHeader = { white = 0.50 },
+      rowActiveBg = { white = 0.0, alpha = 0.07 },
+      rowActiveStroke = { white = 0.0, alpha = 0.12 },
+      rowActiveDot = { red = 0.0, green = 0.48, blue = 1.0, alpha = 1.0 },
+      itemTitle = { white = 0.22 },
+      itemTitleActive = { white = 0.05 },
+      copyBtnActiveFill = { red = 0.0, green = 0.48, blue = 1.0, alpha = 0.95 },
+      copyBtnActiveStroke = { red = 0.0, green = 0.40, blue = 0.90, alpha = 0.95 },
+      copyBtnActiveText = { white = 1.0 },
+      copyBtnInactiveFill = { white = 0.0, alpha = 0.05 },
+      copyBtnInactiveStroke = { white = 0.0, alpha = 0.15 },
+      copyBtnInactiveText = { white = 0.35 },
+      footerText = { white = 0.35 }
+    }
+  end
+end
+
+--- PasswordGenerator:setMenuOpacity(opacity)
+--- Method
+--- Sets the background opacity of the interactive menu dropdown.
+---
+--- Parameters:
+---  * opacity - Number between 0.0 and 1.0 (or nil to reset to system default matching native menus).
+---
+--- Returns:
+---  * The PasswordGenerator object for method chaining
+function obj:setMenuOpacity(opacity)
+  self.menu_opacity = opacity
+  if self.interactiveCanvas and self.interactiveCanvas._visible then
+    self:_renderInteractiveMenu()
+  end
+  return self
+end
+
+--- PasswordGenerator:setMenuCornerRadius(radius)
+--- Method
+--- Sets the corner radius of the interactive menu dropdown window.
+---
+--- Parameters:
+---  * radius - Number: corner radius in points (default `14`, matching native macOS menus).
+---
+--- Returns:
+---  * The PasswordGenerator object for method chaining
+function obj:setMenuCornerRadius(radius)
+  self.menu_corner_radius = radius or 14
+  if self.interactiveCanvas and self.interactiveCanvas._visible then
+    self:_renderInteractiveMenu()
+  end
+  return self
+end
+
+--- PasswordGenerator:setTheme(theme)
+--- Method
+--- Sets the interactive menu color theme.
+---
+--- Parameters:
+---  * theme - String: `"system"` (default), `"dark"`, or `"light"`.
+---
+--- Returns:
+---  * The PasswordGenerator object for method chaining
+function obj:setTheme(theme)
+  self.theme = theme or "system"
+  if self.interactiveCanvas and self.interactiveCanvas._visible then
+    self:_renderInteractiveMenu()
+  end
+  return self
+end
+
+function obj:_ensureThemeWatcher()
+  if not self._themeWatcher and has_hs and hs.distributednotifications and hs.distributednotifications.new then
+    self._themeWatcher = hs.distributednotifications.new(function(name, object, userInfo)
+      if self.interactiveCanvas and self.interactiveCanvas._visible then
+        self:_renderInteractiveMenu()
+      end
+    end, "AppleInterfaceThemeChangedNotification"):start()
+  end
+end
+
+--- PasswordGenerator:copyPassword([itemOrOptions], [existingPassword])
+--- Method
+--- Generates a password and copies it to the system clipboard, or copies an already-generated password string.
 ---
 --- Parameters:
 ---  * itemOrOptions - Optional string (item ID) or table with options. If nil, uses default item.
+---  * existingPassword - Optional string: if provided, copies this password instead of generating a new one.
 ---
 --- Returns:
----  * The generated password string
-function obj:copyPassword(itemOrOptions)
-  local pwd = self:generate(itemOrOptions)
+---  * The copied password string
+function obj:copyPassword(itemOrOptions, existingPassword)
+  local pwd = existingPassword or self:generate(itemOrOptions)
 
   if has_hs and hs.pasteboard then
     if self.conceal_clipboard and hs.pasteboard.writeObjects then
@@ -1753,16 +1924,21 @@ function obj:_renderInteractiveMenu()
   if filled < 1 then filled = 1 end
   if filled > segs then filled = segs end
 
+  local theme = self:getThemeColors()
+  local st = self:getStrengthInfo(item, currentVal, theme.isDark)
+
+  local cornerRadius = self.menu_corner_radius or 14
+
   local elements = {}
 
-  -- 1. Main Background Panel (macOS Dark Menu styling with shadow border)
+  -- 1. Main Background Panel (macOS Native Menu styling with dynamic system colors)
   table.insert(elements, {
     type = "rectangle",
     action = "strokeAndFill",
-    fillColor = { red = 0.12, green = 0.13, blue = 0.18, alpha = 0.97 },
-    strokeColor = { red = 0.30, green = 0.34, blue = 0.42, alpha = 0.85 },
+    fillColor = theme.panelBg,
+    strokeColor = theme.panelStroke,
     strokeWidth = 1,
-    roundedRectRadii = { xRadius = 8, yRadius = 8 },
+    roundedRectRadii = { xRadius = cornerRadius, yRadius = cornerRadius },
     frame = { x = 0, y = 0, w = W, h = H }
   })
 
@@ -1771,10 +1947,10 @@ function obj:_renderInteractiveMenu()
     id = "btn_prev",
     type = "text",
     text = "◀",
-    textColor = { white = 0.75 },
+    textColor = theme.navBtn,
     textSize = 13,
     textAlignment = "center",
-    frame = { x = 12, y = 12, w = 22, h = 20 },
+    frame = { x = 16, y = 12, w = 22, h = 20 },
     trackMouseDown = true
   })
 
@@ -1782,10 +1958,10 @@ function obj:_renderInteractiveMenu()
     id = "title_cycle",
     type = "text",
     text = (item and item.title) or "Password Generator",
-    textColor = { white = 0.98 },
+    textColor = theme.headerText,
     textSize = 14,
     textAlignment = "center",
-    frame = { x = 36, y = 12, w = W - 72, h = 20 },
+    frame = { x = 40, y = 12, w = W - 80, h = 20 },
     trackMouseDown = true
   })
 
@@ -1793,15 +1969,14 @@ function obj:_renderInteractiveMenu()
     id = "btn_next",
     type = "text",
     text = "▶",
-    textColor = { white = 0.75 },
+    textColor = theme.navBtn,
     textSize = 13,
     textAlignment = "center",
-    frame = { x = W - 34, y = 12, w = 22, h = 20 },
+    frame = { x = W - 38, y = 12, w = 22, h = 20 },
     trackMouseDown = true
   })
 
   -- 3. Strength Meter Bar & Comprehensive Readout
-  local st = self:getStrengthInfo(item, currentVal)
   table.insert(elements, {
     type = "rectangle",
     action = "fill",
@@ -1813,29 +1988,30 @@ function obj:_renderInteractiveMenu()
   table.insert(elements, {
     type = "text",
     text = st.label,
-    textColor = { white = 0.95 },
+    textColor = theme.strengthText,
     textSize = 11,
     textAlignment = "center",
     frame = { x = barX, y = 43, w = barW, h = 16 }
   })
 
   -- 4. Segmented Bar (Discrete vertical slices matching user image)
+  local activeSliderColor = (item and item.slider_color) or (self.slider_color) or (theme.isDark and spec.color or theme.sliderDefault)
   for s = 1, segs do
     local sx = barX + (s - 1) * (segW + gap)
-    -- Inactive segment track (dark slate)
+    -- Inactive segment track
     table.insert(elements, {
       type = "rectangle",
       action = "fill",
-      fillColor = { red = 0.28, green = 0.30, blue = 0.36, alpha = 0.95 },
+      fillColor = theme.sliderTrack,
       frame = { x = sx, y = barY, w = segW, h = barH },
       roundedRectRadii = { xRadius = 2, yRadius = 2 }
     })
-    -- Active segment fill (light pastel blue or soft sage green)
+    -- Active segment fill
     if s <= filled then
       table.insert(elements, {
         type = "rectangle",
         action = "fill",
-        fillColor = spec.color,
+        fillColor = activeSliderColor,
         frame = { x = sx, y = barY, w = segW, h = barH },
         roundedRectRadii = { xRadius = 2, yRadius = 2 }
       })
@@ -1859,8 +2035,8 @@ function obj:_renderInteractiveMenu()
     id = "btn_preview_click",
     type = "rectangle",
     action = "strokeAndFill",
-    fillColor = { red = 0.07, green = 0.08, blue = 0.11, alpha = 0.90 },
-    strokeColor = { red = 0.22, green = 0.25, blue = 0.33, alpha = 0.7 },
+    fillColor = theme.previewBg,
+    strokeColor = theme.previewStroke,
     strokeWidth = 1,
     roundedRectRadii = { xRadius = 5, yRadius = 5 },
     frame = { x = barX, y = 86, w = barW, h = 36 },
@@ -1871,7 +2047,7 @@ function obj:_renderInteractiveMenu()
     id = "btn_preview_click",
     type = "text",
     text = self.interactiveState.previewPassword or "...",
-    textColor = { red = 0.92, green = 0.95, blue = 1.0, alpha = 1.0 },
+    textColor = theme.previewText,
     textSize = 12,
     textFont = "Menlo",
     textAlignment = "center",
@@ -1883,14 +2059,14 @@ function obj:_renderInteractiveMenu()
   table.insert(elements, {
     type = "rectangle",
     action = "fill",
-    fillColor = { white = 0.22, alpha = 0.7 },
+    fillColor = theme.separator,
     frame = { x = barX, y = 130, w = barW, h = 1 }
   })
 
   table.insert(elements, {
     type = "text",
     text = "PRESET ITEMS (click row to select, copy button to generate)",
-    textColor = { white = 0.48 },
+    textColor = theme.sectionHeader,
     textSize = 9,
     textAlignment = "left",
     frame = { x = barX, y = 136, w = barW, h = 14 }
@@ -1906,8 +2082,8 @@ function obj:_renderInteractiveMenu()
       table.insert(elements, {
         type = "rectangle",
         action = "strokeAndFill",
-        fillColor = { red = 0.18, green = 0.22, blue = 0.30, alpha = 0.85 },
-        strokeColor = { red = 0.28, green = 0.35, blue = 0.48, alpha = 0.7 },
+        fillColor = theme.rowActiveBg,
+        strokeColor = theme.rowActiveStroke,
         strokeWidth = 1,
         frame = { x = 12, y = rowY, w = W - 24, h = 26 },
         roundedRectRadii = { xRadius = 5, yRadius = 5 }
@@ -1916,7 +2092,7 @@ function obj:_renderInteractiveMenu()
       table.insert(elements, {
         type = "rectangle",
         action = "fill",
-        fillColor = spec.color,
+        fillColor = theme.rowActiveDot,
         frame = { x = 18, y = rowY + 9, w = 8, h = 8 },
         roundedRectRadii = { xRadius = 4, yRadius = 4 }
       })
@@ -1926,16 +2102,16 @@ function obj:_renderInteractiveMenu()
     table.insert(elements, {
       type = "text",
       text = it.title or it.id,
-      textColor = isActive and { white = 1.0 } or { white = 0.85 },
+      textColor = isActive and theme.itemTitleActive or theme.itemTitle,
       textSize = 12,
       textAlignment = "left",
       frame = { x = 32, y = rowY + 4, w = W - 105, h = 18 }
     })
 
     -- Quick Copy Badge (equal 4px padding on top, bottom, and right inside row container)
-    local btnFill = isActive and { red = 0.28, green = 0.48, blue = 0.85, alpha = 0.95 } or { red = 0.20, green = 0.22, blue = 0.28, alpha = 0.85 }
-    local btnStroke = isActive and { red = 0.42, green = 0.62, blue = 1.0, alpha = 0.85 } or { red = 0.32, green = 0.36, blue = 0.46, alpha = 0.6 }
-    local btnTextCol = isActive and { white = 1.0 } or { white = 0.80 }
+    local btnFill = isActive and theme.copyBtnActiveFill or theme.copyBtnInactiveFill
+    local btnStroke = isActive and theme.copyBtnActiveStroke or theme.copyBtnInactiveStroke
+    local btnTextCol = isActive and theme.copyBtnActiveText or theme.copyBtnInactiveText
 
     table.insert(elements, {
       id = "quick_copy_" .. it.id,
@@ -1976,7 +2152,7 @@ function obj:_renderInteractiveMenu()
   table.insert(elements, {
     type = "rectangle",
     action = "fill",
-    fillColor = { white = 0.22, alpha = 0.7 },
+    fillColor = theme.separator,
     frame = { x = barX, y = sep2Y, w = barW, h = 1 }
   })
 
@@ -1994,7 +2170,7 @@ function obj:_renderInteractiveMenu()
     id = "btn_clear_clipboard",
     type = "text",
     text = "🗑  Clear Clipboard Now",
-    textColor = { white = 0.75 },
+    textColor = theme.footerText,
     textSize = 11,
     textAlignment = "left",
     frame = { x = 20, y = sep2Y + 9, w = W - 40, h = 18 },
@@ -2039,7 +2215,8 @@ function obj:_handleInteractiveMouse(canvas, eventName, id, x, y)
   -- 2. Preview Box Click
   if id == "btn_preview_click" and eventName == "mouseDown" then
     local opts, _, _ = self:_getInteractiveItemOpts()
-    self:copyPassword(opts)
+    local pwd = self.interactiveState.previewPassword or self:generate(opts)
+    self:copyPassword(opts, pwd)
     self:hideInteractiveMenu()
     return
   end
@@ -2063,7 +2240,8 @@ function obj:_handleInteractiveMouse(canvas, eventName, id, x, y)
     elseif eventName == "mouseDown" then
       self.interactiveState.currentLength = newVal
       local genOpts = self:_getInteractiveItemOpts(newVal)
-      self:copyPassword(genOpts)
+      local pwd = self.interactiveState.previewPassword or self:generate(genOpts)
+      self:copyPassword(genOpts, pwd)
       self:hideInteractiveMenu()
     end
     return
@@ -2072,7 +2250,13 @@ function obj:_handleInteractiveMouse(canvas, eventName, id, x, y)
   -- 4. Quick Copy Button on Row
   local quickCopyId = id and id:match("^quick_copy_(.*)$")
   if quickCopyId and eventName == "mouseDown" then
-    self:copyPassword(quickCopyId)
+    local activeItem = self.items[self.interactiveState.activeItemIndex]
+    if activeItem and activeItem.id == quickCopyId and self.interactiveState.previewPassword then
+      local genOpts = self:_getInteractiveItemOpts()
+      self:copyPassword(genOpts, self.interactiveState.previewPassword)
+    else
+      self:copyPassword(quickCopyId)
+    end
     self:hideInteractiveMenu()
     return
   end
@@ -2115,6 +2299,7 @@ end
 ---  * The PasswordGenerator object for method chaining
 function obj:showInteractiveMenu()
   if not has_hs or not hs.canvas then return self end
+  self:_ensureThemeWatcher()
 
   if not self.items[self.interactiveState.activeItemIndex] then
     self.interactiveState.activeItemIndex = 1
@@ -2361,6 +2546,7 @@ end
 ---  * The PasswordGenerator object for method chaining
 function obj:start()
   if not has_hs or not hs.menubar then return self end
+  self:_ensureThemeWatcher()
   if not self.menubar then
     self.menubar = hs.menubar.new()
     if self.menubar then
@@ -2386,6 +2572,10 @@ end
 --- Returns:
 ---  * The PasswordGenerator object for method chaining
 function obj:stop()
+  if self._themeWatcher then
+    self._themeWatcher:stop()
+    self._themeWatcher = nil
+  end
   if self.menubar then
     self.menubar:delete()
     self.menubar = nil

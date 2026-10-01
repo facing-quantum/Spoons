@@ -84,6 +84,25 @@ _G.hs = {
       return t
     end
   },
+  host = {
+    _style = "Dark",
+    interfaceStyle = function() return _G.hs.host._style end
+  },
+  distributednotifications = {
+    _watchers = {},
+    new = function(fn, name)
+      local w = {
+        callback = fn,
+        name = name,
+        _started = false,
+        start = function(self) self._started = true; return self end,
+        stop = function(self) self._started = false; return self end,
+        trigger = function(self, obj, info) if self._started and self.callback then self.callback(self.name, obj, info) end end
+      }
+      table.insert(_G.hs.distributednotifications._watchers, w)
+      return w
+    end
+  },
   menubar = {
     new = function()
       local m = {
@@ -565,6 +584,68 @@ if activeRowRect and activeBtnRect then
   assert_equal(topPad, rightPad, "top and right padding around copy button match: " .. topPad)
 end
 
+-- Verify system theme colors and Light / Dark adaptation
+local darkTheme = pg:getThemeColors(true)
+assert_true(darkTheme.isDark == true, "dark theme isDark is true")
+assert_true(darkTheme.panelBg.red < 0.2, "dark theme panelBg is dark")
+assert_equal(0.95, darkTheme.panelBg.alpha, "dark theme default menu opacity is 0.95")
+assert_true(darkTheme.headerText.white > 0.9, "dark theme header text is bright")
+
+local lightTheme = pg:getThemeColors(false)
+assert_true(lightTheme.isDark == false, "light theme isDark is false")
+assert_true(lightTheme.panelBg.red > 0.9, "light theme panelBg is bright")
+assert_equal(0.96, lightTheme.panelBg.alpha, "light theme default menu opacity is 0.96")
+assert_true(lightTheme.headerText.white < 0.2, "light theme header text is dark")
+assert_equal(1.0, lightTheme.copyBtnActiveText.white, "light theme active copy button text is white")
+assert_equal(1.0, lightTheme.copyBtnActiveFill.blue, "light theme active copy button fill is accent blue")
+
+-- Test menu opacity setting
+pg:setMenuOpacity(0.75)
+assert_equal(0.75, pg:getThemeColors().panelBg.alpha, "custom menu_opacity reflected in getThemeColors")
+assert_equal(0.75, pg.interactiveCanvas._elements[1].fillColor.alpha, "custom menu_opacity reflected on canvas background")
+pg:setMenuOpacity(nil)
+assert_equal(0.95, pg:getThemeColors(true).panelBg.alpha, "menu_opacity reset to default")
+
+-- Test menu corner radius (default 14pt matching macOS native menus)
+assert_equal(14, pg.menu_corner_radius, "default menu corner radius is 14pt matching native menus")
+assert_equal(14, pg.interactiveCanvas._elements[1].roundedRectRadii.xRadius, "canvas background has 14pt corner radius")
+pg:setMenuCornerRadius(18)
+assert_equal(18, pg.interactiveCanvas._elements[1].roundedRectRadii.xRadius, "setMenuCornerRadius(18) updates canvas corner radius")
+pg:setMenuCornerRadius(14)
+
+-- Test switching theme dynamically
+pg:setTheme("light")
+assert_equal(false, pg:_isDarkMode(), "setTheme('light') sets mode to light")
+local lightBg = pg.interactiveCanvas._elements[1]
+assert_true(lightBg.fillColor.red > 0.9, "rendered menu background in light mode is light")
+assert_true(lightBg.strokeColor.alpha < 0.3, "rendered menu border in light mode is subtle")
+
+pg:setTheme("dark")
+assert_equal(true, pg:_isDarkMode(), "setTheme('dark') sets mode to dark")
+local darkBg = pg.interactiveCanvas._elements[1]
+assert_true(darkBg.fillColor.red < 0.2, "rendered menu background in dark mode is dark")
+
+-- Test AppleInterfaceThemeChangedNotification distribution
+pg:setTheme("system")
+assert_equal("system", pg.theme, "theme restored to system")
+_G.hs.host._style = "Light"
+for _, w in ipairs(_G.hs.distributednotifications._watchers) do
+  if w.name == "AppleInterfaceThemeChangedNotification" then
+    w:trigger()
+  end
+end
+local liveLightBg = pg.interactiveCanvas._elements[1]
+assert_true(liveLightBg.fillColor.red > 0.9, "menu automatically adapted to Light appearance via theme notification")
+
+_G.hs.host._style = "Dark"
+for _, w in ipairs(_G.hs.distributednotifications._watchers) do
+  if w.name == "AppleInterfaceThemeChangedNotification" then
+    w:trigger()
+  end
+end
+local liveDarkBg = pg.interactiveCanvas._elements[1]
+assert_true(liveDarkBg.fillColor.red < 0.2, "menu automatically adapted to Dark appearance via theme notification")
+
 -- Verify mouse movement over slider bar changes length
 local initialLen = pg.interactiveState.currentLength
 pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseMove", "slider_bar", 200, 68)
@@ -609,10 +690,26 @@ assert_equal(4, pg.interactiveState.activeItemIndex, "switched back to PIN")
 assert_equal(6, pg.interactiveState.currentLength, "PIN length reset to default 6")
 assert_equal(6, #pg.interactiveState.previewPassword, "preview PIN length is 6 digits (NOT old 16)")
 
--- Click preview box and verify copied PIN is 6 digits
+-- Click preview box and verify copied PIN is 6 digits and matches preview exactly
 clipboardContent = nil
+local displayedPin = pg.interactiveState.previewPassword
 pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseDown", "btn_preview_click", 100, 100)
 assert_equal(6, #clipboardContent, "copied PIN from preview box is 6 digits")
+assert_equal(displayedPin, clipboardContent, "preview box click copies the EXACT displayed text")
+
+-- Verify slider click copies the exact displayed preview password
+pg:showInteractiveMenu()
+pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseMove", "slider_bar", 250, 68)
+local displayedSlider = pg.interactiveState.previewPassword
+pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseDown", "slider_bar", 250, 68)
+assert_equal(displayedSlider, clipboardContent, "slider click copies the EXACT displayed text")
+
+-- Verify active row quick copy button copies the exact displayed preview password
+pg:showInteractiveMenu()
+local activeId = pg.items[pg.interactiveState.activeItemIndex].id
+local displayedActive = pg.interactiveState.previewPassword
+pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseDown", "quick_copy_" .. activeId, 340, 160)
+assert_equal(displayedActive, clipboardContent, "active row quick copy copies the EXACT displayed text")
 
 -- Toggle interactive menu
 pg:toggleInteractiveMenu()
