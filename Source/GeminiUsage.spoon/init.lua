@@ -91,7 +91,7 @@ obj.quotaCachePath = os.getenv("HOME") .. "/.gemini/antigravity-cli/cache/quota_
 --- Plan or subscription tier display name override. Default nil (auto-resolved).
 obj.planName = nil
 
-local menubar, timer
+local menubar, timer, resetTimer
 local lastData, lastFetchTime, fetchError, planName
 local statusData, statusFetchTime, statusError, statusAttemptTime
 local incidentsData, incidentsError, incidentsAttemptTime
@@ -218,29 +218,31 @@ end
 
 local function formatCountdown(val)
   if not val then return "--" end
-  local targetTs
-  if type(val) == "number" then
-    targetTs = (val < 100000000) and (os.time() + val) or val
-  else
-    targetTs = utcIsoToUnix(val)
-  end
+  local targetTs = (type(val) == "number" and val >= 100000000) and val or utcIsoToUnix(val)
   if not targetTs then return "--" end
   local diff = targetTs - os.time()
-  if diff <= 0 then return "now" end
+  if diff <= 0 then return "ready" end
   return humanDuration(diff)
 end
 
 local function formatReset(val)
   if not val then return "soon" end
-  local targetTs
-  if type(val) == "number" then
-    targetTs = (val < 100000000) and (os.time() + val) or val
-  else
-    targetTs = utcIsoToUnix(val)
-  end
+  local targetTs = (type(val) == "number" and val >= 100000000) and val or utcIsoToUnix(val)
   if not targetTs then return "soon" end
   local diff = targetTs - os.time()
-  if diff <= 0 then return "now" end
+  if diff <= 0 then
+    local targetDate = os.date("*t", targetTs)
+    local nowDate    = os.date("*t", os.time())
+    local isToday    = (targetDate.year == nowDate.year and targetDate.yday == nowDate.yday)
+    local timeStr    = os.date("%I:%M %p", targetTs):gsub("^0", "")
+    if isToday then
+      return string.format("reset at %s (ready)", timeStr)
+    elseif (nowDate.year == targetDate.year and nowDate.yday - targetDate.yday == 1) then
+      return string.format("reset yesterday at %s (ready)", timeStr)
+    else
+      return "reset (ready)"
+    end
+  end
 
   local targetDate = os.date("*t", targetTs)
   local nowDate    = os.date("*t", os.time())
@@ -261,20 +263,45 @@ end
 
 local function timeRemainingPct(val, maxSecs)
   if not val then return 100 end
-  local targetTs
-  if type(val) == "number" then
-    targetTs = (val < 100000000) and (os.time() + val) or val
-  else
-    targetTs = utcIsoToUnix(val)
-  end
+  local targetTs = (type(val) == "number" and val >= 100000000) and val or utcIsoToUnix(val)
   if not targetTs then return 100 end
-  local rem = math.max(0, targetTs - os.time())
+  local rem = targetTs - os.time()
+  if rem <= 0 then return 0 end
   local linear = math.min(1, rem / (maxSecs or 18000))
   return math.sqrt(linear) * 100
 end
 
-local function getQuotaPct(q)
+local function getQuotaResetVal(q, cacheMtime)
+  if not q then return nil end
+  -- 1. Prefer absolute ISO timestamp: q.reset_time
+  if q.reset_time and type(q.reset_time) == "string" and q.reset_time ~= "" then
+    local ts = utcIsoToUnix(q.reset_time)
+    if ts then return ts end
+  end
+  -- 2. Epoch timestamp number
+  if type(q.reset_time) == "number" and q.reset_time >= 100000000 then
+    return q.reset_time
+  end
+  -- 3. Relative seconds (reset_in_seconds) anchored to cache mtime
+  if q.reset_in_seconds then
+    local sec = tonumber(q.reset_in_seconds)
+    if sec then
+      if sec >= 100000000 then
+        return sec
+      end
+      local base = cacheMtime or (lastData and lastData._cacheMtime) or (lastFetchTime or os.time())
+      return base + sec
+    end
+  end
+  return nil
+end
+
+local function getQuotaPct(q, resetTs)
   if not q then return 0 end
+  local rTs = resetTs or getQuotaResetVal(q)
+  if rTs and rTs <= os.time() then
+    return 0
+  end
   if q.remaining_fraction ~= nil then
     return math.max(0, math.min(100, math.floor((1.0 - q.remaining_fraction) * 100 + 0.5)))
   end
@@ -285,11 +312,6 @@ local function getQuotaPct(q)
     return math.max(0, math.min(100, math.floor(q.used_percentage + 0.5)))
   end
   return 0
-end
-
-local function getQuotaResetVal(q)
-  if not q then return nil end
-  return q.reset_in_seconds or q.reset_time
 end
 
 local function extractPlanName(data, override)
@@ -447,14 +469,22 @@ local function loadCachedQuota()
     os.getenv("HOME") .. "/.gemini/antigravity-cli/cache/quota_state.json",
     "/tmp/agy-statusline-quota.json",
   }
+
+  local bestParsed, bestMtime = nil, -1
+
   for _, path in ipairs(cacheCandidates) do
     if path and fileExists(path) then
+      local attr = hs.fs.attributes(path)
+      local mtime = (attr and attr.modification) or 0
       local f = io.open(path, "r")
       if f then
         local raw = f:read("*a"); f:close()
         local ok, parsed = pcall(hs.json.decode, raw)
         if ok and type(parsed) == "table" and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
-          return parsed
+          if mtime > bestMtime then
+            bestMtime = mtime
+            bestParsed = parsed
+          end
         end
       end
     end
@@ -467,12 +497,17 @@ local function loadCachedQuota()
       if fname:match("^agy%-statusline%-input%.") then
         local fullPath = "/tmp/" .. fname
         if fileExists(fullPath) then
+          local attr = hs.fs.attributes(fullPath)
+          local mtime = (attr and attr.modification) or 0
           local f = io.open(fullPath, "r")
           if f then
             local raw = f:read("*a"); f:close()
             local okDec, parsed = pcall(hs.json.decode, raw)
             if okDec and type(parsed) == "table" and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
-              return parsed
+              if mtime > bestMtime then
+                bestMtime = mtime
+                bestParsed = parsed
+              end
             end
           end
         end
@@ -480,7 +515,10 @@ local function loadCachedQuota()
     end
   end
 
-  return nil
+  if bestParsed then
+    bestParsed._cacheMtime = (bestMtime > 0) and bestMtime or os.time()
+  end
+  return bestParsed
 end
 
 -- ── Service Health ─────────────────────────────────────────────────────
@@ -664,6 +702,28 @@ local function buildDualColumnIcon(gSPct, gWPct, gSTime, gWTime, pSPct, pWPct, p
   return img
 end
 
+local function scheduleNextReset(tsList)
+  local now = os.time()
+  local soonest = nil
+  for _, ts in ipairs(tsList) do
+    if ts and ts > now then
+      if not soonest or ts < soonest then
+        soonest = ts
+      end
+    end
+  end
+  if resetTimer then resetTimer:stop(); resetTimer = nil end
+  if soonest then
+    local delay = soonest - now + 1
+    if delay > 0 and delay <= 7200 then
+      resetTimer = hs.timer.doAfter(delay, function()
+        resetTimer = nil
+        refreshIcon()
+      end)
+    end
+  end
+end
+
 local function refreshIcon()
   if not menubar then return end
   local dot = serviceHealthDotColor()
@@ -671,18 +731,24 @@ local function refreshIcon()
   -- Extract Gemini Quotas
   local g5h = lastData and (lastData.quota and lastData.quota["gemini-5h"] or lastData["gemini-5h"])
   local gWk = lastData and (lastData.quota and lastData.quota["gemini-weekly"] or lastData["gemini-weekly"])
-  local gSPct = getQuotaPct(g5h)
-  local gWPct = getQuotaPct(gWk)
-  local gSTime = g5h and timeRemainingPct(getQuotaResetVal(g5h), 18000) or 100
-  local gWTime = gWk and timeRemainingPct(getQuotaResetVal(gWk), 604800) or 100
+  local gSTs = getQuotaResetVal(g5h)
+  local gWTs = getQuotaResetVal(gWk)
+  local gSPct = getQuotaPct(g5h, gSTs)
+  local gWPct = getQuotaPct(gWk, gWTs)
+  local gSTime = gSTs and timeRemainingPct(gSTs, 18000) or 100
+  local gWTime = gWTs and timeRemainingPct(gWTs, 604800) or 100
 
   -- Extract Claude / 3P Quotas
   local p5h = lastData and (lastData.quota and lastData.quota["3p-5h"] or lastData["3p-5h"])
   local pWk = lastData and (lastData.quota and lastData.quota["3p-weekly"] or lastData["3p-weekly"])
-  local pSPct = getQuotaPct(p5h)
-  local pWPct = getQuotaPct(pWk)
-  local pSTime = p5h and timeRemainingPct(getQuotaResetVal(p5h), 18000) or 100
-  local pWTime = pWk and timeRemainingPct(getQuotaResetVal(pWk), 604800) or 100
+  local pSTs = getQuotaResetVal(p5h)
+  local pWTs = getQuotaResetVal(pWk)
+  local pSPct = getQuotaPct(p5h, pSTs)
+  local pWPct = getQuotaPct(pWk, pWTs)
+  local pSTime = pSTs and timeRemainingPct(pSTs, 18000) or 100
+  local pWTime = pWTs and timeRemainingPct(pWTs, 604800) or 100
+
+  scheduleNextReset({gSTs, gWTs, pSTs, pWTs})
 
   menubar:setIcon(buildDualColumnIcon(gSPct, gWPct, gSTime, gWTime, pSPct, pWPct, pSTime, pWTime, dot), false)
   menubar:setTitle("")
@@ -809,8 +875,8 @@ local function buildMenu()
 
     -- 5-Hour Session
     if q5h then
-      local p = getQuotaPct(q5h)
       local rVal = getQuotaResetVal(q5h)
+      local p = getQuotaPct(q5h, rVal)
       local tp = timeRemainingPct(rVal, 18000)
       add(hs.styledtext.new("  Session 5h\t", {color=lc, paragraphStyle=tabPS})
         .. styledBlockBar(p, clr, 14)
@@ -825,8 +891,8 @@ local function buildMenu()
 
     -- Weekly Window
     if qWk then
-      local wp = getQuotaPct(qWk)
       local wVal = getQuotaResetVal(qWk)
+      local wp = getQuotaPct(qWk, wVal)
       local wtp = timeRemainingPct(wVal, 604800)
       add(hs.styledtext.new("  Weekly 7d\t", {color=lc, paragraphStyle=tabPS})
         .. styledBlockBar(wp, clr, 14)
@@ -1179,8 +1245,9 @@ end
 --- Returns:
 ---  * The GeminiUsage object
 function obj:stop()
-  if timer   then timer:stop();     timer   = nil end
-  if menubar then menubar:delete(); menubar = nil end
+  if timer      then timer:stop();      timer      = nil end
+  if resetTimer then resetTimer:stop(); resetTimer = nil end
+  if menubar    then menubar:delete();  menubar    = nil end
 
   lastData, lastFetchTime, fetchError, planName = nil, nil, nil, nil
   statusData, statusFetchTime, statusError, statusAttemptTime = nil, nil, nil, nil
