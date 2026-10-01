@@ -204,6 +204,7 @@ _G.hs = {
     end
   },
   mouse = {
+    absolutePosition = function() return { x = 600, y = 400 } end,
     getAbsolutePosition = function() return { x = 600, y = 400 } end,
     getCurrentScreen = function()
       return {
@@ -710,6 +711,28 @@ local activeId = pg.items[pg.interactiveState.activeItemIndex].id
 local displayedActive = pg.interactiveState.previewPassword
 pg:_handleInteractiveMouse(pg.interactiveCanvas, "mouseDown", "quick_copy_" .. activeId, 340, 160)
 assert_equal(displayedActive, clipboardContent, "active row quick copy copies the EXACT displayed text")
+
+-- Verify modern hs.mouse.absolutePosition vs legacy getAbsolutePosition
+local calledModern = false
+local calledLegacy = false
+local oldAbsolute = _G.hs.mouse.absolutePosition
+local oldGetAbsolute = _G.hs.mouse.getAbsolutePosition
+
+_G.hs.mouse.absolutePosition = function() calledModern = true return { x = 500, y = 300 } end
+_G.hs.mouse.getAbsolutePosition = nil
+pg:showInteractiveMenu()
+assert_true(calledModern, "used modern hs.mouse.absolutePosition when available")
+pg:hideInteractiveMenu()
+
+calledModern = false
+_G.hs.mouse.absolutePosition = nil
+_G.hs.mouse.getAbsolutePosition = function() calledLegacy = true return { x = 500, y = 300 } end
+pg:showInteractiveMenu()
+assert_true(calledLegacy, "fell back to legacy hs.mouse.getAbsolutePosition when absolutePosition is nil")
+pg:hideInteractiveMenu()
+
+_G.hs.mouse.absolutePosition = oldAbsolute
+_G.hs.mouse.getAbsolutePosition = oldGetAbsolute
 
 -- Toggle interactive menu
 pg:toggleInteractiveMenu()

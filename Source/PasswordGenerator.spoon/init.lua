@@ -2326,7 +2326,8 @@ function obj:showInteractiveMenu()
   end
 
   if not originX then
-    local mPos = (has_hs and hs.mouse and hs.mouse.getAbsolutePosition) and hs.mouse.getAbsolutePosition() or { x = 400, y = 100 }
+    local getPos = has_hs and hs.mouse and (hs.mouse.absolutePosition or hs.mouse.getAbsolutePosition)
+    local mPos = getPos and getPos() or { x = 400, y = 100 }
     local scr = (has_hs and hs.mouse and hs.mouse.getCurrentScreen) and hs.mouse.getCurrentScreen() or nil
     local sf = (scr and scr.fullFrame) and scr:fullFrame() or { x = 0, y = 0, w = 1920, h = 1080 }
     originX = math.min(math.max(sf.x + 10, mPos.x - W / 2), sf.x + sf.w - W - 10)
@@ -2359,7 +2360,8 @@ function obj:showInteractiveMenu()
     if #evTypes > 0 then
       self.interactiveClickTap = hs.eventtap.new(evTypes, function(event)
         if not self.interactiveCanvas then return false end
-        local pos = hs.mouse.getAbsolutePosition()
+        local getPos = hs.mouse and (hs.mouse.absolutePosition or hs.mouse.getAbsolutePosition)
+        local pos = getPos and getPos() or { x = 0, y = 0 }
         local cf = self.interactiveCanvas:frame()
         if pos.x < cf.x or pos.x > cf.x + cf.w or pos.y < cf.y or pos.y > cf.y + cf.h then
           -- If clicked inside menubar item itself, ignore outside tap (toggle handles it)
