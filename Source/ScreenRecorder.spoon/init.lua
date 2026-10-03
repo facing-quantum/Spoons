@@ -1,6 +1,6 @@
 --- === ScreenRecorder ===
 ---
---- Record a selected area of the screen to .mov, and to an animated GIF when ffmpeg is installed
+--- Record a selected area of the screen to .mov, converted to GIF, WebP, AVIF or MP4 when ffmpeg is installed
 ---
 --- Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip)
 
@@ -24,6 +24,22 @@ obj.outputDir = os.getenv("HOME") .. "/Desktop"
 --- Max recording lengths (seconds) offered in the menubar. `0` means no limit.
 obj.maxLengthChoices = { 10, 30, 60, 0 }
 
+--- ScreenRecorder.outputFormat
+--- Variable
+--- Default output format: `"gif"`, `"webp"`, `"avif"` or `"mp4"`. Defaults to `"gif"`.
+--- A format chosen from the menubar Format submenu is remembered and takes precedence over this value.
+obj.outputFormat = "gif"
+
+--- ScreenRecorder.animationFps
+--- Variable
+--- Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.
+obj.animationFps = 10
+
+--- ScreenRecorder.animationMaxWidth
+--- Variable
+--- Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.
+obj.animationMaxWidth = 800
+
 --- ScreenRecorder.logger
 --- Variable
 --- Logger object used within the Spoon. Messages appear in the Hammerspoon console.
@@ -35,11 +51,13 @@ obj.logger = hs.logger.new("ScreenRecorder")
 obj.menuBarItem = nil
 
 local SETTINGS_KEY = "ScreenRecorder.maxSeconds"
+local FORMAT_SETTINGS_KEY = "ScreenRecorder.outputFormat"
+local OUTPUT_FORMATS = { "gif", "webp", "avif", "mp4" }
+local FORMAT_LABELS = { gif = "GIF", webp = "WebP", avif = "AVIF", mp4 = "MP4" }
 local DEFAULT_MAX_SECONDS = 30
 local MIN_SELECTION_SIZE = 10
 local BORDER_WIDTH = 3
 local FFMPEG_CANDIDATES = { "/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg" }
-local GIF_FILTER = "fps=10,scale='min(800,iw)':-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
 
 -- screencapture -v ignores stdin and discards the file on any signal; only the system
 -- stop-recording shortcut (Cmd-Ctrl-Esc) stops it and saves.
@@ -51,11 +69,19 @@ local function fileExists(path)
     return hs.fs.attributes(path) ~= nil
 end
 
+local function anyCaptureFileExists(base)
+    if fileExists(base .. ".mov") then return true end
+    for _, format in ipairs(OUTPUT_FORMATS) do
+        if fileExists(base .. "." .. format) then return true end
+    end
+    return false
+end
+
 function obj._uniqueBaseName(dir, timestamp)
     local base = dir .. "/Capture-" .. timestamp
     local candidate = base
     local suffix = 1
-    while fileExists(candidate .. ".mov") or fileExists(candidate .. ".gif") do
+    while anyCaptureFileExists(candidate) do
         suffix = suffix + 1
         candidate = base .. "-" .. suffix
     end
@@ -73,8 +99,19 @@ function obj._screencaptureArgs(rect, maxSeconds, movPath)
     return args
 end
 
-function obj._ffmpegArgs(movPath, gifPath)
-    return { "-y", "-i", movPath, "-vf", GIF_FILTER, gifPath }
+-- Animated formats are downscaled; libaom and libx264 need even dimensions for yuv420p.
+function obj._ffmpegArgs(format, movPath, outPath, fps, maxWidth)
+    local animatedScale = string.format("fps=%d,scale='trunc(min(%d,iw)/2)*2':-2:flags=lanczos", fps, maxWidth)
+    local encoderArgs = {
+        gif = { "-vf", animatedScale .. ",split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" },
+        webp = { "-vf", animatedScale, "-c:v", "libwebp_anim", "-quality", "80", "-loop", "0" },
+        avif = { "-vf", animatedScale, "-c:v", "libaom-av1", "-crf", "30", "-b:v", "0", "-cpu-used", "6", "-pix_fmt", "yuv420p" },
+        mp4 = { "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", "-c:v", "libx264", "-crf", "23", "-preset", "medium", "-pix_fmt", "yuv420p", "-movflags", "+faststart" },
+    }
+    local args = { "-y", "-i", movPath, "-an" }
+    for _, arg in ipairs(encoderArgs[format]) do table.insert(args, arg) end
+    table.insert(args, outPath)
+    return args
 end
 
 function obj._findFfmpeg()
@@ -116,6 +153,36 @@ function obj:setMaxSeconds(seconds)
     hs.settings.set(SETTINGS_KEY, seconds)
 end
 
+--- ScreenRecorder:format()
+--- Method
+--- Returns the output format recordings are converted to.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * The format chosen in the menubar if one was saved, otherwise `ScreenRecorder.outputFormat`
+function obj:format()
+    local saved = hs.settings.get(FORMAT_SETTINGS_KEY)
+    if FORMAT_LABELS[saved] then return saved end
+    if FORMAT_LABELS[self.outputFormat] then return self.outputFormat end
+    obj.logger.w("unknown outputFormat " .. tostring(self.outputFormat) .. ", using gif")
+    return "gif"
+end
+
+--- ScreenRecorder:setFormat(format)
+--- Method
+--- Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.
+---
+--- Parameters:
+---  * format - `"gif"`, `"webp"`, `"avif"` or `"mp4"`
+---
+--- Returns:
+---  * None
+function obj:setFormat(format)
+    hs.settings.set(FORMAT_SETTINGS_KEY, format)
+end
+
 local function lengthLabel(seconds)
     if seconds == 0 then return "No limit" end
     return seconds .. " s"
@@ -130,9 +197,18 @@ function obj:_menuItems()
             fn = function() self:setMaxSeconds(seconds) end,
         })
     end
+    local formatMenu = {}
+    for _, format in ipairs(OUTPUT_FORMATS) do
+        table.insert(formatMenu, {
+            title = FORMAT_LABELS[format],
+            checked = (format == self:format()),
+            fn = function() self:setFormat(format) end,
+        })
+    end
     return {
         { title = self._recording and "Stop Recording" or "Start Recording", fn = function() self:toggleRecording() end },
         { title = "Max Length", menu = lengthMenu },
+        { title = "Format", menu = formatMenu },
         { title = "Open Output Folder", fn = function() hs.task.new("/usr/bin/open", nil, { self.outputDir }):start() end },
     }
 end
@@ -333,34 +409,36 @@ function obj:_recordingFinished(base, exitCode, stdOut, stdErr)
         return
     end
     obj.logger.i(summary)
-    self:_convertToGif(base)
+    self:_convert(base)
 end
 
-function obj:_convertToGif(base)
-    local movPath, gifPath = base .. ".mov", base .. ".gif"
+function obj:_convert(base)
+    local format = self:format()
+    local movPath, outPath = base .. ".mov", base .. "." .. format
     local ffmpeg = obj._findFfmpeg()
     if not ffmpeg then
         if not self._warnedNoFfmpeg then
             self._warnedNoFfmpeg = true
-            hs.alert.show("ScreenRecorder: ffmpeg not found, saved .mov only (brew install ffmpeg for GIFs)")
+            hs.alert.show("ScreenRecorder: ffmpeg not found, saved .mov only (brew install ffmpeg to convert)")
         end
         self:_deliver(movPath)
         return
     end
+    local args = obj._ffmpegArgs(format, movPath, outPath, self.animationFps, self.animationMaxWidth)
     self._converting = self._converting or {}
     local task
     task = hs.task.new(ffmpeg, function(exitCode, _, stderr)
         self._converting[task] = nil
         if exitCode == 0 then
-            self:_deliver(gifPath)
+            self:_deliver(outPath)
         else
-            os.remove(gifPath)
-            obj.logger.e(string.format("ffmpeg exit %s, stderr: %s", tostring(exitCode), stderr or ""))
-            hs.alert.show("ScreenRecorder: GIF export failed, see Hammerspoon console: " .. (stderr or ""):sub(-200))
+            os.remove(outPath)
+            obj.logger.e(string.format("ffmpeg exit %s, stderr: %s, command: %s %s", tostring(exitCode), stderr or "", ffmpeg, table.concat(args, " ")))
+            hs.alert.show("ScreenRecorder: " .. FORMAT_LABELS[format] .. " export failed, see Hammerspoon console: " .. (stderr or ""):sub(-200))
             self:_deliver(movPath)
         end
-    end, obj._ffmpegArgs(movPath, gifPath))
-    obj.logger.i("starting: " .. ffmpeg .. " " .. table.concat(obj._ffmpegArgs(movPath, gifPath), " "))
+    end, args)
+    obj.logger.i("starting: " .. ffmpeg .. " " .. table.concat(args, " "))
     self._converting[task] = true
     task:start()
 end

@@ -13,7 +13,7 @@
         "doc": "Binds hotkeys for ScreenRecorder.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - Select an area and start recording, or stop the current recording\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "186",
+        "lineno": "262",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -27,12 +27,31 @@
         "type": "Method"
       },
       {
+        "def": "ScreenRecorder:format()",
+        "desc": "Returns the output format recordings are converted to.",
+        "doc": "Returns the output format recordings are converted to.\n\nParameters:\n * None\n\nReturns:\n * The format chosen in the menubar if one was saved, otherwise `ScreenRecorder.outputFormat`",
+        "examples": [],
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "156",
+        "name": "format",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The format chosen in the menubar if one was saved, otherwise `ScreenRecorder.outputFormat`"
+        ],
+        "signature": "ScreenRecorder:format()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "ScreenRecorder:maxSeconds()",
         "desc": "Returns the configured max recording length.",
         "doc": "Returns the configured max recording length.\n\nParameters:\n * None\n\nReturns:\n * The max length in seconds; `0` means no limit",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "91",
+        "lineno": "128",
         "name": "maxSeconds",
         "notes": [],
         "parameters": [
@@ -46,12 +65,31 @@
         "type": "Method"
       },
       {
+        "def": "ScreenRecorder:setFormat(format)",
+        "desc": "Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.",
+        "doc": "Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.\n\nParameters:\n * format - `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "173",
+        "name": "setFormat",
+        "notes": [],
+        "parameters": [
+          " * format - `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`"
+        ],
+        "returns": [
+          " * None"
+        ],
+        "signature": "ScreenRecorder:setFormat(format)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "ScreenRecorder:setMaxSeconds(seconds)",
         "desc": "Sets and persists the max recording length.",
         "doc": "Sets and persists the max recording length.\n\nParameters:\n * seconds - Max length in seconds; `0` means no limit\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "106",
+        "lineno": "143",
         "name": "setMaxSeconds",
         "notes": [],
         "parameters": [
@@ -70,7 +108,7 @@
         "doc": "Creates the menubar item.\n\nParameters:\n * None\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "150",
+        "lineno": "226",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -89,7 +127,7 @@
         "doc": "Stops any recording or selection in progress and removes the menubar item.\n\nParameters:\n * None\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "167",
+        "lineno": "243",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -108,7 +146,7 @@
         "doc": "Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.\n\nParameters:\n * None\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "258",
+        "lineno": "334",
         "name": "toggleRecording",
         "notes": [],
         "parameters": [
@@ -124,11 +162,33 @@
     ],
     "Variable": [
       {
+        "def": "ScreenRecorder.animationFps",
+        "desc": "Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.",
+        "doc": "Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "33",
+        "name": "animationFps",
+        "signature": "ScreenRecorder.animationFps",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "ScreenRecorder.animationMaxWidth",
+        "desc": "Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.",
+        "doc": "Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "38",
+        "name": "animationMaxWidth",
+        "signature": "ScreenRecorder.animationMaxWidth",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "ScreenRecorder.logger",
         "desc": "Logger object used within the Spoon. Messages appear in the Hammerspoon console.",
         "doc": "Logger object used within the Spoon. Messages appear in the Hammerspoon console.",
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "27",
+        "lineno": "43",
         "name": "logger",
         "signature": "ScreenRecorder.logger",
         "stripped_doc": "",
@@ -150,7 +210,7 @@
         "desc": "The `hs.menubar` item, created by `ScreenRecorder:start()`.",
         "doc": "The `hs.menubar` item, created by `ScreenRecorder:start()`.",
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "32",
+        "lineno": "48",
         "name": "menuBarItem",
         "signature": "ScreenRecorder.menuBarItem",
         "stripped_doc": "",
@@ -166,18 +226,51 @@
         "signature": "ScreenRecorder.outputDir",
         "stripped_doc": "",
         "type": "Variable"
+      },
+      {
+        "def": "ScreenRecorder.outputFormat",
+        "desc": "Default output format: `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`. Defaults to `\"gif\"`.",
+        "doc": "Default output format: `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`. Defaults to `\"gif\"`.\nA format chosen from the menubar Format submenu is remembered and takes precedence over this value.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "27",
+        "name": "outputFormat",
+        "signature": "ScreenRecorder.outputFormat",
+        "stripped_doc": "A format chosen from the menubar Format submenu is remembered and takes precedence over this value.",
+        "type": "Variable"
       }
     ],
-    "desc": "Record a selected area of the screen to .mov, and to an animated GIF when ffmpeg is installed",
-    "doc": "Record a selected area of the screen to .mov, and to an animated GIF when ffmpeg is installed\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip)",
+    "desc": "Record a selected area of the screen to .mov, converted to GIF, WebP, AVIF or MP4 when ffmpeg is installed",
+    "doc": "Record a selected area of the screen to .mov, converted to GIF, WebP, AVIF or MP4 when ffmpeg is installed\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip)",
     "items": [
+      {
+        "def": "ScreenRecorder.animationFps",
+        "desc": "Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.",
+        "doc": "Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "33",
+        "name": "animationFps",
+        "signature": "ScreenRecorder.animationFps",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "ScreenRecorder.animationMaxWidth",
+        "desc": "Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.",
+        "doc": "Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "38",
+        "name": "animationMaxWidth",
+        "signature": "ScreenRecorder.animationMaxWidth",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
       {
         "def": "ScreenRecorder:bindHotkeys(mapping)",
         "desc": "Binds hotkeys for ScreenRecorder.",
         "doc": "Binds hotkeys for ScreenRecorder.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - Select an area and start recording, or stop the current recording\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "186",
+        "lineno": "262",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -191,11 +284,30 @@
         "type": "Method"
       },
       {
+        "def": "ScreenRecorder:format()",
+        "desc": "Returns the output format recordings are converted to.",
+        "doc": "Returns the output format recordings are converted to.\n\nParameters:\n * None\n\nReturns:\n * The format chosen in the menubar if one was saved, otherwise `ScreenRecorder.outputFormat`",
+        "examples": [],
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "156",
+        "name": "format",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The format chosen in the menubar if one was saved, otherwise `ScreenRecorder.outputFormat`"
+        ],
+        "signature": "ScreenRecorder:format()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "ScreenRecorder.logger",
         "desc": "Logger object used within the Spoon. Messages appear in the Hammerspoon console.",
         "doc": "Logger object used within the Spoon. Messages appear in the Hammerspoon console.",
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "27",
+        "lineno": "43",
         "name": "logger",
         "signature": "ScreenRecorder.logger",
         "stripped_doc": "",
@@ -218,7 +330,7 @@
         "doc": "Returns the configured max recording length.\n\nParameters:\n * None\n\nReturns:\n * The max length in seconds; `0` means no limit",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "91",
+        "lineno": "128",
         "name": "maxSeconds",
         "notes": [],
         "parameters": [
@@ -236,7 +348,7 @@
         "desc": "The `hs.menubar` item, created by `ScreenRecorder:start()`.",
         "doc": "The `hs.menubar` item, created by `ScreenRecorder:start()`.",
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "32",
+        "lineno": "48",
         "name": "menuBarItem",
         "signature": "ScreenRecorder.menuBarItem",
         "stripped_doc": "",
@@ -254,12 +366,42 @@
         "type": "Variable"
       },
       {
+        "def": "ScreenRecorder.outputFormat",
+        "desc": "Default output format: `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`. Defaults to `\"gif\"`.",
+        "doc": "Default output format: `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`. Defaults to `\"gif\"`.\nA format chosen from the menubar Format submenu is remembered and takes precedence over this value.",
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "27",
+        "name": "outputFormat",
+        "signature": "ScreenRecorder.outputFormat",
+        "stripped_doc": "A format chosen from the menubar Format submenu is remembered and takes precedence over this value.",
+        "type": "Variable"
+      },
+      {
+        "def": "ScreenRecorder:setFormat(format)",
+        "desc": "Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.",
+        "doc": "Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.\n\nParameters:\n * format - `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/ScreenRecorder.spoon/init.lua",
+        "lineno": "173",
+        "name": "setFormat",
+        "notes": [],
+        "parameters": [
+          " * format - `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`"
+        ],
+        "returns": [
+          " * None"
+        ],
+        "signature": "ScreenRecorder:setFormat(format)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "ScreenRecorder:setMaxSeconds(seconds)",
         "desc": "Sets and persists the max recording length.",
         "doc": "Sets and persists the max recording length.\n\nParameters:\n * seconds - Max length in seconds; `0` means no limit\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "106",
+        "lineno": "143",
         "name": "setMaxSeconds",
         "notes": [],
         "parameters": [
@@ -278,7 +420,7 @@
         "doc": "Creates the menubar item.\n\nParameters:\n * None\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "150",
+        "lineno": "226",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -297,7 +439,7 @@
         "doc": "Stops any recording or selection in progress and removes the menubar item.\n\nParameters:\n * None\n\nReturns:\n * The ScreenRecorder object",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "167",
+        "lineno": "243",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -316,7 +458,7 @@
         "doc": "Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.\n\nParameters:\n * None\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/ScreenRecorder.spoon/init.lua",
-        "lineno": "258",
+        "lineno": "334",
         "name": "toggleRecording",
         "notes": [],
         "parameters": [

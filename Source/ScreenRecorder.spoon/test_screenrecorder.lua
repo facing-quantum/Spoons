@@ -121,6 +121,10 @@ existingFiles = {
   ["/out/Capture-2026-10-03-143512-2.mov"] = 1,
 }
 assert_equal("/out/Capture-2026-10-03-143512-3", recorder._uniqueBaseName("/out", "2026-10-03-143512"), "existing .gif and -2.mov force -3")
+for _, ext in ipairs({ "webp", "avif", "mp4" }) do
+  existingFiles = { ["/out/Capture-2026-10-03-143512." .. ext] = 1 }
+  assert_equal("/out/Capture-2026-10-03-143512-2", recorder._uniqueBaseName("/out", "2026-10-03-143512"), "existing ." .. ext .. " forces -2")
+end
 
 -- [Test 2] screencapture arguments
 print("\n[Test 2] screencapture arguments")
@@ -133,9 +137,22 @@ assert_equal("-v -k -R 10,20,300,200 /out/a.mov",
 
 -- [Test 3] ffmpeg arguments
 print("\n[Test 3] ffmpeg arguments")
-assert_equal("-y -i /out/a.mov -vf fps=10,scale='min(800,iw)':-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse /out/a.gif",
-  table.concat(recorder._ffmpegArgs("/out/a.mov", "/out/a.gif"), " "),
-  "ffmpeg palette conversion args")
+local animatedScale = "fps=10,scale='trunc(min(800,iw)/2)*2':-2:flags=lanczos"
+assert_equal("-y -i /out/a.mov -an -vf " .. animatedScale
+    .. ",split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle /out/a.gif",
+  table.concat(recorder._ffmpegArgs("gif", "/out/a.mov", "/out/a.gif", 10, 800), " "),
+  "gif: diff palette, rectangle updates, bayer dither")
+assert_equal("-y -i /out/a.mov -an -vf " .. animatedScale .. " -c:v libwebp_anim -quality 80 -loop 0 /out/a.webp",
+  table.concat(recorder._ffmpegArgs("webp", "/out/a.mov", "/out/a.webp", 10, 800), " "),
+  "webp: libwebp_anim (inter-frame) quality 80, looping")
+assert_equal("-y -i /out/a.mov -an -vf " .. animatedScale .. " -c:v libaom-av1 -crf 30 -b:v 0 -cpu-used 6 -pix_fmt yuv420p /out/a.avif",
+  table.concat(recorder._ffmpegArgs("avif", "/out/a.mov", "/out/a.avif", 10, 800), " "),
+  "avif: libaom crf 30")
+assert_equal("-y -i /out/a.mov -an -vf scale=trunc(iw/2)*2:trunc(ih/2)*2 -c:v libx264 -crf 23 -preset medium -pix_fmt yuv420p -movflags +faststart /out/a.mp4",
+  table.concat(recorder._ffmpegArgs("mp4", "/out/a.mov", "/out/a.mp4", 10, 800), " "),
+  "mp4: native size and frame rate, even dimensions")
+assert_true(table.concat(recorder._ffmpegArgs("gif", "/out/a.mov", "/out/a.gif", 15, 640), " "):find("fps=15,scale='trunc(min(640,iw)/2)*2'", 1, true) ~= nil,
+  "animation fps and max width come from the arguments")
 
 -- [Test 4] ffmpeg discovery
 print("\n[Test 4] ffmpeg discovery")
@@ -160,6 +177,21 @@ recorder:setMaxSeconds(0)
 assert_equal(0, recorder:maxSeconds(), "No limit (0) is kept, not replaced by default")
 recorder:setMaxSeconds(30)
 
+-- [Test 5b] Output format setting
+print("\n[Test 5b] Output format setting")
+settingsStore = {}
+assert_equal("gif", recorder.outputFormat, "outputFormat defaults to gif")
+assert_equal(10, recorder.animationFps, "animationFps defaults to 10")
+assert_equal(800, recorder.animationMaxWidth, "animationMaxWidth defaults to 800")
+assert_equal("gif", recorder:format(), "format() falls back to outputFormat when nothing is saved")
+recorder.outputFormat = "webp"
+assert_equal("webp", recorder:format(), "format() follows outputFormat from init.lua")
+recorder:setFormat("mp4")
+assert_equal("mp4", settingsStore["ScreenRecorder.outputFormat"], "chosen format persisted to hs.settings")
+assert_equal("mp4", recorder:format(), "saved menu choice takes precedence over outputFormat")
+recorder.outputFormat = "gif"
+settingsStore = {}
+
 -- [Test 6] Menubar
 print("\n[Test 6] Menubar")
 recorder:start()
@@ -176,7 +208,15 @@ assert_true(not items[2].menu[1].checked, "other max lengths unchecked")
 items[2].menu[3].fn()
 assert_equal(60, recorder:maxSeconds(), "choosing 60 s from menu updates setting")
 recorder:setMaxSeconds(30)
-assert_equal("Open Output Folder", items[3].title, "third item opens output folder")
+assert_equal("Format", items[3].title, "third item is Format submenu")
+assert_equal("GIF WebP AVIF MP4", items[3].menu[1].title .. " " .. items[3].menu[2].title .. " " .. items[3].menu[3].title .. " " .. items[3].menu[4].title, "format labels in order")
+assert_true(items[3].menu[1].checked, "current format (gif) is checked")
+assert_true(not items[3].menu[4].checked, "other formats unchecked")
+items[3].menu[4].fn()
+assert_equal("mp4", recorder:format(), "choosing MP4 from menu selects it")
+assert_true(recorder.menuBarItem.menuFn()[3].menu[4].checked, "MP4 checked after choosing it")
+settingsStore = {}
+assert_equal("Open Output Folder", items[4].title, "fourth item opens output folder")
 
 -- [Test 7] Hotkeys
 print("\n[Test 7] Hotkeys")
@@ -365,6 +405,32 @@ assert_equal("file://" .. gifs[2], pasteboardWrites[#pasteboardWrites].url, "sec
 converting[1].callback(0, "", "")
 assert_equal(nil, recorder._converting[converting[1]], "first conversion released")
 assert_equal("file://" .. gifs[1], pasteboardWrites[#pasteboardWrites].url, "first gif copied")
+
+-- [Test 11] Converting to the selected format
+print("\n[Test 11] Selected format conversion")
+existingFiles = { ["/opt/homebrew/bin/ffmpeg"] = 1 }
+recorder:setFormat("mp4")
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+local mp4Path = movPath:gsub("%.mov$", ".mp4")
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+ffmpegTask = lastTask()
+assert_equal(mp4Path, ffmpegTask.args[#ffmpegTask.args], "converts to the selected format, sharing the mov base name")
+assert_true(table.concat(ffmpegTask.args, " "):find("libx264", 1, true) ~= nil, "mp4 encoder used")
+ffmpegTask.callback(0, "", "")
+assert_equal("file://" .. mp4Path, pasteboardWrites[#pasteboardWrites].url, "selected format copied to clipboard")
+
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+lastTask().callback(1, "", "Unknown encoder")
+assert_true(alerts[#alerts]:find("MP4 export failed", 1, true) ~= nil, "alert names the failed format")
+assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied when conversion fails")
+settingsStore = {}
 
 -- Results
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))
