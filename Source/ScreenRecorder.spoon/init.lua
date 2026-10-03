@@ -299,7 +299,8 @@ function obj:_convertToGif(base)
         self:_deliver(movPath)
         return
     end
-    hs.task.new(ffmpeg, function(exitCode, _, stderr)
+    self._converting = hs.task.new(ffmpeg, function(exitCode, _, stderr)
+        self._converting = nil
         if exitCode == 0 then
             self:_deliver(gifPath)
         else
@@ -307,7 +308,8 @@ function obj:_convertToGif(base)
             hs.alert.show("ScreenRecorder: GIF export failed: " .. (stderr or ""):sub(-200))
             self:_deliver(movPath)
         end
-    end, obj._ffmpegArgs(movPath, gifPath)):start()
+    end, obj._ffmpegArgs(movPath, gifPath))
+    self._converting:start()
 end
 
 function obj:_deliver(path)
