@@ -9,12 +9,15 @@
     "Method": [
       {
         "def": "Caffeine:bindHotkeys(mapping)",
-        "desc": "Binds hotkeys for Caffeine",
-        "doc": "Binds hotkeys for Caffeine\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic\n\nReturns:\n * The Caffeine object",
+        "desc": "Binds hotkeys for Caffeine.",
+        "doc": "Binds hotkeys for Caffeine.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "71",
         "name": "bindHotkeys",
+        "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey modifier/key details for the following items:",
-          "  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic"
+          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic"
         ],
         "returns": [
           " * The Caffeine object"
@@ -24,15 +27,114 @@
         "type": "Method"
       },
       {
+        "def": "Caffeine:clicked()",
+        "desc": "Toggles caffeination state and updates the menubar icon.",
+        "doc": "Toggles caffeination state and updates the menubar icon.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "142",
+        "name": "clicked",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * None"
+        ],
+        "signature": "Caffeine:clicked()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:getState()",
+        "desc": "Returns whether or not screen sleep prevention is currently active.",
+        "doc": "Returns whether or not screen sleep prevention is currently active.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if display sleep prevention is active, false otherwise",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "93",
+        "name": "getState",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * A boolean, true if display sleep prevention is active, false otherwise"
+        ],
+        "signature": "Caffeine:getState()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:init()",
+        "desc": "Initializes the Spoon.",
+        "doc": "Initializes the Spoon.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "58",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:init()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:isCaffeinated()",
+        "desc": "Alias of `Caffeine:getState()`.",
+        "doc": "Alias of `Caffeine:getState()`.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if display sleep prevention is active, false otherwise",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "106",
+        "name": "isCaffeinated",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * A boolean, true if display sleep prevention is active, false otherwise"
+        ],
+        "signature": "Caffeine:isCaffeinated()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:setDisplay(state)",
+        "desc": "Updates the menubar icon and tooltip to match the given state.",
+        "doc": "Updates the menubar icon and tooltip to match the given state.\n\nParameters:\n * state - A boolean, true for active (caffeinated), false for inactive\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "119",
+        "name": "setDisplay",
+        "notes": [],
+        "parameters": [
+          " * state - A boolean, true for active (caffeinated), false for inactive"
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:setDisplay(state)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "Caffeine:setState(on)",
-        "desc": "Sets whether or not caffeination should be enabled",
-        "doc": "Sets whether or not caffeination should be enabled\n\nParameters:\n * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep\n\nReturns:\n * None",
+        "desc": "Sets whether or not caffeination should be enabled.",
+        "doc": "Sets whether or not caffeination should be enabled.\n\nParameters:\n * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "157",
         "name": "setState",
+        "notes": [],
         "parameters": [
           " * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep"
         ],
         "returns": [
-          " * None"
+          " * The Caffeine object"
         ],
         "signature": "Caffeine:setState(on)",
         "stripped_doc": "",
@@ -40,9 +142,13 @@
       },
       {
         "def": "Caffeine:start()",
-        "desc": "Starts Caffeine",
-        "doc": "Starts Caffeine\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "desc": "Starts Caffeine.",
+        "doc": "Starts Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "173",
         "name": "start",
+        "notes": [],
         "parameters": [
           " * None"
         ],
@@ -55,9 +161,13 @@
       },
       {
         "def": "Caffeine:stop()",
-        "desc": "Stops Caffeine",
-        "doc": "Stops Caffeine\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "desc": "Stops Caffeine.",
+        "doc": "Stops Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "201",
         "name": "stop",
+        "notes": [],
         "parameters": [
           " * None"
         ],
@@ -69,18 +179,66 @@
         "type": "Method"
       }
     ],
-    "Variable": [],
+    "Variable": [
+      {
+        "def": "Caffeine.hotkeyToggle",
+        "desc": "The `hs.hotkey` object for toggling Caffeine, if bound directly.",
+        "doc": "The `hs.hotkey` object for toggling Caffeine, if bound directly.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "22",
+        "name": "hotkeyToggle",
+        "signature": "Caffeine.hotkeyToggle",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine.menuBarItem",
+        "desc": "The `hs.menubar` item for Caffeine.",
+        "doc": "The `hs.menubar` item for Caffeine.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "17",
+        "name": "menuBarItem",
+        "signature": "Caffeine.menuBarItem",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine.sleepWatcher",
+        "desc": "The `hs.caffeinate.watcher` used to resynchronize the menubar icon across system sleep/wake events.",
+        "doc": "The `hs.caffeinate.watcher` used to resynchronize the menubar icon across system sleep/wake events.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "27",
+        "name": "sleepWatcher",
+        "signature": "Caffeine.sleepWatcher",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine.spoonPath",
+        "desc": "The file path to the Spoon directory.",
+        "doc": "The file path to the Spoon directory.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "40",
+        "name": "spoonPath",
+        "signature": "Caffeine.spoonPath",
+        "stripped_doc": "",
+        "type": "Variable"
+      }
+    ],
     "desc": "Prevent the screen from going to sleep",
-    "doc": "Prevent the screen from going to sleep\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip)",
+    "doc": "Prevent the screen from going to sleep\n\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip)",
     "items": [
       {
         "def": "Caffeine:bindHotkeys(mapping)",
-        "desc": "Binds hotkeys for Caffeine",
-        "doc": "Binds hotkeys for Caffeine\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic\n\nReturns:\n * The Caffeine object",
+        "desc": "Binds hotkeys for Caffeine.",
+        "doc": "Binds hotkeys for Caffeine.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "71",
         "name": "bindHotkeys",
+        "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey modifier/key details for the following items:",
-          "  * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic"
+          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * toggle - This will toggle the state of display sleep prevention, and update the menubar graphic"
         ],
         "returns": [
           " * The Caffeine object"
@@ -90,25 +248,172 @@
         "type": "Method"
       },
       {
+        "def": "Caffeine:clicked()",
+        "desc": "Toggles caffeination state and updates the menubar icon.",
+        "doc": "Toggles caffeination state and updates the menubar icon.\n\nParameters:\n * None\n\nReturns:\n * None",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "142",
+        "name": "clicked",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * None"
+        ],
+        "signature": "Caffeine:clicked()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:getState()",
+        "desc": "Returns whether or not screen sleep prevention is currently active.",
+        "doc": "Returns whether or not screen sleep prevention is currently active.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if display sleep prevention is active, false otherwise",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "93",
+        "name": "getState",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * A boolean, true if display sleep prevention is active, false otherwise"
+        ],
+        "signature": "Caffeine:getState()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine.hotkeyToggle",
+        "desc": "The `hs.hotkey` object for toggling Caffeine, if bound directly.",
+        "doc": "The `hs.hotkey` object for toggling Caffeine, if bound directly.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "22",
+        "name": "hotkeyToggle",
+        "signature": "Caffeine.hotkeyToggle",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine:init()",
+        "desc": "Initializes the Spoon.",
+        "doc": "Initializes the Spoon.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "58",
+        "name": "init",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:init()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine:isCaffeinated()",
+        "desc": "Alias of `Caffeine:getState()`.",
+        "doc": "Alias of `Caffeine:getState()`.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if display sleep prevention is active, false otherwise",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "106",
+        "name": "isCaffeinated",
+        "notes": [],
+        "parameters": [
+          " * None"
+        ],
+        "returns": [
+          " * A boolean, true if display sleep prevention is active, false otherwise"
+        ],
+        "signature": "Caffeine:isCaffeinated()",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
+        "def": "Caffeine.menuBarItem",
+        "desc": "The `hs.menubar` item for Caffeine.",
+        "doc": "The `hs.menubar` item for Caffeine.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "17",
+        "name": "menuBarItem",
+        "signature": "Caffeine.menuBarItem",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine:setDisplay(state)",
+        "desc": "Updates the menubar icon and tooltip to match the given state.",
+        "doc": "Updates the menubar icon and tooltip to match the given state.\n\nParameters:\n * state - A boolean, true for active (caffeinated), false for inactive\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "119",
+        "name": "setDisplay",
+        "notes": [],
+        "parameters": [
+          " * state - A boolean, true for active (caffeinated), false for inactive"
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:setDisplay(state)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "Caffeine:setState(on)",
-        "desc": "Sets whether or not caffeination should be enabled",
-        "doc": "Sets whether or not caffeination should be enabled\n\nParameters:\n * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep\n\nReturns:\n * None",
+        "desc": "Sets whether or not caffeination should be enabled.",
+        "doc": "Sets whether or not caffeination should be enabled.\n\nParameters:\n * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "157",
         "name": "setState",
+        "notes": [],
         "parameters": [
           " * on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep"
         ],
         "returns": [
-          " * None"
+          " * The Caffeine object"
         ],
         "signature": "Caffeine:setState(on)",
         "stripped_doc": "",
         "type": "Method"
       },
       {
+        "def": "Caffeine.sleepWatcher",
+        "desc": "The `hs.caffeinate.watcher` used to resynchronize the menubar icon across system sleep/wake events.",
+        "doc": "The `hs.caffeinate.watcher` used to resynchronize the menubar icon across system sleep/wake events.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "27",
+        "name": "sleepWatcher",
+        "signature": "Caffeine.sleepWatcher",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
+        "def": "Caffeine.spoonPath",
+        "desc": "The file path to the Spoon directory.",
+        "doc": "The file path to the Spoon directory.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "40",
+        "name": "spoonPath",
+        "signature": "Caffeine.spoonPath",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "Caffeine:start()",
-        "desc": "Starts Caffeine",
-        "doc": "Starts Caffeine\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "desc": "Starts Caffeine.",
+        "doc": "Starts Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "173",
         "name": "start",
+        "notes": [],
         "parameters": [
           " * None"
         ],
@@ -121,9 +426,13 @@
       },
       {
         "def": "Caffeine:stop()",
-        "desc": "Stops Caffeine",
-        "doc": "Stops Caffeine\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "desc": "Stops Caffeine.",
+        "doc": "Stops Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "201",
         "name": "stop",
+        "notes": [],
         "parameters": [
           " * None"
         ],
@@ -136,7 +445,7 @@
       }
     ],
     "name": "Caffeine",
-    "stripped_doc": "Download: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip)",
+    "stripped_doc": "\nDownload: [https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip](https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip)",
     "submodules": [],
     "type": "Module"
   }
