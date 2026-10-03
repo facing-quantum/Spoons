@@ -21,6 +21,8 @@ end
 local existingFiles = {}      -- path -> size
 local settingsStore = {}
 local alerts = {}
+local keyStrokes = {}
+local logLines = {}
 local tasks = {}
 local pasteboardWrites = {}
 local executeResult = { "", false }
@@ -70,6 +72,12 @@ _G.hs = {
   timer = { doEvery = function() return { stop = function(self) self.stopped = true end } end },
   canvas = { new = newMockCanvas, windowLevels = { overlay = 102 } },
   alert = { show = function(message) table.insert(alerts, message) end },
+  logger = {
+    new = function()
+      local function record(level) return function(message) table.insert(logLines, level .. ": " .. message) end end
+      return { i = record("i"), w = record("w"), e = record("e") }
+    end,
+  },
   pasteboard = { writeObjects = function(object) table.insert(pasteboardWrites, object) end },
   spoons = {
     bindHotkeysToSpec = function(def, mapping) _G.hs.spoons.lastBound = { def = def, mapping = mapping } end,
@@ -81,6 +89,7 @@ _G.hs = {
   },
   keycodes = { map = { escape = 53 } },
   eventtap = {
+    keyStroke = function(mods, key) table.insert(keyStrokes, table.concat(mods, "+") .. "+" .. key) end,
     event = { types = { leftMouseDown = 1, leftMouseUp = 2, leftMouseDragged = 6, keyDown = 10 } },
     new = function(types, handler)
       lastTap = { types = types, handler = handler }
@@ -257,7 +266,8 @@ assert_equal(306, border.frame.w, "border width covers rect plus both edges")
 assert_true(recorder.menuBarItem.title.text:match("^● %d+s$") ~= nil, "menubar shows recording")
 
 recorder:toggleRecording()
-assert_true(captureTask.interrupted, "toggle while recording interrupts screencapture")
+assert_equal("cmd+ctrl+escape", keyStrokes[#keyStrokes], "toggle while recording sends the system stop-recording shortcut")
+assert_true(not captureTask.interrupted, "screencapture is not interrupted (SIGINT discards the recording)")
 
 -- finish without ffmpeg
 existingFiles[movPath] = 1000
@@ -309,7 +319,11 @@ local writesBefore = #pasteboardWrites
 recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
 captureTask = lastTask()
 local failedTimer = recorder._recording.timer
-captureTask.callback(1, "", "")
+captureTask.callback(2, "", "screencapture: illegal option")
+assert_true(logLines[#logLines]:find("exit 2", 1, true) ~= nil, "exit code logged to console")
+assert_true(logLines[#logLines]:find("screencapture: illegal option", 1, true) ~= nil, "screencapture stderr logged to console")
+assert_true(logLines[#logLines]:find("command: /usr/sbin/screencapture -v -k -R 10,20,300,200", 1, true) ~= nil, "failing command included in the error line")
+assert_true(alerts[#alerts]:find("console", 1, true) ~= nil, "alert points to the console")
 assert_true(alerts[#alerts]:find("Screen Recording", 1, true) ~= nil, "permission hint shown")
 assert_equal(writesBefore, #pasteboardWrites, "nothing copied on failure")
 assert_equal(nil, recorder._recording, "state cleared on failure")

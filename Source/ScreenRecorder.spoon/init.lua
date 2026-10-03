@@ -24,6 +24,11 @@ obj.outputDir = os.getenv("HOME") .. "/Desktop"
 --- Max recording lengths (seconds) offered in the menubar. `0` means no limit.
 obj.maxLengthChoices = { 10, 30, 60, 0 }
 
+--- ScreenRecorder.logger
+--- Variable
+--- Logger object used within the Spoon. Messages appear in the Hammerspoon console.
+obj.logger = hs.logger.new("ScreenRecorder")
+
 --- ScreenRecorder.menuBarItem
 --- Variable
 --- The `hs.menubar` item, created by `ScreenRecorder:start()`.
@@ -35,6 +40,12 @@ local MIN_SELECTION_SIZE = 10
 local BORDER_WIDTH = 3
 local FFMPEG_CANDIDATES = { "/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg" }
 local GIF_FILTER = "fps=10,scale='min(800,iw)':-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse"
+
+-- screencapture -v ignores stdin and discards the file on any signal; only the system
+-- stop-recording shortcut (Cmd-Ctrl-Esc) stops it and saves.
+local function stopCapture()
+    hs.eventtap.keyStroke({ "cmd", "ctrl" }, "escape")
+end
 
 local function fileExists(path)
     return hs.fs.attributes(path) ~= nil
@@ -148,7 +159,7 @@ end
 --- Returns:
 ---  * The ScreenRecorder object
 function obj:stop()
-    if self._recording then self._recording.task:interrupt() end
+    if self._recording then stopCapture() end
     if self._selector then self:_cancelSelection() end
     if self.menuBarItem then
         self.menuBarItem:delete()
@@ -234,7 +245,7 @@ end
 --- Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.
 function obj:toggleRecording()
     if self._recording then
-        self._recording.task:interrupt()
+        stopCapture()
     elseif self._selector then
         self:_cancelSelection()
     else
@@ -261,25 +272,29 @@ function obj:_startRecording(selectedRect)
     }
 
     -- ponytail: a Hammerspoon reload mid-recording orphans screencapture until -V ends it (never, with No limit); persist the pid and kill it on start() if that bites.
-    local task = hs.task.new("/usr/sbin/screencapture", function(exitCode)
-        self:_recordingFinished(base, exitCode)
-    end, obj._screencaptureArgs(rect, self:maxSeconds(), movPath))
+    local args = obj._screencaptureArgs(rect, self:maxSeconds(), movPath)
+    local command = "/usr/sbin/screencapture " .. table.concat(args, " ")
+    obj.logger.i("starting: " .. command)
+    local task = hs.task.new("/usr/sbin/screencapture", function(exitCode, stdOut, stdErr)
+        self:_recordingFinished(base, exitCode, stdOut, stdErr)
+    end, args)
 
     self._recording = {
         task = task,
         border = border,
         timer = hs.timer.doEvery(1, function() self:_updateTitle() end),
         startedAt = os.time(),
+        command = command,
     }
     border:show()
     if not task:start() then
-        self:_recordingFinished(base, -1)
+        self:_recordingFinished(base, -1, "", "hs.task could not launch /usr/sbin/screencapture")
         return
     end
     self:_updateTitle()
 end
 
-function obj:_recordingFinished(base, exitCode)
+function obj:_recordingFinished(base, exitCode, stdOut, stdErr)
     local recording = self._recording
     self._recording = nil
     recording.timer:stop()
@@ -288,11 +303,15 @@ function obj:_recordingFinished(base, exitCode)
 
     local movPath = base .. ".mov"
     local size = hs.fs.attributes(movPath, "size")
+    local summary = string.format("screencapture exit %s, file size %s, stderr: %s, stdout: %s, command: %s",
+        tostring(exitCode), tostring(size), stdErr or "", stdOut or "", recording.command)
     if not size or size == 0 then
+        obj.logger.e(summary)
         os.remove(movPath)
-        hs.alert.show("ScreenRecorder: recording failed (exit " .. tostring(exitCode) .. "). Allow Hammerspoon in System Settings › Privacy & Security › Screen Recording.")
+        hs.alert.show("ScreenRecorder: recording failed (exit " .. tostring(exitCode) .. "), see Hammerspoon console. Check System Settings › Privacy & Security › Screen Recording.")
         return
     end
+    obj.logger.i(summary)
     self:_convertToGif(base)
 end
 
@@ -315,10 +334,12 @@ function obj:_convertToGif(base)
             self:_deliver(gifPath)
         else
             os.remove(gifPath)
-            hs.alert.show("ScreenRecorder: GIF export failed: " .. (stderr or ""):sub(-200))
+            obj.logger.e(string.format("ffmpeg exit %s, stderr: %s", tostring(exitCode), stderr or ""))
+            hs.alert.show("ScreenRecorder: GIF export failed, see Hammerspoon console: " .. (stderr or ""):sub(-200))
             self:_deliver(movPath)
         end
     end, obj._ffmpegArgs(movPath, gifPath))
+    obj.logger.i("starting: " .. ffmpeg .. " " .. table.concat(obj._ffmpegArgs(movPath, gifPath), " "))
     self._converting[task] = true
     task:start()
 end
