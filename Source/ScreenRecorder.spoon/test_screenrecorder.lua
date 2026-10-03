@@ -224,6 +224,16 @@ recorder:toggleRecording()
 assert_equal(nil, recorder._selector, "toggle during selection cancels it")
 assert_equal(nil, selectedRect, "no recording after cancel")
 
+selectedRect = nil
+recorder:toggleRecording()
+lastTap.handler(fakeEvent(types.leftMouseDown, 1400, 850))
+lastTap.handler(fakeEvent(types.leftMouseUp, 1600, 1000))
+assert_true(selectedRect ~= nil, "off-screen drag still selects")
+assert_equal(1400, selectedRect.x, "clamped rect x")
+assert_equal(850, selectedRect.y, "clamped rect y")
+assert_equal(40, selectedRect.w, "rect width clamped to screen edge")
+assert_equal(50, selectedRect.h, "rect height clamped to screen edge")
+
 recorder._startRecording = realStartRecording
 
 -- [Test 10] Recording and delivery
@@ -279,10 +289,10 @@ captureTask.callback(0, "", "")
 local ffmpegTask = lastTask()
 assert_equal("/opt/homebrew/bin/ffmpeg", ffmpegTask.path, "runs ffmpeg")
 assert_equal(gifPath, ffmpegTask.args[#ffmpegTask.args], "gif shares the mov base name")
-assert_equal(ffmpegTask, recorder._converting, "ffmpeg task retained in _converting")
+assert_equal(true, recorder._converting[ffmpegTask], "ffmpeg task retained in _converting")
 ffmpegTask.callback(0, "", "")
 assert_equal("file://" .. gifPath, pasteboardWrites[#pasteboardWrites].url, "gif copied to clipboard")
-assert_equal(nil, recorder._converting, "_converting cleared after callback")
+assert_equal(nil, recorder._converting[ffmpegTask], "_converting cleared after callback")
 
 -- finish with ffmpeg, failure
 recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
@@ -304,6 +314,43 @@ assert_true(alerts[#alerts]:find("Screen Recording", 1, true) ~= nil, "permissio
 assert_equal(writesBefore, #pasteboardWrites, "nothing copied on failure")
 assert_equal(nil, recorder._recording, "state cleared on failure")
 assert_true(failedTimer.stopped, "elapsed timer stopped")
+
+-- fractional rect: border and capture region use the same floored rect
+recorder:_startRecording({ x = 10.7, y = 20.4, w = 300.9, h = 200.2 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+border = recorder._recording.border
+assert_equal(7, border.frame.x, "border x from floored rect")
+assert_equal(17, border.frame.y, "border y from floored rect")
+assert_equal(306, border.frame.w, "border w from floored rect")
+assert_equal(206, border.frame.h, "border h from floored rect")
+assert_true(table.concat(captureTask.args, " "):find("-R 10,20,300,200", 1, true) ~= nil, "capture region floored")
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+
+-- concurrent conversions are all retained until their own callback
+existingFiles = { ["/opt/homebrew/bin/ffmpeg"] = 1 }
+local converting = {}
+local gifs = {}
+for i = 1, 2 do
+  recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+  captureTask = lastTask()
+  movPath = captureTask.args[#captureTask.args]
+  gifs[i] = movPath:gsub("%.mov$", ".gif")
+  existingFiles[movPath] = 1000
+  captureTask.callback(0, "", "")
+  converting[i] = lastTask()
+end
+assert_true(converting[1] ~= converting[2], "two distinct ffmpeg tasks")
+assert_equal(true, recorder._converting[converting[1]], "first conversion retained")
+assert_equal(true, recorder._converting[converting[2]], "second conversion retained")
+converting[2].callback(0, "", "")
+assert_equal(nil, recorder._converting[converting[2]], "second conversion released")
+assert_equal(true, recorder._converting[converting[1]], "first still retained after second finishes")
+assert_equal("file://" .. gifs[2], pasteboardWrites[#pasteboardWrites].url, "second gif copied")
+converting[1].callback(0, "", "")
+assert_equal(nil, recorder._converting[converting[1]], "first conversion released")
+assert_equal("file://" .. gifs[1], pasteboardWrites[#pasteboardWrites].url, "first gif copied")
 
 -- Results
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))

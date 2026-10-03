@@ -199,7 +199,11 @@ function obj:_selectArea(onSelected)
             self:_cancelSelection()
             return true
         end
-        local point = event:location()
+        local location = event:location()
+        local point = {
+            x = math.max(screenFrame.x, math.min(location.x, screenFrame.x + screenFrame.w)),
+            y = math.max(screenFrame.y, math.min(location.y, screenFrame.y + screenFrame.h)),
+        }
         if eventType == types.leftMouseDown then
             startPoint = point
         elseif startPoint and eventType == types.leftMouseDragged then
@@ -238,7 +242,11 @@ function obj:toggleRecording()
     end
 end
 
-function obj:_startRecording(rect)
+function obj:_startRecording(selectedRect)
+    local rect = {
+        x = math.floor(selectedRect.x), y = math.floor(selectedRect.y),
+        w = math.floor(selectedRect.w), h = math.floor(selectedRect.h),
+    }
     local base = obj._uniqueBaseName(self.outputDir, os.date("%Y-%m-%d-%H%M%S"))
     local movPath = base .. ".mov"
 
@@ -299,8 +307,10 @@ function obj:_convertToGif(base)
         self:_deliver(movPath)
         return
     end
-    self._converting = hs.task.new(ffmpeg, function(exitCode, _, stderr)
-        self._converting = nil
+    self._converting = self._converting or {}
+    local task
+    task = hs.task.new(ffmpeg, function(exitCode, _, stderr)
+        self._converting[task] = nil
         if exitCode == 0 then
             self:_deliver(gifPath)
         else
@@ -309,7 +319,8 @@ function obj:_convertToGif(base)
             self:_deliver(movPath)
         end
     end, obj._ffmpegArgs(movPath, gifPath))
-    self._converting:start()
+    self._converting[task] = true
+    task:start()
 end
 
 function obj:_deliver(path)
