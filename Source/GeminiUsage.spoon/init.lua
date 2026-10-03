@@ -387,6 +387,28 @@ local function fileExists(path)
   return path ~= "" and hs.fs.attributes(path, "mode") ~= nil
 end
 
+local function isCompleteObject(text)
+  return text:sub(1, 1) == "{" and text:sub(-1) == "}"
+end
+
+-- agy rewrites its cache/statusline files from another process without truncating them,
+-- so a read can land mid-write, or a shorter one-line object can be followed by the stale
+-- tail of the previous write. Decode only a complete object instead of letting
+-- hs.json.decode log a LuaSkin error to the console on every poll.
+local function readJsonFile(path)
+  local f = io.open(path, "r")
+  if not f then return nil end
+  local raw = f:read("*a"); f:close()
+  local trimmed = raw:match("^%s*(.-)%s*$")
+  local firstLine = trimmed:match("^[^\n]*"):match("^(.-)%s*$")
+  if isCompleteObject(firstLine) then trimmed = firstLine end
+  if not isCompleteObject(trimmed) then return nil end
+  local ok, parsed = pcall(hs.json.decode, trimmed)
+  if ok and type(parsed) == "table" then return parsed end
+  return nil
+end
+obj._readJsonFile = readJsonFile
+
 local function findAgyBinary()
   local candidates = {}
   local conf = obj.agyBinPaths
@@ -476,15 +498,11 @@ local function loadCachedQuota()
     if path and fileExists(path) then
       local attr = hs.fs.attributes(path)
       local mtime = (attr and attr.modification) or 0
-      local f = io.open(path, "r")
-      if f then
-        local raw = f:read("*a"); f:close()
-        local ok, parsed = pcall(hs.json.decode, raw)
-        if ok and type(parsed) == "table" and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
-          if mtime > bestMtime then
-            bestMtime = mtime
-            bestParsed = parsed
-          end
+      local parsed = readJsonFile(path)
+      if parsed and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
+        if mtime > bestMtime then
+          bestMtime = mtime
+          bestParsed = parsed
         end
       end
     end
@@ -499,15 +517,11 @@ local function loadCachedQuota()
         if fileExists(fullPath) then
           local attr = hs.fs.attributes(fullPath)
           local mtime = (attr and attr.modification) or 0
-          local f = io.open(fullPath, "r")
-          if f then
-            local raw = f:read("*a"); f:close()
-            local okDec, parsed = pcall(hs.json.decode, raw)
-            if okDec and type(parsed) == "table" and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
-              if mtime > bestMtime then
-                bestMtime = mtime
-                bestParsed = parsed
-              end
+          local parsed = readJsonFile(fullPath)
+          if parsed and (parsed.quota or parsed["gemini-5h"] or parsed.model) then
+            if mtime > bestMtime then
+              bestMtime = mtime
+              bestParsed = parsed
             end
           end
         end
