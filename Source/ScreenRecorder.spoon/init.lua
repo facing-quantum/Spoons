@@ -172,4 +172,70 @@ function obj:bindHotkeys(mapping)
     return self
 end
 
+function obj:_selectArea(onSelected)
+    local screenFrame = hs.mouse.getCurrentScreen():fullFrame()
+    local canvas = hs.canvas.new(screenFrame)
+    canvas:level(hs.canvas.windowLevels.overlay)
+    canvas[1] = { type = "rectangle", action = "fill", fillColor = { black = 1, alpha = 0.3 } }
+    canvas[2] = {
+        type = "rectangle", action = "strokeAndFill",
+        strokeColor = { red = 1 }, strokeWidth = 1, fillColor = { white = 1, alpha = 0.15 },
+        frame = { x = 0, y = 0, w = 0, h = 0 },
+    }
+
+    local startPoint = nil
+    local function rectTo(point)
+        return {
+            x = math.min(startPoint.x, point.x), y = math.min(startPoint.y, point.y),
+            w = math.abs(point.x - startPoint.x), h = math.abs(point.y - startPoint.y),
+        }
+    end
+
+    local types = hs.eventtap.event.types
+    local tap = hs.eventtap.new({ types.leftMouseDown, types.leftMouseDragged, types.leftMouseUp, types.keyDown }, function(event)
+        local eventType = event:getType()
+        if eventType == types.keyDown then
+            if event:getKeyCode() ~= hs.keycodes.map.escape then return false end
+            self:_cancelSelection()
+            return true
+        end
+        local point = event:location()
+        if eventType == types.leftMouseDown then
+            startPoint = point
+        elseif startPoint and eventType == types.leftMouseDragged then
+            local rect = rectTo(point)
+            canvas[2].frame = { x = rect.x - screenFrame.x, y = rect.y - screenFrame.y, w = rect.w, h = rect.h }
+        elseif startPoint and eventType == types.leftMouseUp then
+            local rect = rectTo(point)
+            self:_cancelSelection()
+            if rect.w >= MIN_SELECTION_SIZE and rect.h >= MIN_SELECTION_SIZE then onSelected(rect) end
+        end
+        return true
+    end)
+
+    self._selector = { canvas = canvas, tap = tap }
+    canvas:show()
+    tap:start()
+end
+
+function obj:_cancelSelection()
+    if not self._selector then return end
+    self._selector.tap:stop()
+    self._selector.canvas:delete()
+    self._selector = nil
+end
+
+--- ScreenRecorder:toggleRecording()
+--- Method
+--- Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.
+function obj:toggleRecording()
+    if self._recording then
+        self._recording.task:interrupt()
+    elseif self._selector then
+        self:_cancelSelection()
+    else
+        self:_selectArea(function(rect) self:_startRecording(rect) end)
+    end
+end
+
 return obj

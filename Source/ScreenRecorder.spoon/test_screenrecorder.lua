@@ -182,6 +182,50 @@ assert_true(menuBarItem.deleted, "menubar item deleted")
 assert_equal(nil, recorder.menuBarItem, "menuBarItem cleared")
 recorder:start()
 
+-- [Test 9] Area selection
+print("\n[Test 9] Area selection")
+local types = _G.hs.eventtap.event.types
+local selectedRect = nil
+local realStartRecording = recorder._startRecording
+recorder._startRecording = function(_, rect) selectedRect = rect end
+
+recorder:toggleRecording()
+assert_true(recorder._selector ~= nil, "toggle starts selection")
+assert_true(lastTap.running, "eventtap running during selection")
+local overlay = recorder._selector.canvas
+assert_true(overlay.shown, "overlay shown")
+lastTap.handler(fakeEvent(types.leftMouseDown, 300, 400))
+lastTap.handler(fakeEvent(types.leftMouseDragged, 200, 250))
+assert_equal(100, overlay[2].frame.w, "selection rectangle drawn while dragging")
+lastTap.handler(fakeEvent(types.leftMouseUp, 100, 200))
+assert_true(selectedRect ~= nil, "selection callback fired")
+assert_equal(100, selectedRect.x, "rect normalized x")
+assert_equal(200, selectedRect.y, "rect normalized y")
+assert_equal(200, selectedRect.w, "rect width")
+assert_equal(200, selectedRect.h, "rect height")
+assert_equal(nil, recorder._selector, "selector cleared after mouse up")
+assert_true(overlay.deleted, "overlay deleted")
+assert_true(not lastTap.running, "eventtap stopped")
+
+selectedRect = nil
+recorder:toggleRecording()
+lastTap.handler(fakeEvent(types.leftMouseDown, 10, 10))
+lastTap.handler(fakeEvent(types.leftMouseUp, 15, 15))
+assert_equal(nil, selectedRect, "tiny drag cancels silently")
+assert_equal(nil, recorder._selector, "selector cleared after tiny drag")
+
+recorder:toggleRecording()
+assert_equal(false, lastTap.handler(fakeEvent(types.keyDown, 0, 0, 0)), "other keys pass through")
+assert_equal(true, lastTap.handler(fakeEvent(types.keyDown, 0, 0, 53)), "escape is consumed")
+assert_equal(nil, recorder._selector, "escape cancels selection")
+
+recorder:toggleRecording()
+recorder:toggleRecording()
+assert_equal(nil, recorder._selector, "toggle during selection cancels it")
+assert_equal(nil, selectedRect, "no recording after cancel")
+
+recorder._startRecording = realStartRecording
+
 -- Results
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))
 if failed > 0 then os.exit(1) end
