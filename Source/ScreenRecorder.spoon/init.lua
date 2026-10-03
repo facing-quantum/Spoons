@@ -238,4 +238,81 @@ function obj:toggleRecording()
     end
 end
 
+function obj:_startRecording(rect)
+    local base = obj._uniqueBaseName(self.outputDir, os.date("%Y-%m-%d-%H%M%S"))
+    local movPath = base .. ".mov"
+
+    local border = hs.canvas.new({
+        x = rect.x - BORDER_WIDTH, y = rect.y - BORDER_WIDTH,
+        w = rect.w + 2 * BORDER_WIDTH, h = rect.h + 2 * BORDER_WIDTH,
+    })
+    border:level(hs.canvas.windowLevels.overlay)
+    border[1] = {
+        type = "rectangle", action = "stroke", strokeColor = { red = 1 }, strokeWidth = BORDER_WIDTH,
+        frame = { x = BORDER_WIDTH / 2, y = BORDER_WIDTH / 2, w = rect.w + BORDER_WIDTH, h = rect.h + BORDER_WIDTH },
+    }
+
+    -- ponytail: a Hammerspoon reload mid-recording orphans screencapture until -V ends it (never, with No limit); persist the pid and kill it on start() if that bites.
+    local task = hs.task.new("/usr/sbin/screencapture", function(exitCode)
+        self:_recordingFinished(base, exitCode)
+    end, obj._screencaptureArgs(rect, self:maxSeconds(), movPath))
+
+    self._recording = {
+        task = task,
+        border = border,
+        timer = hs.timer.doEvery(1, function() self:_updateTitle() end),
+        startedAt = os.time(),
+    }
+    border:show()
+    if not task:start() then
+        self:_recordingFinished(base, -1)
+        return
+    end
+    self:_updateTitle()
+end
+
+function obj:_recordingFinished(base, exitCode)
+    local recording = self._recording
+    self._recording = nil
+    recording.timer:stop()
+    recording.border:delete()
+    self:_updateTitle()
+
+    local movPath = base .. ".mov"
+    local size = hs.fs.attributes(movPath, "size")
+    if not size or size == 0 then
+        os.remove(movPath)
+        hs.alert.show("ScreenRecorder: recording failed (exit " .. tostring(exitCode) .. "). Allow Hammerspoon in System Settings › Privacy & Security › Screen Recording.")
+        return
+    end
+    self:_convertToGif(base)
+end
+
+function obj:_convertToGif(base)
+    local movPath, gifPath = base .. ".mov", base .. ".gif"
+    local ffmpeg = obj._findFfmpeg()
+    if not ffmpeg then
+        if not self._warnedNoFfmpeg then
+            self._warnedNoFfmpeg = true
+            hs.alert.show("ScreenRecorder: ffmpeg not found, saved .mov only (brew install ffmpeg for GIFs)")
+        end
+        self:_deliver(movPath)
+        return
+    end
+    hs.task.new(ffmpeg, function(exitCode, _, stderr)
+        if exitCode == 0 then
+            self:_deliver(gifPath)
+        else
+            os.remove(gifPath)
+            hs.alert.show("ScreenRecorder: GIF export failed: " .. (stderr or ""):sub(-200))
+            self:_deliver(movPath)
+        end
+    end, obj._ffmpegArgs(movPath, gifPath)):start()
+end
+
+function obj:_deliver(path)
+    hs.pasteboard.writeObjects({ url = "file://" .. (path:gsub(" ", "%%20")) })
+    hs.task.new("/usr/bin/open", nil, { "-R", path }):start()
+end
+
 return obj

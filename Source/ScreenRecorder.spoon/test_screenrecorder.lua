@@ -226,6 +226,83 @@ assert_equal(nil, selectedRect, "no recording after cancel")
 
 recorder._startRecording = realStartRecording
 
+-- [Test 10] Recording and delivery
+print("\n[Test 10] Recording and delivery")
+local function lastTask() return tasks[#tasks] end
+recorder.outputDir = "/out"
+existingFiles = {}
+executeResult = { "", false }
+
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+local captureTask = lastTask()
+local movPath = captureTask.args[#captureTask.args]
+assert_equal("/usr/sbin/screencapture", captureTask.path, "runs screencapture")
+assert_true(captureTask.started, "screencapture started")
+assert_true(movPath:match("^/out/Capture%-%d%d%d%d%-%d%d%-%d%d%-%d%d%d%d%d%d%.mov$") ~= nil, "mov path uses timestamped base name")
+assert_true(table.concat(captureTask.args, " "):find("-R 10,20,300,200 -V 30", 1, true) ~= nil, "region and max length passed")
+local border = recorder._recording.border
+assert_true(border.shown, "border shown")
+assert_equal(7, border.frame.x, "border sits outside the rect")
+assert_equal(306, border.frame.w, "border width covers rect plus both edges")
+assert_true(recorder.menuBarItem.title.text:match("^● %d+s$") ~= nil, "menubar shows recording")
+
+recorder:toggleRecording()
+assert_true(captureTask.interrupted, "toggle while recording interrupts screencapture")
+
+-- finish without ffmpeg
+existingFiles[movPath] = 1000
+local alertCount = #alerts
+captureTask.callback(0, "", "")
+assert_equal(nil, recorder._recording, "recording state cleared")
+assert_true(border.deleted, "border removed")
+assert_equal("◉", recorder.menuBarItem.title, "menubar back to idle")
+assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied to clipboard when ffmpeg missing")
+assert_equal("/usr/bin/open", lastTask().path, "reveals in Finder")
+assert_equal("-R " .. movPath, table.concat(lastTask().args, " "), "open -R on the mov")
+assert_equal(alertCount + 1, #alerts, "one alert about missing ffmpeg")
+
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+assert_equal(alertCount + 1, #alerts, "missing-ffmpeg alert shown only once")
+
+-- finish with ffmpeg, success
+existingFiles = { ["/opt/homebrew/bin/ffmpeg"] = 1 }
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+local gifPath = movPath:gsub("%.mov$", ".gif")
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+local ffmpegTask = lastTask()
+assert_equal("/opt/homebrew/bin/ffmpeg", ffmpegTask.path, "runs ffmpeg")
+assert_equal(gifPath, ffmpegTask.args[#ffmpegTask.args], "gif shares the mov base name")
+ffmpegTask.callback(0, "", "")
+assert_equal("file://" .. gifPath, pasteboardWrites[#pasteboardWrites].url, "gif copied to clipboard")
+
+-- finish with ffmpeg, failure
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+lastTask().callback(1, "", "boom")
+assert_true(alerts[#alerts]:find("boom", 1, true) ~= nil, "ffmpeg stderr shown")
+assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied when ffmpeg fails")
+
+-- screencapture failure (no file produced)
+local writesBefore = #pasteboardWrites
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+local failedTimer = recorder._recording.timer
+captureTask.callback(1, "", "")
+assert_true(alerts[#alerts]:find("Screen Recording", 1, true) ~= nil, "permission hint shown")
+assert_equal(writesBefore, #pasteboardWrites, "nothing copied on failure")
+assert_equal(nil, recorder._recording, "state cleared on failure")
+assert_true(failedTimer.stopped, "elapsed timer stopped")
+
 -- Results
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))
 if failed > 0 then os.exit(1) end
