@@ -384,25 +384,157 @@
     "type": "Module"
   },
   {
-    "desc": "Binds hotkeys for Caffeine",
+    "desc": "The `hs.battery.watcher` used to automatically deactivate Caffeine when switching to battery power.",
+    "module": "Caffeine",
+    "name": "batteryWatcher",
+    "type": "Variable"
+  },
+  {
+    "desc": "Boolean indicating whether Caffeine should automatically deactivate when the computer is running on battery power. Defaults to `false`.",
+    "module": "Caffeine",
+    "name": "disableOnBattery",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.hotkey` object for toggling Caffeine, if bound directly.",
+    "module": "Caffeine",
+    "name": "hotkeyToggle",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.menubar` item for Caffeine.",
+    "module": "Caffeine",
+    "name": "menuBarItem",
+    "type": "Variable"
+  },
+  {
+    "desc": "Boolean indicating whether left-clicking the menubar icon displays the dropdown menu (`true`) or directly toggles state (`false`).",
+    "module": "Caffeine",
+    "name": "menuOnLeftClick",
+    "type": "Variable"
+  },
+  {
+    "desc": "The type of sleep prevention to enforce. Defaults to `\"displayIdle\"` (keeps screen and system awake).",
+    "module": "Caffeine",
+    "name": "preventType",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.eventtap` used to detect secondary (right) clicks on the menubar item to display the context menu.",
+    "module": "Caffeine",
+    "name": "rightClickTap",
+    "type": "Variable"
+  },
+  {
+    "desc": "Unix timestamp representing the scheduled end time of the active timed caffeination session, or `nil` if indefinite/off.",
+    "module": "Caffeine",
+    "name": "sessionEndTime",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.timer` object managing timed caffeination sessions.",
+    "module": "Caffeine",
+    "name": "sessionTimer",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.caffeinate.watcher` used to resynchronize the menubar icon across system sleep/wake events.",
+    "module": "Caffeine",
+    "name": "sleepWatcher",
+    "type": "Variable"
+  },
+  {
+    "desc": "Internal click handler differentiating left-click toggle vs modifier/secondary click for menu.",
+    "module": "Caffeine",
+    "name": "_handleClick",
+    "type": "Method"
+  },
+  {
+    "desc": "Binds hotkeys for Caffeine.",
     "module": "Caffeine",
     "name": "bindHotkeys",
     "type": "Method"
   },
   {
-    "desc": "Sets whether or not caffeination should be enabled",
+    "desc": "Toggles caffeination state and updates the menubar icon.",
+    "module": "Caffeine",
+    "name": "clicked",
+    "type": "Method"
+  },
+  {
+    "desc": "Generates a table formatted for `hs.menubar:setMenu()` representing the context menu options.",
+    "module": "Caffeine",
+    "name": "getMenuTable",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns whether or not screen/system sleep prevention is currently active.",
+    "module": "Caffeine",
+    "name": "getState",
+    "type": "Method"
+  },
+  {
+    "desc": "Initializes the Spoon and restores any previously persisted user preferences.",
+    "module": "Caffeine",
+    "name": "init",
+    "type": "Method"
+  },
+  {
+    "desc": "Alias of `Caffeine:getState()`.",
+    "module": "Caffeine",
+    "name": "isCaffeinated",
+    "type": "Method"
+  },
+  {
+    "desc": "Displays the context menu with duration options and settings at the current cursor or menubar position.",
+    "module": "Caffeine",
+    "name": "popupMenu",
+    "type": "Method"
+  },
+  {
+    "desc": "Enables or disables automatic deactivation when running on battery power and persists the preference.",
+    "module": "Caffeine",
+    "name": "setDisableOnBattery",
+    "type": "Method"
+  },
+  {
+    "desc": "Updates the menubar icon and tooltip to match the given state.",
+    "module": "Caffeine",
+    "name": "setDisplay",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets whether left-clicking the menubar icon displays the dropdown menu or directly toggles state.",
+    "module": "Caffeine",
+    "name": "setMenuOnLeftClick",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets the sleep prevention type.",
+    "module": "Caffeine",
+    "name": "setPreventType",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets whether or not caffeination should be enabled indefinitely.",
     "module": "Caffeine",
     "name": "setState",
     "type": "Method"
   },
   {
-    "desc": "Starts Caffeine",
+    "desc": "Starts Caffeine.",
     "module": "Caffeine",
     "name": "start",
     "type": "Method"
   },
   {
-    "desc": "Stops Caffeine",
+    "desc": "Keeps macOS awake for a specified duration in minutes, then automatically returns to sleep allowed.",
+    "module": "Caffeine",
+    "name": "startTimed",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops Caffeine.",
     "module": "Caffeine",
     "name": "stop",
     "type": "Method"
@@ -1424,6 +1556,12 @@
     "desc": "Minimum seconds between model roster updates. Default 3600.",
     "module": "GeminiUsage",
     "name": "modelsPollInterval",
+    "type": "Variable"
+  },
+  {
+    "desc": "Plan or subscription tier display name override. Default nil (auto-resolved).",
+    "module": "GeminiUsage",
+    "name": "planName",
     "type": "Variable"
   },
   {
@@ -2547,68 +2685,260 @@
     "type": "Method"
   },
   {
-    "desc": "Generate a password and copy to the clipboard.",
+    "desc": "Multi-algorithm, cryptographically secure password and passphrase generator with configurable preset items, interactive menubar dropdown menu, and segmented-bar length selector.",
     "name": "PasswordGenerator",
     "type": "Module"
   },
   {
-    "desc": "Explicit function used to generate passwords, if nil style is used instead.",
+    "desc": "Seconds after which the copied password will be automatically cleared from the clipboard.",
+    "module": "PasswordGenerator",
+    "name": "clipboard_clear_timeout",
+    "type": "Variable"
+  },
+  {
+    "desc": "If `true`, marks the clipboard entry as concealed/transient to prevent clipboard managers from storing it. Default is `true`.",
+    "module": "PasswordGenerator",
+    "name": "conceal_clipboard",
+    "type": "Variable"
+  },
+  {
+    "desc": "The default item ID to generate when invoking `copyPassword()` or `pastePassword()`.",
+    "module": "PasswordGenerator",
+    "name": "default_item",
+    "type": "Variable"
+  },
+  {
+    "desc": "Width of the interactive menu dropdown window in points. Default is `380`.",
+    "module": "PasswordGenerator",
+    "name": "interactive_hud_width",
+    "type": "Variable"
+  },
+  {
+    "desc": "Whether clicking the menubar icon displays the rich interactive segmented-bar dropdown menu.",
+    "module": "PasswordGenerator",
+    "name": "interactive_menu",
+    "type": "Variable"
+  },
+  {
+    "desc": "Corner radius of the interactive menu dropdown window in points. Default is `14` (matching macOS native menus).",
+    "module": "PasswordGenerator",
+    "name": "menu_corner_radius",
+    "type": "Variable"
+  },
+  {
+    "desc": "Background opacity (alpha) of the interactive menu dropdown panel (number between `0.0` and `1.0`). If `nil` (default), uses `0.95` in dark mode and `0.96` in light mode to provide a solid, non-see-through surface.",
+    "module": "PasswordGenerator",
+    "name": "menu_opacity",
+    "type": "Variable"
+  },
+  {
+    "desc": "Explicit function used to generate passwords; if set, overrides style/item defaults.",
     "module": "PasswordGenerator",
     "name": "password_generator_function",
     "type": "Variable"
   },
   {
-    "desc": "Length of generated passwords. Is ignored by style xkcd.",
+    "desc": "Length of generated passwords. Default is `20`.",
     "module": "PasswordGenerator",
     "name": "password_length",
     "type": "Variable"
   },
   {
-    "desc": "Style for the generated password.",
+    "desc": "Legacy style for the generated password: `\"default\"` or `\"xkcd\"`.",
     "module": "PasswordGenerator",
     "name": "password_style",
     "type": "Variable"
   },
   {
-    "desc": "Number of words in generated passwords. Used by xkcd.",
+    "desc": "Randomness source to use for password generation.",
+    "module": "PasswordGenerator",
+    "name": "random_source",
+    "type": "Variable"
+  },
+  {
+    "desc": "Whether to display a menubar dropdown item. Default is `true`.",
+    "module": "PasswordGenerator",
+    "name": "show_in_menubar",
+    "type": "Variable"
+  },
+  {
+    "desc": "Whether to show a notification when a password is generated. Default is `true`.",
+    "module": "PasswordGenerator",
+    "name": "show_notifications",
+    "type": "Variable"
+  },
+  {
+    "desc": "Color theme for the interactive menu: `\"system\"` (default, dynamically tracks macOS Light/Dark Mode), `\"dark\"`, or `\"light\"`.",
+    "module": "PasswordGenerator",
+    "name": "theme",
+    "type": "Variable"
+  },
+  {
+    "desc": "Number of words in generated passwords. Default is `4`.",
     "module": "PasswordGenerator",
     "name": "word_count",
     "type": "Variable"
   },
   {
-    "desc": "Which word number will have its word `733t` transformed.",
+    "desc": "Word index to apply leet transformation to. Default is `0`.",
     "module": "PasswordGenerator",
     "name": "word_leet",
     "type": "Variable"
   },
   {
-    "desc": "String of separators to use between words.",
+    "desc": "Separator characters between words. Default is `\" _-,$\"`.",
     "module": "PasswordGenerator",
     "name": "word_separators",
     "type": "Variable"
   },
   {
-    "desc": "Number of words to uppercase the first letter.",
+    "desc": "Number of words to uppercase the first letter. Default is `1`.",
     "module": "PasswordGenerator",
     "name": "word_uppercase",
     "type": "Variable"
   },
   {
-    "desc": "Binds hotkeys for PasswordGenerator",
+    "desc": "Adds or updates a configured password item preset.",
+    "module": "PasswordGenerator",
+    "name": "addItem",
+    "type": "Method"
+  },
+  {
+    "desc": "Binds hotkeys for PasswordGenerator.",
     "module": "PasswordGenerator",
     "name": "bindHotkeys",
     "type": "Method"
   },
   {
-    "desc": "Generates a password and copies to clipboard",
+    "desc": "Estimates brute-force crack time under an offline attack.",
+    "module": "PasswordGenerator",
+    "name": "calculateCrackTime",
+    "type": "Method"
+  },
+  {
+    "desc": "Calculates the Shannon entropy in bits for a given password configuration and length/count.",
+    "module": "PasswordGenerator",
+    "name": "calculateEntropy",
+    "type": "Method"
+  },
+  {
+    "desc": "Configures the PasswordGenerator with settings and preset items.",
+    "module": "PasswordGenerator",
+    "name": "configure",
+    "type": "Method"
+  },
+  {
+    "desc": "Generates a password and copies it to the system clipboard, or copies an already-generated password string.",
     "module": "PasswordGenerator",
     "name": "copyPassword",
     "type": "Method"
   },
   {
-    "desc": "Generates a password and types it",
+    "desc": "Generates a password string based on an item ID or an options table.",
+    "module": "PasswordGenerator",
+    "name": "generate",
+    "type": "Method"
+  },
+  {
+    "desc": "Retrieves a configured item preset definition by ID.",
+    "module": "PasswordGenerator",
+    "name": "getItem",
+    "type": "Method"
+  },
+  {
+    "desc": "Legacy helper returning the generator function.",
+    "module": "PasswordGenerator",
+    "name": "getPasswordGenerator",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns password strength rating, color, crack time, and formatted summary string.",
+    "module": "PasswordGenerator",
+    "name": "getStrengthInfo",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns the color palette table for the interactive canvas menu matching macOS system appearance.",
+    "module": "PasswordGenerator",
+    "name": "getThemeColors",
+    "type": "Method"
+  },
+  {
+    "desc": "Closes and dismisses the interactive menu dropdown.",
+    "module": "PasswordGenerator",
+    "name": "hideInteractiveMenu",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns an array of all configured item presets in order.",
+    "module": "PasswordGenerator",
+    "name": "listItems",
+    "type": "Method"
+  },
+  {
+    "desc": "Generates a password and types it into the active application.",
     "module": "PasswordGenerator",
     "name": "pastePassword",
+    "type": "Method"
+  },
+  {
+    "desc": "Registers a new custom password generation algorithm.",
+    "module": "PasswordGenerator",
+    "name": "registerAlgorithm",
+    "type": "Method"
+  },
+  {
+    "desc": "Registers a new wordlist source for passphrase generation.",
+    "module": "PasswordGenerator",
+    "name": "registerWordSource",
+    "type": "Method"
+  },
+  {
+    "desc": "Removes a configured password item preset by ID.",
+    "module": "PasswordGenerator",
+    "name": "removeItem",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets the corner radius of the interactive menu dropdown window.",
+    "module": "PasswordGenerator",
+    "name": "setMenuCornerRadius",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets the background opacity of the interactive menu dropdown.",
+    "module": "PasswordGenerator",
+    "name": "setMenuOpacity",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets the interactive menu color theme.",
+    "module": "PasswordGenerator",
+    "name": "setTheme",
+    "type": "Method"
+  },
+  {
+    "desc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.",
+    "module": "PasswordGenerator",
+    "name": "showInteractiveMenu",
+    "type": "Method"
+  },
+  {
+    "desc": "Starts the menubar display for PasswordGenerator.",
+    "module": "PasswordGenerator",
+    "name": "start",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops and removes the menubar item for PasswordGenerator.",
+    "module": "PasswordGenerator",
+    "name": "stop",
+    "type": "Method"
+  },
+  {
+    "desc": "Toggles visibility of the interactive menu dropdown.",
+    "module": "PasswordGenerator",
+    "name": "toggleInteractiveMenu",
     "type": "Method"
   },
   {
@@ -2902,6 +3232,101 @@
     "desc": "Stops RoundedCorners",
     "module": "RoundedCorners",
     "name": "stop",
+    "type": "Method"
+  },
+  {
+    "desc": "Record a selected area of the screen to .mov, converted to GIF, WebP, AVIF or MP4 when ffmpeg is installed",
+    "name": "ScreenRecorder",
+    "type": "Module"
+  },
+  {
+    "desc": "Frame rate for GIF, WebP and AVIF output. Defaults to `10`. MP4 keeps the recording's native frame rate.",
+    "module": "ScreenRecorder",
+    "name": "animationFps",
+    "type": "Variable"
+  },
+  {
+    "desc": "Maximum width in pixels for GIF, WebP and AVIF output. Defaults to `800`. MP4 keeps the recording's native size.",
+    "module": "ScreenRecorder",
+    "name": "animationMaxWidth",
+    "type": "Variable"
+  },
+  {
+    "desc": "Logger object used within the Spoon. Messages appear in the Hammerspoon console.",
+    "module": "ScreenRecorder",
+    "name": "logger",
+    "type": "Variable"
+  },
+  {
+    "desc": "Max recording lengths (seconds) offered in the menubar. `0` means no limit.",
+    "module": "ScreenRecorder",
+    "name": "maxLengthChoices",
+    "type": "Variable"
+  },
+  {
+    "desc": "The `hs.menubar` item, created by `ScreenRecorder:start()`.",
+    "module": "ScreenRecorder",
+    "name": "menuBarItem",
+    "type": "Variable"
+  },
+  {
+    "desc": "Folder where recordings are saved in the selected format. Defaults to `~/Desktop`.",
+    "module": "ScreenRecorder",
+    "name": "outputDir",
+    "type": "Variable"
+  },
+  {
+    "desc": "Default output format: `\"gif\"`, `\"webp\"`, `\"avif\"` or `\"mp4\"`. Defaults to `\"gif\"`.",
+    "module": "ScreenRecorder",
+    "name": "outputFormat",
+    "type": "Variable"
+  },
+  {
+    "desc": "Binds hotkeys for ScreenRecorder.",
+    "module": "ScreenRecorder",
+    "name": "bindHotkeys",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns the output format recordings are converted to.",
+    "module": "ScreenRecorder",
+    "name": "format",
+    "type": "Method"
+  },
+  {
+    "desc": "Returns the configured max recording length.",
+    "module": "ScreenRecorder",
+    "name": "maxSeconds",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets and persists the output format, taking precedence over `ScreenRecorder.outputFormat`.",
+    "module": "ScreenRecorder",
+    "name": "setFormat",
+    "type": "Method"
+  },
+  {
+    "desc": "Sets and persists the max recording length.",
+    "module": "ScreenRecorder",
+    "name": "setMaxSeconds",
+    "type": "Method"
+  },
+  {
+    "desc": "Creates the menubar item.",
+    "module": "ScreenRecorder",
+    "name": "start",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops any recording or selection in progress and removes the menubar item.",
+    "module": "ScreenRecorder",
+    "name": "stop",
+    "type": "Method"
+  },
+  {
+    "desc": "Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.",
+    "module": "ScreenRecorder",
+    "name": "toggleRecording",
     "type": "Method"
   },
   {
