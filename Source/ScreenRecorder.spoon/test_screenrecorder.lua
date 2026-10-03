@@ -140,6 +140,48 @@ assert_equal("/custom/bin/ffmpeg", recorder._findFfmpeg(), "falls back to PATH l
 executeResult = { "", false }
 assert_equal(nil, recorder._findFfmpeg(), "nil when not installed")
 
+-- [Test 5] Max length setting
+print("\n[Test 5] Max length setting")
+settingsStore = {}
+assert_equal(30, recorder:maxSeconds(), "default max length is 30 s")
+recorder:setMaxSeconds(60)
+assert_equal(60, recorder:maxSeconds(), "max length updated")
+assert_equal(60, settingsStore["ScreenRecorder.maxSeconds"], "max length persisted to hs.settings")
+recorder:setMaxSeconds(0)
+assert_equal(0, recorder:maxSeconds(), "No limit (0) is kept, not replaced by default")
+recorder:setMaxSeconds(30)
+
+-- [Test 6] Menubar
+print("\n[Test 6] Menubar")
+recorder:start()
+assert_true(recorder.menuBarItem ~= nil, "start() creates menubar item")
+assert_equal("◉", recorder.menuBarItem.title, "idle title")
+local items = recorder.menuBarItem.menuFn()
+assert_equal("Start Recording", items[1].title, "first item starts recording")
+assert_equal("Max Length", items[2].title, "second item is Max Length submenu")
+assert_equal(4, #items[2].menu, "four max length choices")
+assert_equal("30 s", items[2].menu[2].title, "30 s label")
+assert_equal("No limit", items[2].menu[4].title, "No limit label")
+assert_true(items[2].menu[2].checked, "current max length is checked")
+assert_true(not items[2].menu[1].checked, "other max lengths unchecked")
+items[2].menu[3].fn()
+assert_equal(60, recorder:maxSeconds(), "choosing 60 s from menu updates setting")
+recorder:setMaxSeconds(30)
+assert_equal("Open Output Folder", items[3].title, "third item opens output folder")
+
+-- [Test 7] Hotkeys
+print("\n[Test 7] Hotkeys")
+recorder:bindHotkeys({ toggle = { { "cmd", "shift" }, "r" } })
+assert_true(_G.hs.spoons.lastBound ~= nil and _G.hs.spoons.lastBound.def.toggle ~= nil, "toggle hotkey bound via bindHotkeysToSpec")
+
+-- [Test 8] stop() removes menubar
+print("\n[Test 8] stop()")
+local menuBarItem = recorder.menuBarItem
+recorder:stop()
+assert_true(menuBarItem.deleted, "menubar item deleted")
+assert_equal(nil, recorder.menuBarItem, "menuBarItem cleared")
+recorder:start()
+
 -- Results
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))
 if failed > 0 then os.exit(1) end

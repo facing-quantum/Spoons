@@ -77,4 +77,99 @@ function obj._findFfmpeg()
     return nil
 end
 
+--- ScreenRecorder:maxSeconds()
+--- Method
+--- Returns the configured max recording length in seconds (`0` means no limit).
+function obj:maxSeconds()
+    local seconds = hs.settings.get(SETTINGS_KEY)
+    if seconds == nil then return DEFAULT_MAX_SECONDS end
+    return seconds
+end
+
+--- ScreenRecorder:setMaxSeconds(seconds)
+--- Method
+--- Sets and persists the max recording length.
+---
+--- Parameters:
+---  * seconds - Max length in seconds; `0` means no limit
+function obj:setMaxSeconds(seconds)
+    hs.settings.set(SETTINGS_KEY, seconds)
+end
+
+local function lengthLabel(seconds)
+    if seconds == 0 then return "No limit" end
+    return seconds .. " s"
+end
+
+function obj:_menuItems()
+    local lengthMenu = {}
+    for _, seconds in ipairs(self.maxLengthChoices) do
+        table.insert(lengthMenu, {
+            title = lengthLabel(seconds),
+            checked = (seconds == self:maxSeconds()),
+            fn = function() self:setMaxSeconds(seconds) end,
+        })
+    end
+    return {
+        { title = self._recording and "Stop Recording" or "Start Recording", fn = function() self:toggleRecording() end },
+        { title = "Max Length", menu = lengthMenu },
+        { title = "Open Output Folder", fn = function() hs.task.new("/usr/bin/open", nil, { self.outputDir }):start() end },
+    }
+end
+
+function obj:_updateTitle()
+    if not self.menuBarItem then return end
+    if self._recording then
+        local elapsed = os.time() - self._recording.startedAt
+        self.menuBarItem:setTitle(hs.styledtext.new("● " .. elapsed .. "s", { color = { red = 1 } }))
+    else
+        self.menuBarItem:setTitle("◉")
+    end
+end
+
+--- ScreenRecorder:start()
+--- Method
+--- Creates the menubar item.
+---
+--- Returns:
+---  * The ScreenRecorder object
+function obj:start()
+    if self.menuBarItem then return self end
+    self.menuBarItem = hs.menubar.new()
+    self.menuBarItem:setMenu(function() return self:_menuItems() end)
+    self:_updateTitle()
+    return self
+end
+
+--- ScreenRecorder:stop()
+--- Method
+--- Stops any recording or selection in progress and removes the menubar item.
+---
+--- Returns:
+---  * The ScreenRecorder object
+function obj:stop()
+    if self._recording then self._recording.task:interrupt() end
+    if self._selector then self:_cancelSelection() end
+    if self.menuBarItem then
+        self.menuBarItem:delete()
+        self.menuBarItem = nil
+    end
+    return self
+end
+
+--- ScreenRecorder:bindHotkeys(mapping)
+--- Method
+--- Binds hotkeys for ScreenRecorder.
+---
+--- Parameters:
+---  * mapping - A table containing hotkey modifier/key details for the following items:
+---   * toggle - Select an area and start recording, or stop the current recording
+---
+--- Returns:
+---  * The ScreenRecorder object
+function obj:bindHotkeys(mapping)
+    hs.spoons.bindHotkeysToSpec({ toggle = function() self:toggleRecording() end }, mapping)
+    return self
+end
+
 return obj
