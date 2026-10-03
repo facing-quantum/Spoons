@@ -110,6 +110,21 @@ end
 
 local recorder = require("init")
 
+-- file moves/deletes are stubbed so tests never touch the real filesystem
+local renames, removals = {}, {}
+local renameSucceeds = true
+os.rename = function(from, to)
+  table.insert(renames, { from = from, to = to })
+  if renameSucceeds then return true end
+  return nil, "Cross-device link"
+end
+os.remove = function(path) table.insert(removals, path); return true end
+
+local tempDir = (os.getenv("TMPDIR") or "/tmp"):gsub("/$", "")
+local function outputPath(movPath, ext)
+  return "/out/" .. movPath:match("([^/]+)%.mov$") .. "." .. ext
+end
+
 -- [Test 1] Unique base names
 print("\n[Test 1] Unique base names")
 existingFiles = {}
@@ -121,6 +136,8 @@ existingFiles = {
   ["/out/Capture-2026-10-03-143512-2.mov"] = 1,
 }
 assert_equal("/out/Capture-2026-10-03-143512-3", recorder._uniqueBaseName("/out", "2026-10-03-143512"), "existing .gif and -2.mov force -3")
+existingFiles = { [tempDir .. "/Capture-2026-10-03-143512.mov"] = 1 }
+assert_equal("/out/Capture-2026-10-03-143512-2", recorder._uniqueBaseName("/out", "2026-10-03-143512"), "temp mov still being converted forces -2")
 for _, ext in ipairs({ "webp", "avif", "mp4" }) do
   existingFiles = { ["/out/Capture-2026-10-03-143512." .. ext] = 1 }
   assert_equal("/out/Capture-2026-10-03-143512-2", recorder._uniqueBaseName("/out", "2026-10-03-143512"), "existing ." .. ext .. " forces -2")
@@ -297,7 +314,8 @@ local captureTask = lastTask()
 local movPath = captureTask.args[#captureTask.args]
 assert_equal("/usr/sbin/screencapture", captureTask.path, "runs screencapture")
 assert_true(captureTask.started, "screencapture started")
-assert_true(movPath:match("^/out/Capture%-%d%d%d%d%-%d%d%-%d%d%-%d%d%d%d%d%d%.mov$") ~= nil, "mov path uses timestamped base name")
+assert_true(movPath:match("/Capture%-%d%d%d%d%-%d%d%-%d%d%-%d%d%d%d%d%d%.mov$") ~= nil, "mov path uses timestamped base name")
+assert_equal(tempDir .. "/", movPath:sub(1, #tempDir + 1), "mov is recorded into the temp folder, not outputDir")
 assert_true(table.concat(captureTask.args, " "):find("-R 10,20,300,200 -V 30", 1, true) ~= nil, "region and max length passed")
 local border = recorder._recording.border
 assert_true(border.shown, "border shown")
@@ -316,9 +334,11 @@ captureTask.callback(0, "", "")
 assert_equal(nil, recorder._recording, "recording state cleared")
 assert_true(border.deleted, "border removed")
 assert_equal("◉", recorder.menuBarItem.title, "menubar back to idle")
-assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied to clipboard when ffmpeg missing")
+assert_equal("file://" .. outputPath(movPath, "mov"), pasteboardWrites[#pasteboardWrites].url, "mov moved to outputDir and copied when ffmpeg missing")
+assert_equal(movPath, renames[#renames].from, "temp mov is the move source")
+assert_equal(outputPath(movPath, "mov"), renames[#renames].to, "mov moved next to where the converted file would go")
 assert_equal("/usr/bin/open", lastTask().path, "reveals in Finder")
-assert_equal("-R " .. movPath, table.concat(lastTask().args, " "), "open -R on the mov")
+assert_equal("-R " .. outputPath(movPath, "mov"), table.concat(lastTask().args, " "), "open -R on the kept mov")
 assert_equal(alertCount + 1, #alerts, "one alert about missing ffmpeg")
 
 recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
@@ -333,7 +353,7 @@ existingFiles = { ["/opt/homebrew/bin/ffmpeg"] = 1 }
 recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
 captureTask = lastTask()
 movPath = captureTask.args[#captureTask.args]
-local gifPath = movPath:gsub("%.mov$", ".gif")
+local gifPath = outputPath(movPath, "gif")
 existingFiles[movPath] = 1000
 captureTask.callback(0, "", "")
 local ffmpegTask = lastTask()
@@ -342,6 +362,7 @@ assert_equal(gifPath, ffmpegTask.args[#ffmpegTask.args], "gif shares the mov bas
 assert_equal(true, recorder._converting[ffmpegTask], "ffmpeg task retained in _converting")
 ffmpegTask.callback(0, "", "")
 assert_equal("file://" .. gifPath, pasteboardWrites[#pasteboardWrites].url, "gif copied to clipboard")
+assert_equal(movPath, removals[#removals], "temp mov deleted after successful conversion")
 assert_equal(nil, recorder._converting[ffmpegTask], "_converting cleared after callback")
 
 -- finish with ffmpeg, failure
@@ -352,7 +373,7 @@ existingFiles[movPath] = 1000
 captureTask.callback(0, "", "")
 lastTask().callback(1, "", "boom")
 assert_true(alerts[#alerts]:find("boom", 1, true) ~= nil, "ffmpeg stderr shown")
-assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied when ffmpeg fails")
+assert_equal("file://" .. outputPath(movPath, "mov"), pasteboardWrites[#pasteboardWrites].url, "mov kept in outputDir and copied when ffmpeg fails")
 
 -- screencapture failure (no file produced)
 local writesBefore = #pasteboardWrites
@@ -390,7 +411,7 @@ for i = 1, 2 do
   recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
   captureTask = lastTask()
   movPath = captureTask.args[#captureTask.args]
-  gifs[i] = movPath:gsub("%.mov$", ".gif")
+  gifs[i] = outputPath(movPath, "gif")
   existingFiles[movPath] = 1000
   captureTask.callback(0, "", "")
   converting[i] = lastTask()
@@ -413,7 +434,7 @@ recorder:setFormat("mp4")
 recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
 captureTask = lastTask()
 movPath = captureTask.args[#captureTask.args]
-local mp4Path = movPath:gsub("%.mov$", ".mp4")
+local mp4Path = outputPath(movPath, "mp4")
 existingFiles[movPath] = 1000
 captureTask.callback(0, "", "")
 ffmpegTask = lastTask()
@@ -429,7 +450,19 @@ existingFiles[movPath] = 1000
 captureTask.callback(0, "", "")
 lastTask().callback(1, "", "Unknown encoder")
 assert_true(alerts[#alerts]:find("MP4 export failed", 1, true) ~= nil, "alert names the failed format")
-assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "mov copied when conversion fails")
+assert_equal("file://" .. outputPath(movPath, "mov"), pasteboardWrites[#pasteboardWrites].url, "mov kept in outputDir and copied when conversion fails")
+
+-- move to outputDir fails (e.g. outputDir on another volume): deliver from temp and warn
+renameSucceeds = false
+recorder:_startRecording({ x = 10, y = 20, w = 300, h = 200 })
+captureTask = lastTask()
+movPath = captureTask.args[#captureTask.args]
+existingFiles[movPath] = 1000
+captureTask.callback(0, "", "")
+lastTask().callback(1, "", "Unknown encoder")
+assert_equal("file://" .. movPath, pasteboardWrites[#pasteboardWrites].url, "temp mov delivered when it cannot be moved")
+assert_true(logLines[#logLines]:find("could not move", 1, true) ~= nil, "failed move logged")
+renameSucceeds = true
 settingsStore = {}
 
 -- Results

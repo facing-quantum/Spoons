@@ -16,7 +16,8 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 --- ScreenRecorder.outputDir
 --- Variable
---- Folder where recordings are saved. Defaults to `~/Desktop`.
+--- Folder where recordings are saved in the selected format. Defaults to `~/Desktop`.
+--- The raw .mov is recorded to the temp folder and only saved here when conversion is not possible.
 obj.outputDir = os.getenv("HOME") .. "/Desktop"
 
 --- ScreenRecorder.maxLengthChoices
@@ -69,8 +70,16 @@ local function fileExists(path)
     return hs.fs.attributes(path) ~= nil
 end
 
+-- The raw .mov is recorded into the per-user temp folder (cleared by macOS) so only the
+-- converted file lands in outputDir; it is moved there only when conversion is not possible.
+local TEMP_DIR = (os.getenv("TMPDIR") or "/tmp"):gsub("/$", "")
+
+function obj._tempMovPath(base)
+    return TEMP_DIR .. "/" .. base:match("[^/]+$") .. ".mov"
+end
+
 local function anyCaptureFileExists(base)
-    if fileExists(base .. ".mov") then return true end
+    if fileExists(base .. ".mov") or fileExists(obj._tempMovPath(base)) then return true end
     for _, format in ipairs(OUTPUT_FORMATS) do
         if fileExists(base .. "." .. format) then return true end
     end
@@ -356,7 +365,7 @@ function obj:_startRecording(selectedRect)
         w = math.floor(selectedRect.w), h = math.floor(selectedRect.h),
     }
     local base = obj._uniqueBaseName(self.outputDir, os.date("%Y-%m-%d-%H%M%S"))
-    local movPath = base .. ".mov"
+    local movPath = obj._tempMovPath(base)
 
     local border = hs.canvas.new({
         x = rect.x - BORDER_WIDTH, y = rect.y - BORDER_WIDTH,
@@ -398,7 +407,7 @@ function obj:_recordingFinished(base, exitCode, stdOut, stdErr)
     recording.border:delete()
     self:_updateTitle()
 
-    local movPath = base .. ".mov"
+    local movPath = obj._tempMovPath(base)
     local size = hs.fs.attributes(movPath, "size")
     local summary = string.format("screencapture exit %s, file size %s, stderr: %s, stdout: %s, command: %s",
         tostring(exitCode), tostring(size), stdErr or "", stdOut or "", recording.command)
@@ -414,14 +423,14 @@ end
 
 function obj:_convert(base)
     local format = self:format()
-    local movPath, outPath = base .. ".mov", base .. "." .. format
+    local movPath, outPath = obj._tempMovPath(base), base .. "." .. format
     local ffmpeg = obj._findFfmpeg()
     if not ffmpeg then
         if not self._warnedNoFfmpeg then
             self._warnedNoFfmpeg = true
             hs.alert.show("ScreenRecorder: ffmpeg not found, saved .mov only (brew install ffmpeg to convert)")
         end
-        self:_deliver(movPath)
+        self:_deliver(self:_keepMov(base))
         return
     end
     local args = obj._ffmpegArgs(format, movPath, outPath, self.animationFps, self.animationMaxWidth)
@@ -430,17 +439,27 @@ function obj:_convert(base)
     task = hs.task.new(ffmpeg, function(exitCode, _, stderr)
         self._converting[task] = nil
         if exitCode == 0 then
+            os.remove(movPath)
             self:_deliver(outPath)
         else
             os.remove(outPath)
             obj.logger.e(string.format("ffmpeg exit %s, stderr: %s, command: %s %s", tostring(exitCode), stderr or "", ffmpeg, table.concat(args, " ")))
             hs.alert.show("ScreenRecorder: " .. FORMAT_LABELS[format] .. " export failed, see Hammerspoon console: " .. (stderr or ""):sub(-200))
-            self:_deliver(movPath)
+            self:_deliver(self:_keepMov(base))
         end
     end, args)
     obj.logger.i("starting: " .. ffmpeg .. " " .. table.concat(args, " "))
     self._converting[task] = true
     task:start()
+end
+
+-- Conversion was not possible, so the temp .mov is the only copy: move it into outputDir.
+function obj:_keepMov(base)
+    local tempPath, keptPath = obj._tempMovPath(base), base .. ".mov"
+    local ok, err = os.rename(tempPath, keptPath)
+    if ok then return keptPath end
+    obj.logger.w("could not move " .. tempPath .. " to " .. keptPath .. ": " .. tostring(err))
+    return tempPath
 end
 
 function obj:_deliver(path)
