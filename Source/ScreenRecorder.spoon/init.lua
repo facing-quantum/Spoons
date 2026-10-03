@@ -90,7 +90,13 @@ end
 
 --- ScreenRecorder:maxSeconds()
 --- Method
---- Returns the configured max recording length in seconds (`0` means no limit).
+--- Returns the configured max recording length.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * The max length in seconds; `0` means no limit
 function obj:maxSeconds()
     local seconds = hs.settings.get(SETTINGS_KEY)
     if seconds == nil then return DEFAULT_MAX_SECONDS end
@@ -103,6 +109,9 @@ end
 ---
 --- Parameters:
 ---  * seconds - Max length in seconds; `0` means no limit
+---
+--- Returns:
+---  * None
 function obj:setMaxSeconds(seconds)
     hs.settings.set(SETTINGS_KEY, seconds)
 end
@@ -142,6 +151,9 @@ end
 --- Method
 --- Creates the menubar item.
 ---
+--- Parameters:
+---  * None
+---
 --- Returns:
 ---  * The ScreenRecorder object
 function obj:start()
@@ -155,6 +167,9 @@ end
 --- ScreenRecorder:stop()
 --- Method
 --- Stops any recording or selection in progress and removes the menubar item.
+---
+--- Parameters:
+---  * None
 ---
 --- Returns:
 ---  * The ScreenRecorder object
@@ -243,6 +258,12 @@ end
 --- ScreenRecorder:toggleRecording()
 --- Method
 --- Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * None
 function obj:toggleRecording()
     if self._recording then
         stopCapture()
