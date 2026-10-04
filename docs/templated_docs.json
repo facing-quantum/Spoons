@@ -10926,8 +10926,8 @@
         "def_gfm": "HoldToQuit:bindHotkeys(mapping)",
         "desc": "Binds hotkeys for HoldToQuit",
         "desc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n",
-        "doc": "Binds hotkeys for HoldToQuit\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * show - This will define the quit hotkey",
-        "doc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n<p>Parameters:</p>\n<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:</li>\n<li>show - This will define the quit hotkey</li>\n</ul>\n",
+        "doc": "Binds hotkeys for HoldToQuit\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * quit - This will define the quit hotkey",
+        "doc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n<p>Parameters:</p>\n<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:</li>\n<li>quit - This will define the quit hotkey</li>\n</ul>\n",
         "examples": [],
         "file": "Source/HoldToQuit.spoon/init.lua",
         "lineno": "112",
@@ -10935,9 +10935,9 @@
         "notes": [],
         "notes_gfm": "",
         "parameters": [
-          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * show - This will define the quit hotkey"
+          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * quit - This will define the quit hotkey"
         ],
-        "parameters_gfm": "<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:<ul>\n<li>show - This will define the quit hotkey</li>\n</ul>\n</li>\n</ul>\n",
+        "parameters_gfm": "<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:<ul>\n<li>quit - This will define the quit hotkey</li>\n</ul>\n</li>\n</ul>\n",
         "returns": [],
         "returns_gfm": "",
         "signature": "HoldToQuit:bindHotkeys(mapping)",
@@ -10968,8 +10968,8 @@
         "type": "Method"
       },
       {
-        "def": "HoldToQuit.killCurrentApp()",
-        "def_gfm": "HoldToQuit.killCurrentApp()",
+        "def": "HoldToQuit:killCurrentApp()",
+        "def_gfm": "HoldToQuit:killCurrentApp()",
         "desc": "Kill the frontmost application",
         "desc_gfm": "<p>Kill the frontmost application</p>\n",
         "doc": "Kill the frontmost application\n\nParameters:\n * None",
@@ -10986,7 +10986,7 @@
         "parameters_gfm": "<ul>\n<li>None</li>\n</ul>\n",
         "returns": [],
         "returns_gfm": "",
-        "signature": "HoldToQuit.killCurrentApp()",
+        "signature": "HoldToQuit:killCurrentApp()",
         "stripped_doc": "",
         "type": "Method"
       },
@@ -11151,8 +11151,8 @@
         "def_gfm": "HoldToQuit:bindHotkeys(mapping)",
         "desc": "Binds hotkeys for HoldToQuit",
         "desc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n",
-        "doc": "Binds hotkeys for HoldToQuit\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * show - This will define the quit hotkey",
-        "doc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n<p>Parameters:</p>\n<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:</li>\n<li>show - This will define the quit hotkey</li>\n</ul>\n",
+        "doc": "Binds hotkeys for HoldToQuit\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * quit - This will define the quit hotkey",
+        "doc_gfm": "<p>Binds hotkeys for HoldToQuit</p>\n<p>Parameters:</p>\n<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:</li>\n<li>quit - This will define the quit hotkey</li>\n</ul>\n",
         "examples": [],
         "file": "Source/HoldToQuit.spoon/init.lua",
         "lineno": "112",
@@ -11160,9 +11160,9 @@
         "notes": [],
         "notes_gfm": "",
         "parameters": [
-          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * show - This will define the quit hotkey"
+          " * mapping - A table containing hotkey modifier/key details for the following items:\n   * quit - This will define the quit hotkey"
         ],
-        "parameters_gfm": "<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:<ul>\n<li>show - This will define the quit hotkey</li>\n</ul>\n</li>\n</ul>\n",
+        "parameters_gfm": "<ul>\n<li>mapping - A table containing hotkey modifier/key details for the following items:<ul>\n<li>quit - This will define the quit hotkey</li>\n</ul>\n</li>\n</ul>\n",
         "returns": [],
         "returns_gfm": "",
         "signature": "HoldToQuit:bindHotkeys(mapping)",
@@ -11235,8 +11235,8 @@
         "type": "Method"
       },
       {
-        "def": "HoldToQuit.killCurrentApp()",
-        "def_gfm": "HoldToQuit.killCurrentApp()",
+        "def": "HoldToQuit:killCurrentApp()",
+        "def_gfm": "HoldToQuit:killCurrentApp()",
         "desc": "Kill the frontmost application",
         "desc_gfm": "<p>Kill the frontmost application</p>\n",
         "doc": "Kill the frontmost application\n\nParameters:\n * None",
@@ -11253,7 +11253,7 @@
         "parameters_gfm": "<ul>\n<li>None</li>\n</ul>\n",
         "returns": [],
         "returns_gfm": "",
-        "signature": "HoldToQuit.killCurrentApp()",
+        "signature": "HoldToQuit:killCurrentApp()",
         "stripped_doc": "",
         "type": "Method"
       },

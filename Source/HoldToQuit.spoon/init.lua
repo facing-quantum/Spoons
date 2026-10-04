@@ -7,7 +7,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "HoldToQuit"
-obj.version = "1.0"
+obj.version = "1.1"
 obj.author = "Matthias Strauss <matthias.strauss@mayflower.de>"
 obj.github = "@MattFromGer"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
@@ -36,7 +36,7 @@ obj.hotkeyQbj = nil
 --- Timer for counting the holding time
 obj.timer = nil
 
---- HoldToQuit.killCurrentApp()
+--- HoldToQuit:killCurrentApp()
 --- Method
 --- Kill the frontmost application
 ---
@@ -44,7 +44,7 @@ obj.timer = nil
 ---  * None
 function obj:killCurrentApp()
     local app = hs.application.frontmostApplication()
-    app:kill()
+    if app then app:kill() end
 end
 
 --- HoldToQuit:init()
@@ -64,7 +64,7 @@ end
 --- Parameters:
 ---  * None
 function obj:onKeyDown()
-    self.timer:start()
+    self.timer:start(self.duration)
 end
 
 --- HoldToQuit:onKeyUp()
@@ -77,7 +77,7 @@ function obj:onKeyUp()
     if self.timer:running() then
         self.timer:stop()
         local app = hs.application.frontmostApplication()
-        hs.alert.show("Hold ⌘Q to quit " .. app:name())
+        if app then hs.alert.show("Hold to quit " .. app:name()) end
     end
 end
 
@@ -115,7 +115,7 @@ end
 ---
 --- Parameters:
 ---  * mapping - A table containing hotkey modifier/key details for the following items:
----   * show - This will define the quit hotkey
+---   * quit - This will define the quit hotkey
 function obj:bindHotkeys(mapping)
     if (self.hotkeyQbj) then
         self.hotkeyQbj:delete()
