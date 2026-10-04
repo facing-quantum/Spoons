@@ -23793,7 +23793,7 @@
         "doc": "Fires whenever the wifiWatcher detects an SSID change.\n\nParameters:\n * None\n\nReturns:\n * The WifiNotifier object",
         "examples": [],
         "file": "Source/WifiNotifier.spoon/init.lua",
-        "lineno": "48",
+        "lineno": "47",
         "name": "ssidChangedCallback",
         "notes": [],
         "parameters": [
@@ -23812,7 +23812,7 @@
         "doc": "Starts the wifiNotifier\n\nParameters:\n * None\n\nReturns:\n * The WifiNotifier object",
         "examples": [],
         "file": "Source/WifiNotifier.spoon/init.lua",
-        "lineno": "34",
+        "lineno": "33",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -23855,7 +23855,7 @@
         "doc": "Fires whenever the wifiWatcher detects an SSID change.\n\nParameters:\n * None\n\nReturns:\n * The WifiNotifier object",
         "examples": [],
         "file": "Source/WifiNotifier.spoon/init.lua",
-        "lineno": "48",
+        "lineno": "47",
         "name": "ssidChangedCallback",
         "notes": [],
         "parameters": [
@@ -23874,7 +23874,7 @@
         "doc": "Starts the wifiNotifier\n\nParameters:\n * None\n\nReturns:\n * The WifiNotifier object",
         "examples": [],
         "file": "Source/WifiNotifier.spoon/init.lua",
-        "lineno": "34",
+        "lineno": "33",
         "name": "start",
         "notes": [],
         "parameters": [
