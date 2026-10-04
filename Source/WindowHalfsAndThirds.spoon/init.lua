@@ -9,7 +9,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "WindowHalfsAndThirds"
-obj.version = "0.2"
+obj.version = "0.3"
 obj.author = "Diego Zamboni <diego@zzamboni.org>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
@@ -71,7 +71,7 @@ obj.defaultHotkeys = {
 
 --- WindowHalfsAndThirds.use_frame_correctness
 --- Variable
---- If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`
+--- If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`
 obj.use_frame_correctness = false
 
 --- WindowHalfsAndThirds.clear_cache_after_seconds
@@ -89,7 +89,7 @@ obj.clear_cache_after_seconds = 60
 --
 -- `window_state_names` are states windows can be in (so since `third_left` implies a relative move there is no `third_left`
 --   `window_state_name`, only a `third_left` `action`)
--- `window_state_rects` are `{x,y,w,l}` `hs.geometry.unitrect` tables defining those states
+-- `window_state_rects` are `{x,y,w,h}` `hs.geometry.unitrect` tables defining those states
 obj._window_state_name_to_rect = {
    left_half      = {0.00,0.00,0.50,1.00}, -- two decimal places required for `window_state_rect_strings` to match
    left_40        = {0.00,0.00,0.40,1.00},
@@ -186,16 +186,26 @@ local function current_window_rect(win)
    return {r(ur.x,2), r(ur.y,2), r(ur.w,2), r(ur.h,2)} -- an hs.geometry.unitrect table
 end
 
+local function rect_near(a, b)
+   for i = 1, 4 do
+      if math.abs(a[i] - b[i]) > 0.03 then return false end
+   end
+   return true
+end
+
+local function state_name_of_rect(rect)
+   return obj._window_state_rect_string_to_name[table.concat(rect,",")]
+end
+
 local function current_window_state_name(win)
-   local win = win or hs.window.focusedWindow()
-   return obj._window_state_rect_string_to_name[table.concat(current_window_rect(win),",")]
+   return state_name_of_rect(current_window_rect(win))
 end
 
 local function cacheWindow(win, move_to)
    local win = win or hs.window.focusedWindow()
    if (not win) or (not win:id()) then return end
    obj._frameCache[win:id()] = win:frame()
-   obj._frameCacheClearTimer:start()
+   obj._frameCacheClearTimer:start(obj.clear_cache_after_seconds)
    obj._lastMoveCache[win:id()] = move_to
    return win
 end
@@ -209,24 +219,8 @@ local function restoreWindowFromCache(win)
    return win
 end
 
-function obj.script_path_raw(n)
-   return (debug.getinfo(n or 2, "S").source)
-end
-function obj.script_path(n)
-   local str = obj.script_path_raw(n or 2):sub(2)
-   return str:match("(.*/)")
-end
-function obj.generate_docs_json()
-   io.open(obj.script_path().."docs.json","w"):write(hs.doc.builder.genJSON(obj.script_path())):close()
-end
-
--- Internal functions to store/restore the current value of setFrameCorrectness.
-local function _setFrameCorrectness()
-   obj._savedFrameCorrectness = hs.window.setFrameCorrectness
-   hs.window.setFrameCorrectness = obj.use_frame_correctness
-end
-local function _restoreFrameCorrectness()
-   hs.window.setFrameCorrectness = obj._savedFrameCorrectness
+local function moveWithWorkarounds(win, unit_rect)
+   win:setFrameWithWorkarounds(win:screen():fromUnitRect(unit_rect))
 end
 
 
@@ -236,29 +230,34 @@ end
 
 
 -- Resize current window to different parts of the screen
--- If use_frame_correctness_preference is true, then use setFrameCorrectness according to the
+-- If use_frame_correctness_preference is true, then use setFrameWithWorkarounds according to the
 -- configured value of `WindowHalfsAndThirds.use_frame_correctness`
-function obj.resizeCurrentWindow(how, use_frame_correctness_preference)
-   local win = hs.window.focusedWindow()
+-- win defaults to hs.window.focusedWindow()
+function obj.resizeCurrentWindow(how, use_frame_correctness_preference, win)
+   local win = win or hs.window.focusedWindow()
    if not win then return end
 
-   local move_to = obj._lastMoveCache[win:id()] and obj._window_moves[how][obj._lastMoveCache[win:id()]] or
-      obj._window_moves[how][current_window_state_name(win)] or obj._window_moves[how][1]
-   if not move_to then
-      obj.logger.e("I don't know how to move ".. how .." from ".. (obj._lastMoveCache[win:id()] or
-         current_window_state_name(win)))
-   end
-   if current_window_state_name(win) == move_to then return end
+   -- Trust the last move only while the window is still (roughly) where we put it; windows that size
+   -- in steps (eg. terminals) never match a state exactly, but one moved by hand or by undo is far off
+   local current_rect = current_window_rect(win)
+   local current_state = state_name_of_rect(current_rect)
+   local last_move = obj._lastMoveCache[win:id()]
+   local last_move_rect = last_move and obj._window_state_name_to_rect[last_move]
+   local from = (last_move_rect and rect_near(current_rect, last_move_rect)) and last_move or current_state
+   local move_to = obj._window_moves[how][from] or obj._window_moves[how][1]
+   if current_state == move_to then return end
    local move_to_rect = obj._window_state_name_to_rect[move_to]
    if not move_to_rect then
       obj.logger.e("I don't know how to move to ".. move_to)
       return
    end
 
-   if use_frame_correctness_preference then _setFrameCorrectness() end
    cacheWindow(win, move_to)
-   win:move(move_to_rect)
-   if use_frame_correctness_preference then _restoreFrameCorrectness() end
+   if use_frame_correctness_preference and obj.use_frame_correctness then
+      moveWithWorkarounds(win, move_to_rect)
+   else
+      win:move(move_to_rect)
+   end
 end
 
 -- --------------------------------------------------------------------
@@ -281,33 +280,40 @@ end
 ---    * .thirdUp .thirdDown .topThird .middleThirdV .bottomThird .topLeft .topRight .bottomLeft .bottomRight
 ---    * .maximize
 
-obj.leftHalf       = hs.fnutils.partial(obj.resizeCurrentWindow, "left_half")
-obj.halfLeft       = hs.fnutils.partial(obj.resizeCurrentWindow, "half_left")
-obj.rightHalf      = hs.fnutils.partial(obj.resizeCurrentWindow, "right_half")
-obj.halfRight      = hs.fnutils.partial(obj.resizeCurrentWindow, "half_right")
-obj.topHalf        = hs.fnutils.partial(obj.resizeCurrentWindow, "top_half")
-obj.halfTop        = hs.fnutils.partial(obj.resizeCurrentWindow, "half_top")
-obj.bottomHalf     = hs.fnutils.partial(obj.resizeCurrentWindow, "bottom_half")
-obj.halfBottom     = hs.fnutils.partial(obj.resizeCurrentWindow, "half_bottom")
-obj.thirdLeft      = hs.fnutils.partial(obj.resizeCurrentWindow, "third_left")
-obj.thirdRight     = hs.fnutils.partial(obj.resizeCurrentWindow, "third_right")
-obj.leftThird      = hs.fnutils.partial(obj.resizeCurrentWindow, "left_third")
-obj.leftTwoThird   = hs.fnutils.partial(obj.resizeCurrentWindow, "left_two_third")
-obj.middleThirdH   = hs.fnutils.partial(obj.resizeCurrentWindow, "middle_third_h")
-obj.rightThird     = hs.fnutils.partial(obj.resizeCurrentWindow, "right_third")
-obj.rightTwoThird  = hs.fnutils.partial(obj.resizeCurrentWindow, "right_two_third")
-obj.thirdUp        = hs.fnutils.partial(obj.resizeCurrentWindow, "third_up")
-obj.thirdDown      = hs.fnutils.partial(obj.resizeCurrentWindow, "third_down")
-obj.topThird       = hs.fnutils.partial(obj.resizeCurrentWindow, "top_third")
-obj.topTwoThird    = hs.fnutils.partial(obj.resizeCurrentWindow, "top_two_third")
-obj.middleThirdV   = hs.fnutils.partial(obj.resizeCurrentWindow, "middle_third_v")
-obj.bottomThird    = hs.fnutils.partial(obj.resizeCurrentWindow, "bottom_third")
-obj.bottomTwoThird = hs.fnutils.partial(obj.resizeCurrentWindow, "bottom_two_third")
-obj.topLeft        = hs.fnutils.partial(obj.resizeCurrentWindow, "top_left")
-obj.topRight       = hs.fnutils.partial(obj.resizeCurrentWindow, "top_right")
-obj.bottomLeft     = hs.fnutils.partial(obj.resizeCurrentWindow, "bottom_left")
-obj.bottomRight    = hs.fnutils.partial(obj.resizeCurrentWindow, "bottom_right")
-obj.maximize       = hs.fnutils.partial(obj.resizeCurrentWindow, "max", true)
+local function resizeMethod(how, use_frame_correctness_preference)
+   return function(_, win)
+      obj.resizeCurrentWindow(how, use_frame_correctness_preference, win)
+      return obj
+   end
+end
+
+obj.leftHalf       = resizeMethod("left_half")
+obj.halfLeft       = resizeMethod("half_left")
+obj.rightHalf      = resizeMethod("right_half")
+obj.halfRight      = resizeMethod("half_right")
+obj.topHalf        = resizeMethod("top_half")
+obj.halfTop        = resizeMethod("half_top")
+obj.bottomHalf     = resizeMethod("bottom_half")
+obj.halfBottom     = resizeMethod("half_bottom")
+obj.thirdLeft      = resizeMethod("third_left")
+obj.thirdRight     = resizeMethod("third_right")
+obj.leftThird      = resizeMethod("left_third")
+obj.leftTwoThird   = resizeMethod("left_two_third")
+obj.middleThirdH   = resizeMethod("middle_third_h")
+obj.rightThird     = resizeMethod("right_third")
+obj.rightTwoThird  = resizeMethod("right_two_third")
+obj.thirdUp        = resizeMethod("third_up")
+obj.thirdDown      = resizeMethod("third_down")
+obj.topThird       = resizeMethod("top_third")
+obj.topTwoThird    = resizeMethod("top_two_third")
+obj.middleThirdV   = resizeMethod("middle_third_v")
+obj.bottomThird    = resizeMethod("bottom_third")
+obj.bottomTwoThird = resizeMethod("bottom_two_third")
+obj.topLeft        = resizeMethod("top_left")
+obj.topRight       = resizeMethod("top_right")
+obj.bottomLeft     = resizeMethod("bottom_left")
+obj.bottomRight    = resizeMethod("bottom_right")
+obj.maximize       = resizeMethod("max", true)
 
 
 --- WindowHalfsAndThirds:toggleMaximized(win)
@@ -319,16 +325,20 @@ obj.maximize       = hs.fnutils.partial(obj.resizeCurrentWindow, "max", true)
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
-function obj.toggleMaximized(win)
+function obj:toggleMaximized(win)
    local win = win or hs.window.focusedWindow()
    if (not win) or (not win:id()) then
       return
    end
-   if current_window_state_name() == "max" then
+   if current_window_state_name(win) == "max" then
       restoreWindowFromCache(win)
    else
       cacheWindow(win, "max")
-      win:maximize()
+      if obj.use_frame_correctness then
+         moveWithWorkarounds(win, obj._window_state_name_to_rect.max)
+      else
+         win:maximize()
+      end
    end
    return obj
 end
@@ -342,7 +352,7 @@ end
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
-function obj.undo(win)
+function obj:undo(win)
    restoreWindowFromCache(win)
    return obj
 end
@@ -356,7 +366,7 @@ end
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
-function obj.center(win)
+function obj:center(win)
    local win = win or hs.window.focusedWindow()
    if win then
       cacheWindow(win, "center")
@@ -374,7 +384,7 @@ end
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
-function obj.larger(win)
+function obj:larger(win)
    local win = win or hs.window.focusedWindow()
    if win then
       cacheWindow(win, nil)
@@ -398,7 +408,7 @@ end
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
-function obj.smaller(win)
+function obj:smaller(win)
    local win = win or hs.window.focusedWindow()
    if win then
       cacheWindow(win, nil)
@@ -419,18 +429,22 @@ end
 ---
 --- Parameters:
 ---  * mapping - A table containing hotkey objifier/key details for the following items:
----   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen
+---   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%
+---   * half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling
 ---   * third_left, third_right - resize to one horizontal-third of the screen and move left/right
 ---   * third_up, third_down - resize to one vertical-third of the screen and move up/down
 ---   * max - maximize the window
 ---   * max_toggle - toggle maximization
 ---   * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen
+---   * left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen
 ---   * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen
+---   * top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen
 ---   * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen
 ---   * undo - restore window to position before last move
 ---   * center - move window to center of screen
 ---   * larger - grow window larger than its current size
 ---   * smaller - shrink window smaller than its current size
+---   * left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half
 ---
 --- Returns:
 ---  * the WindowHalfsAndThirds object
@@ -487,10 +501,10 @@ end
 
 
 -- Legacy (names changed for internal consistency, old names preserved)
-function obj.oneThirdLeft() obj.thirdLeft() end
-function obj.oneThirdRight() obj.thirdRight() end
-function obj.oneThirdUp() obj.thirdUp() end
-function obj.onethirdDown() obj.thirdDown() end
+function obj.oneThirdLeft() obj:thirdLeft() end
+function obj.oneThirdRight() obj:thirdRight() end
+function obj.oneThirdUp() obj:thirdUp() end
+function obj.onethirdDown() obj:thirdDown() end
 
 
 return obj
