@@ -71,7 +71,7 @@ obj.defaultHotkeys = {
 
 --- WindowHalfsAndThirds.use_frame_correctness
 --- Variable
---- If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`
+--- If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`
 obj.use_frame_correctness = false
 
 --- WindowHalfsAndThirds.clear_cache_after_seconds

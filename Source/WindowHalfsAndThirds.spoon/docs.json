@@ -208,8 +208,8 @@
       },
       {
         "def": "WindowHalfsAndThirds.use_frame_correctness",
-        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
-        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
         "lineno": "72",
         "name": "use_frame_correctness",
@@ -420,8 +420,8 @@
       },
       {
         "def": "WindowHalfsAndThirds.use_frame_correctness",
-        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
-        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
         "lineno": "72",
         "name": "use_frame_correctness",

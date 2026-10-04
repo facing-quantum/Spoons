@@ -3765,13 +3765,15 @@
       },
       {
         "def": "ClipboardBridge:stop()",
-        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
-        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "desc": "Stops the clipboard watcher and Unix socket server.",
+        "doc": "Stops the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object\n\nNotes:\n * The socket file is removed automatically by hs.socket on disconnect.",
         "examples": [],
         "file": "Source/ClipboardBridge.spoon/init.lua",
         "lineno": "260",
         "name": "stop",
-        "notes": [],
+        "notes": [
+          " * The socket file is removed automatically by hs.socket on disconnect."
+        ],
         "parameters": [
           " * None"
         ],
@@ -3779,7 +3781,7 @@
           " * The ClipboardBridge object"
         ],
         "signature": "ClipboardBridge:stop()",
-        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "stripped_doc": "",
         "type": "Method"
       }
     ],
@@ -3930,13 +3932,15 @@
       },
       {
         "def": "ClipboardBridge:stop()",
-        "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
-        "doc": "Stops the clipboard watcher and Unix socket server. The socket file is\nremoved automatically by hs.socket on disconnect.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object",
+        "desc": "Stops the clipboard watcher and Unix socket server.",
+        "doc": "Stops the clipboard watcher and Unix socket server.\n\nParameters:\n * None\n\nReturns:\n * The ClipboardBridge object\n\nNotes:\n * The socket file is removed automatically by hs.socket on disconnect.",
         "examples": [],
         "file": "Source/ClipboardBridge.spoon/init.lua",
         "lineno": "260",
         "name": "stop",
-        "notes": [],
+        "notes": [
+          " * The socket file is removed automatically by hs.socket on disconnect."
+        ],
         "parameters": [
           " * None"
         ],
@@ -3944,7 +3948,7 @@
           " * The ClipboardBridge object"
         ],
         "signature": "ClipboardBridge:stop()",
-        "stripped_doc": "removed automatically by hs.socket on disconnect.",
+        "stripped_doc": "",
         "type": "Method"
       },
       {
@@ -24220,14 +24224,14 @@
       {
         "def": "WindowHalfsAndThirds:bindHotkeys(mapping)",
         "desc": "Binds hotkeys for WindowHalfsAndThirds",
-        "doc": "Binds hotkeys for WindowHalfsAndThirds\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen\n  * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n  * third_up, third_down - resize to one vertical-third of the screen and move up/down\n  * max - maximize the window\n  * max_toggle - toggle maximization\n  * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n  * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n  * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n  * undo - restore window to position before last move\n  * center - move window to center of screen\n  * larger - grow window larger than its current size\n  * smaller - shrink window smaller than its current size\n\nReturns:\n * the WindowHalfsAndThirds object",
+        "doc": "Binds hotkeys for WindowHalfsAndThirds\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%\n  * half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling\n  * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n  * third_up, third_down - resize to one vertical-third of the screen and move up/down\n  * max - maximize the window\n  * max_toggle - toggle maximization\n  * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n  * left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen\n  * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n  * top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen\n  * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n  * undo - restore window to position before last move\n  * center - move window to center of screen\n  * larger - grow window larger than its current size\n  * smaller - shrink window smaller than its current size\n  * left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "416",
+        "lineno": "426",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey objifier/key details for the following items:\n   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen\n   * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n   * third_up, third_down - resize to one vertical-third of the screen and move up/down\n   * max - maximize the window\n   * max_toggle - toggle maximization\n   * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n   * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n   * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n   * undo - restore window to position before last move\n   * center - move window to center of screen\n   * larger - grow window larger than its current size\n   * smaller - shrink window smaller than its current size"
+          " * mapping - A table containing hotkey objifier/key details for the following items:\n   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%\n   * half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling\n   * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n   * third_up, third_down - resize to one vertical-third of the screen and move up/down\n   * max - maximize the window\n   * max_toggle - toggle maximization\n   * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n   * left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen\n   * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n   * top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen\n   * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n   * undo - restore window to position before last move\n   * center - move window to center of screen\n   * larger - grow window larger than its current size\n   * smaller - shrink window smaller than its current size\n   * left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half"
         ],
         "returns": [
           " * the WindowHalfsAndThirds object"
@@ -24242,7 +24246,7 @@
         "doc": "Center window on screen\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "350",
+        "lineno": "360",
         "name": "center",
         "notes": [],
         "parameters": [
@@ -24261,7 +24265,7 @@
         "doc": "Make win larger than its current size\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "368",
+        "lineno": "378",
         "name": "larger",
         "notes": [],
         "parameters": [
@@ -24280,7 +24284,7 @@
         "doc": "Resize to the left half of the screen.\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object\n\nNotes:\n * Variations of this method exist for other operations. See WindowHalfsAndThirds:bindHotkeys for details:\n   * .leftHalf .rightHalf .topHalf .bottomHalf .thirdLeft .thirdRight .leftThird .middleThirdH .rightThird\n   * .thirdUp .thirdDown .topThird .middleThirdV .bottomThird .topLeft .topRight .bottomLeft .bottomRight\n   * .maximize",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "268",
+        "lineno": "267",
         "name": "leftHalf",
         "notes": [
           " * Variations of this method exist for other operations. See WindowHalfsAndThirds:bindHotkeys for details:",
@@ -24304,7 +24308,7 @@
         "doc": "Make win smaller than its current size\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "392",
+        "lineno": "402",
         "name": "smaller",
         "notes": [],
         "parameters": [
@@ -24323,7 +24327,7 @@
         "doc": "Toggle win between its normal size, and being maximized\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "313",
+        "lineno": "319",
         "name": "toggleMaximized",
         "notes": [],
         "parameters": [
@@ -24342,7 +24346,7 @@
         "doc": "Undo window size changes for win if there've been any in WindowHalfsAndThirds.clear_cache_after_seconds\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "336",
+        "lineno": "346",
         "name": "undo",
         "notes": [],
         "parameters": [
@@ -24418,8 +24422,8 @@
       },
       {
         "def": "WindowHalfsAndThirds.use_frame_correctness",
-        "desc": "If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
-        "doc": "If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
         "lineno": "72",
         "name": "use_frame_correctness",
@@ -24434,14 +24438,14 @@
       {
         "def": "WindowHalfsAndThirds:bindHotkeys(mapping)",
         "desc": "Binds hotkeys for WindowHalfsAndThirds",
-        "doc": "Binds hotkeys for WindowHalfsAndThirds\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen\n  * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n  * third_up, third_down - resize to one vertical-third of the screen and move up/down\n  * max - maximize the window\n  * max_toggle - toggle maximization\n  * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n  * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n  * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n  * undo - restore window to position before last move\n  * center - move window to center of screen\n  * larger - grow window larger than its current size\n  * smaller - shrink window smaller than its current size\n\nReturns:\n * the WindowHalfsAndThirds object",
+        "doc": "Binds hotkeys for WindowHalfsAndThirds\n\nParameters:\n * mapping - A table containing hotkey objifier/key details for the following items:\n  * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%\n  * half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling\n  * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n  * third_up, third_down - resize to one vertical-third of the screen and move up/down\n  * max - maximize the window\n  * max_toggle - toggle maximization\n  * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n  * left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen\n  * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n  * top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen\n  * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n  * undo - restore window to position before last move\n  * center - move window to center of screen\n  * larger - grow window larger than its current size\n  * smaller - shrink window smaller than its current size\n  * left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "416",
+        "lineno": "426",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
-          " * mapping - A table containing hotkey objifier/key details for the following items:\n   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen\n   * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n   * third_up, third_down - resize to one vertical-third of the screen and move up/down\n   * max - maximize the window\n   * max_toggle - toggle maximization\n   * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n   * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n   * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n   * undo - restore window to position before last move\n   * center - move window to center of screen\n   * larger - grow window larger than its current size\n   * smaller - shrink window smaller than its current size"
+          " * mapping - A table containing hotkey objifier/key details for the following items:\n   * left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%\n   * half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling\n   * third_left, third_right - resize to one horizontal-third of the screen and move left/right\n   * third_up, third_down - resize to one vertical-third of the screen and move up/down\n   * max - maximize the window\n   * max_toggle - toggle maximization\n   * left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen\n   * left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen\n   * top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen\n   * top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen\n   * top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen\n   * undo - restore window to position before last move\n   * center - move window to center of screen\n   * larger - grow window larger than its current size\n   * smaller - shrink window smaller than its current size\n   * left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half"
         ],
         "returns": [
           " * the WindowHalfsAndThirds object"
@@ -24456,7 +24460,7 @@
         "doc": "Center window on screen\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "350",
+        "lineno": "360",
         "name": "center",
         "notes": [],
         "parameters": [
@@ -24523,7 +24527,7 @@
         "doc": "Make win larger than its current size\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "368",
+        "lineno": "378",
         "name": "larger",
         "notes": [],
         "parameters": [
@@ -24542,7 +24546,7 @@
         "doc": "Resize to the left half of the screen.\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object\n\nNotes:\n * Variations of this method exist for other operations. See WindowHalfsAndThirds:bindHotkeys for details:\n   * .leftHalf .rightHalf .topHalf .bottomHalf .thirdLeft .thirdRight .leftThird .middleThirdH .rightThird\n   * .thirdUp .thirdDown .topThird .middleThirdV .bottomThird .topLeft .topRight .bottomLeft .bottomRight\n   * .maximize",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "268",
+        "lineno": "267",
         "name": "leftHalf",
         "notes": [
           " * Variations of this method exist for other operations. See WindowHalfsAndThirds:bindHotkeys for details:",
@@ -24577,7 +24581,7 @@
         "doc": "Make win smaller than its current size\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "392",
+        "lineno": "402",
         "name": "smaller",
         "notes": [],
         "parameters": [
@@ -24596,7 +24600,7 @@
         "doc": "Toggle win between its normal size, and being maximized\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "313",
+        "lineno": "319",
         "name": "toggleMaximized",
         "notes": [],
         "parameters": [
@@ -24615,7 +24619,7 @@
         "doc": "Undo window size changes for win if there've been any in WindowHalfsAndThirds.clear_cache_after_seconds\n\nParameters:\n * win - hs.window to use, defaults to hs.window.focusedWindow()\n\nReturns:\n * the WindowHalfsAndThirds object",
         "examples": [],
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
-        "lineno": "336",
+        "lineno": "346",
         "name": "undo",
         "notes": [],
         "parameters": [
@@ -24630,8 +24634,8 @@
       },
       {
         "def": "WindowHalfsAndThirds.use_frame_correctness",
-        "desc": "If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
-        "doc": "If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+        "doc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
         "file": "Source/WindowHalfsAndThirds.spoon/init.lua",
         "lineno": "72",
         "name": "use_frame_correctness",

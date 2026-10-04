@@ -733,7 +733,7 @@
     "type": "Method"
   },
   {
-    "desc": "Stops the clipboard watcher and Unix socket server. The socket file is",
+    "desc": "Stops the clipboard watcher and Unix socket server.",
     "module": "ClipboardBridge",
     "name": "stop",
     "type": "Method"
@@ -4558,7 +4558,7 @@
     "type": "Variable"
   },
   {
-    "desc": "If `true`, set [setFrameCorrectness](http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness) for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
+    "desc": "If `true`, use [setFrameWithWorkarounds](http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds) when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to `false`",
     "module": "WindowHalfsAndThirds",
     "name": "use_frame_correctness",
     "type": "Variable"

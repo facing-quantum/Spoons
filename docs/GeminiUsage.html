@@ -1,0 +1,559 @@
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Hammerspoon docs: GeminiUsage</title>
+    <style type="text/css">
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      th { background-color: #DDDDDD; vertical-align: top; padding: 3px; }
+      td { width: 100%; background-color: #EEEEEE; vertical-align: top; padding: 3px; }
+      table { width: 100% ; border: 1px solid #0; text-align: left; }
+      section > table table td { width: 0; }
+    </style>
+    <link rel="stylesheet" href="docs.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="./index.html">docs</a> &raquo; GeminiUsage</h1>
+      <p>Displays Google Gemini and partner AI plan usage limits in a single unified macOS menu bar item.
+The icon renders a dual-column layout side-by-side:</p>
+<ul>
+<li>Left column: Gemini models (5-hour session and weekly progress bars).</li>
+<li>Right column: Claude &amp; 3P partner models (5-hour session and weekly progress bars).</li>
+</ul>
+<p>Features 8-segment gradient progress bars with sqrt-scaled reset proximity countdown lines,
+usage percentages, and a service health indicator dot. Clicking the menu bar item expands
+a rich dropdown detailing quota usage for both pools, countdowns, reset times in the local
+timezone, session context window metrics, Google Cloud / Vertex AI service health, and
+a model roster.</p>
+<p>Credentials and quota data are automatically resolved from Antigravity CLI (<code>agy</code>), macOS
+Keychain, local quota cache files, and Google Cloud endpoints.</p>
+
+      </header>
+      <h3>API Overview</h3>
+      <ul>
+        <li>Constants - Useful values which cannot be changed</li>
+          <ul>
+            <li><a href="#author">author</a></li>
+            <li><a href="#homepage">homepage</a></li>
+            <li><a href="#license">license</a></li>
+            <li><a href="#name">name</a></li>
+            <li><a href="#version">version</a></li>
+          </ul>
+        <li>Variables - Configurable values</li>
+          <ul>
+            <li><a href="#agyBinPaths">agyBinPaths</a></li>
+            <li><a href="#geminiApiKey">geminiApiKey</a></li>
+            <li><a href="#iconStyle">iconStyle</a></li>
+            <li><a href="#incidentsPollInterval">incidentsPollInterval</a></li>
+            <li><a href="#modelsPollInterval">modelsPollInterval</a></li>
+            <li><a href="#planName">planName</a></li>
+            <li><a href="#pollInterval">pollInterval</a></li>
+            <li><a href="#quotaCachePath">quotaCachePath</a></li>
+            <li><a href="#statusPollInterval">statusPollInterval</a></li>
+          </ul>
+        <li>Methods - API calls which can only be made on an object returned by a constructor</li>
+          <ul>
+            <li><a href="#fetch">fetch</a></li>
+            <li><a href="#init">init</a></li>
+            <li><a href="#start">start</a></li>
+            <li><a href="#stop">stop</a></li>
+          </ul>
+      </ul>
+      <h3>API Documentation</h3>
+        <h4 class="documentation-section">Constants</h4>
+          <section id="author">
+            <a name="//apple_ref/cpp/Constant/author" class="dashAnchor"></a>
+            <h5><a href="#author">author</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.author</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The author of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L30">Source/GeminiUsage.spoon/init.lua line 30</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="homepage">
+            <a name="//apple_ref/cpp/Constant/homepage" class="dashAnchor"></a>
+            <h5><a href="#homepage">homepage</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.homepage</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The homepage for this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L40">Source/GeminiUsage.spoon/init.lua line 40</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="license">
+            <a name="//apple_ref/cpp/Constant/license" class="dashAnchor"></a>
+            <h5><a href="#license">license</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.license</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The license for this Spoon (MIT)</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L35">Source/GeminiUsage.spoon/init.lua line 35</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="name">
+            <a name="//apple_ref/cpp/Constant/name" class="dashAnchor"></a>
+            <h5><a href="#name">name</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.name</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The name of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L20">Source/GeminiUsage.spoon/init.lua line 20</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="version">
+            <a name="//apple_ref/cpp/Constant/version" class="dashAnchor"></a>
+            <h5><a href="#version">version</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.version</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The version of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L25">Source/GeminiUsage.spoon/init.lua line 25</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Variables</h4>
+          <section id="agyBinPaths">
+            <a name="//apple_ref/cpp/Variable/agyBinPaths" class="dashAnchor"></a>
+            <h5><a href="#agyBinPaths">agyBinPaths</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.agyBinPaths</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Extra locations to search for the <code>agy</code> or <code>gemini</code> binary, tried in order</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L71">Source/GeminiUsage.spoon/init.lua line 71</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="geminiApiKey">
+            <a name="//apple_ref/cpp/Variable/geminiApiKey" class="dashAnchor"></a>
+            <h5><a href="#geminiApiKey">geminiApiKey</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.geminiApiKey</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Optional Google AI Studio API key. If unset, the spoon checks the GEMINI_API_KEY</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L77">Source/GeminiUsage.spoon/init.lua line 77</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="iconStyle">
+            <a name="//apple_ref/cpp/Variable/iconStyle" class="dashAnchor"></a>
+            <h5><a href="#iconStyle">iconStyle</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.iconStyle</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Menu bar icon display style: &quot;dual&quot; (default, both Gemini and Claude side-by-side in one icon),</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L65">Source/GeminiUsage.spoon/init.lua line 65</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="incidentsPollInterval">
+            <a name="//apple_ref/cpp/Variable/incidentsPollInterval" class="dashAnchor"></a>
+            <h5><a href="#incidentsPollInterval">incidentsPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.incidentsPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between Google incident history fetches. Default 900.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L55">Source/GeminiUsage.spoon/init.lua line 55</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="modelsPollInterval">
+            <a name="//apple_ref/cpp/Variable/modelsPollInterval" class="dashAnchor"></a>
+            <h5><a href="#modelsPollInterval">modelsPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.modelsPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between model roster updates. Default 3600.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L60">Source/GeminiUsage.spoon/init.lua line 60</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="planName">
+            <a name="//apple_ref/cpp/Variable/planName" class="dashAnchor"></a>
+            <h5><a href="#planName">planName</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.planName</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Plan or subscription tier display name override. Default nil (auto-resolved).</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L89">Source/GeminiUsage.spoon/init.lua line 89</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="pollInterval">
+            <a name="//apple_ref/cpp/Variable/pollInterval" class="dashAnchor"></a>
+            <h5><a href="#pollInterval">pollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.pollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Seconds between quota and usage data checks. Default 120.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L45">Source/GeminiUsage.spoon/init.lua line 45</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="quotaCachePath">
+            <a name="//apple_ref/cpp/Variable/quotaCachePath" class="dashAnchor"></a>
+            <h5><a href="#quotaCachePath">quotaCachePath</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.quotaCachePath</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Path to check for cached statusline quota JSON.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L83">Source/GeminiUsage.spoon/init.lua line 83</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="statusPollInterval">
+            <a name="//apple_ref/cpp/Variable/statusPollInterval" class="dashAnchor"></a>
+            <h5><a href="#statusPollInterval">statusPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage.statusPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between Google service status fetches. Default 300.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L50">Source/GeminiUsage.spoon/init.lua line 50</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Methods</h4>
+          <section id="fetch">
+            <a name="//apple_ref/cpp/Method/fetch" class="dashAnchor"></a>
+            <h5><a href="#fetch">fetch</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage:fetch()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Immediately fetches current quota and usage data.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The GeminiUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Called automatically on start and by the poll timer. Updates the menu bar icon and dropdown menu.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L1103">Source/GeminiUsage.spoon/init.lua line 1103</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="init">
+            <a name="//apple_ref/cpp/Method/init" class="dashAnchor"></a>
+            <h5><a href="#init">init</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage:init()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Prepares the menu bar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The GeminiUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make network requests.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L1189">Source/GeminiUsage.spoon/init.lua line 1189</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="start">
+            <a name="//apple_ref/cpp/Method/start" class="dashAnchor"></a>
+            <h5><a href="#start">start</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage:start()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Starts background polling.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The GeminiUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Performs an immediate fetch then schedules subsequent fetches every GeminiUsage.pollInterval seconds.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L1211">Source/GeminiUsage.spoon/init.lua line 1211</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="stop">
+            <a name="//apple_ref/cpp/Method/stop" class="dashAnchor"></a>
+            <h5><a href="#stop">stop</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>GeminiUsage:stop()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Stops background polling and removes the menu bar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The GeminiUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/GeminiUsage.spoon/init.lua#L1252">Source/GeminiUsage.spoon/init.lua line 1252</a></td>
+              </tr>
+            </table>
+          </section>
+  </body>
+</html>
