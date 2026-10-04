@@ -1,0 +1,352 @@
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Hammerspoon docs: ClipboardBridge</title>
+    <style type="text/css">
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      th { background-color: #DDDDDD; vertical-align: top; padding: 3px; }
+      td { width: 100%; background-color: #EEEEEE; vertical-align: top; padding: 3px; }
+      table { width: 100% ; border: 1px solid #0; text-align: left; }
+      section > table table td { width: 0; }
+    </style>
+    <link rel="stylesheet" href="docs.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="./index.html">docs</a> &raquo; ClipboardBridge</h1>
+      <p>Serves the current clipboard image over a Unix domain socket so that
+external tools (e.g. AI agents in Docker containers) can read screenshots
+without any network exposure. The socket is a plain file; it is invisible
+to the network and cannot be reached from another machine.</p>
+<p>Docker containers access the socket via a bind-mount (see compose.yaml) and use:
+  curl -sf <br />
+    --unix-socket &quot;$CLIPBOARD_BRIDGE_SOCK&quot; <br />
+    -H &quot;Authorization: Bearer $CLIPBOARD_BRIDGE_TOKEN&quot; <br />
+    http://localhost</p>
+<p>Security default:</p>
+<ul>
+<li>Token auth is enabled when CLIPBOARD_BRIDGE_TOKEN is set.</li>
+<li>Set authToken to empty/nil to allow unauthenticated requests.</li>
+<li>Unauthorized requests can trigger a local notification.</li>
+<li>Set unauthorizedNotificationRateLimit to 0/nil to disable notifications.</li>
+</ul>
+
+      </header>
+      <h3>API Overview</h3>
+      <ul>
+        <li>Constants - Useful values which cannot be changed</li>
+          <ul>
+            <li><a href="#author">author</a></li>
+            <li><a href="#homepage">homepage</a></li>
+            <li><a href="#license">license</a></li>
+            <li><a href="#name">name</a></li>
+            <li><a href="#version">version</a></li>
+          </ul>
+        <li>Variables - Configurable values</li>
+          <ul>
+            <li><a href="#authToken">authToken</a></li>
+            <li><a href="#maxAge">maxAge</a></li>
+            <li><a href="#socketPath">socketPath</a></li>
+            <li><a href="#unauthorizedNotificationRateLimit">unauthorizedNotificationRateLimit</a></li>
+          </ul>
+        <li>Methods - API calls which can only be made on an object returned by a constructor</li>
+          <ul>
+            <li><a href="#start">start</a></li>
+            <li><a href="#stop">stop</a></li>
+          </ul>
+      </ul>
+      <h3>API Documentation</h3>
+        <h4 class="documentation-section">Constants</h4>
+          <section id="author">
+            <a name="//apple_ref/cpp/Constant/author" class="dashAnchor"></a>
+            <h5><a href="#author">author</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.author</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The author of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L33">Source/ClipboardBridge.spoon/init.lua line 33</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="homepage">
+            <a name="//apple_ref/cpp/Constant/homepage" class="dashAnchor"></a>
+            <h5><a href="#homepage">homepage</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.homepage</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The homepage for this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L38">Source/ClipboardBridge.spoon/init.lua line 38</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="license">
+            <a name="//apple_ref/cpp/Constant/license" class="dashAnchor"></a>
+            <h5><a href="#license">license</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.license</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The license for this Spoon (MIT)</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L43">Source/ClipboardBridge.spoon/init.lua line 43</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="name">
+            <a name="//apple_ref/cpp/Constant/name" class="dashAnchor"></a>
+            <h5><a href="#name">name</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.name</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The name of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L23">Source/ClipboardBridge.spoon/init.lua line 23</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="version">
+            <a name="//apple_ref/cpp/Constant/version" class="dashAnchor"></a>
+            <h5><a href="#version">version</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.version</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The version of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L28">Source/ClipboardBridge.spoon/init.lua line 28</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Variables</h4>
+          <section id="authToken">
+            <a name="//apple_ref/cpp/Variable/authToken" class="dashAnchor"></a>
+            <h5><a href="#authToken">authToken</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.authToken</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Bearer token required by clients when set.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L55">Source/ClipboardBridge.spoon/init.lua line 55</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="maxAge">
+            <a name="//apple_ref/cpp/Variable/maxAge" class="dashAnchor"></a>
+            <h5><a href="#maxAge">maxAge</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.maxAge</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Seconds after which a clipboard image is considered stale and a 204 is</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L62">Source/ClipboardBridge.spoon/init.lua line 62</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="socketPath">
+            <a name="//apple_ref/cpp/Variable/socketPath" class="dashAnchor"></a>
+            <h5><a href="#socketPath">socketPath</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.socketPath</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Path to the Unix domain socket file.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L48">Source/ClipboardBridge.spoon/init.lua line 48</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="unauthorizedNotificationRateLimit">
+            <a name="//apple_ref/cpp/Variable/unauthorizedNotificationRateLimit" class="dashAnchor"></a>
+            <h5><a href="#unauthorizedNotificationRateLimit">unauthorizedNotificationRateLimit</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge.unauthorizedNotificationRateLimit</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum number of seconds between unauthorized access notifications.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L68">Source/ClipboardBridge.spoon/init.lua line 68</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Methods</h4>
+          <section id="start">
+            <a name="//apple_ref/cpp/Method/start" class="dashAnchor"></a>
+            <h5><a href="#start">start</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge:start()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Starts the clipboard watcher and Unix socket server.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClipboardBridge object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L211">Source/ClipboardBridge.spoon/init.lua line 211</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="stop">
+            <a name="//apple_ref/cpp/Method/stop" class="dashAnchor"></a>
+            <h5><a href="#stop">stop</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClipboardBridge:stop()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Stops the clipboard watcher and Unix socket server.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClipboardBridge object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>The socket file is removed automatically by hs.socket on disconnect.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClipboardBridge.spoon/init.lua#L260">Source/ClipboardBridge.spoon/init.lua line 260</a></td>
+              </tr>
+            </table>
+          </section>
+  </body>
+</html>

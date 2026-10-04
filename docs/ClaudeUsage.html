@@ -1,0 +1,489 @@
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Hammerspoon docs: ClaudeUsage</title>
+    <style type="text/css">
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      th { background-color: #DDDDDD; vertical-align: top; padding: 3px; }
+      td { width: 100%; background-color: #EEEEEE; vertical-align: top; padding: 3px; }
+      table { width: 100% ; border: 1px solid #0; text-align: left; }
+      section > table table td { width: 0; }
+    </style>
+    <link rel="stylesheet" href="docs.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="./index.html">docs</a> &raquo; ClaudeUsage</h1>
+      <p>Displays Claude AI plan usage limits in the macOS menu bar as two stacked
+segmented progress bars (current session and weekly). Clicking the icon
+expands a dropdown mirroring the platform.claude.com usage page with
+reset times in the local timezone.</p>
+<p>The dropdown also reports Claude service health from the public Statuspage
+API at status.claude.com: per-component status, a rolling incident summary,
+and a submenu of recent incidents linking to their status page entries.</p>
+<p>A model roster sits alongside it, built by intersecting the /v1/models list
+for the signed-in account with the model catalog baked into the local
+<code>claude</code> binary. See modelRows for what the three resulting states mean.</p>
+<p>Credentials come from the macOS Keychain entry &quot;Claude Code-credentials&quot;
+(set by Claude Code). That entry is authoritative when it exists: the spoon
+neither reads nor writes ~/.claude/.credentials.json in that case. The file
+is used only by installs that have no Keychain entry at all. The status
+endpoints are public and need no authentication.</p>
+
+      </header>
+      <h3>API Overview</h3>
+      <ul>
+        <li>Constants - Useful values which cannot be changed</li>
+          <ul>
+            <li><a href="#author">author</a></li>
+            <li><a href="#homepage">homepage</a></li>
+            <li><a href="#license">license</a></li>
+            <li><a href="#name">name</a></li>
+            <li><a href="#version">version</a></li>
+          </ul>
+        <li>Variables - Configurable values</li>
+          <ul>
+            <li><a href="#autoRefreshToken">autoRefreshToken</a></li>
+            <li><a href="#claudeBinPaths">claudeBinPaths</a></li>
+            <li><a href="#incidentsPollInterval">incidentsPollInterval</a></li>
+            <li><a href="#modelsPollInterval">modelsPollInterval</a></li>
+            <li><a href="#pollInterval">pollInterval</a></li>
+            <li><a href="#statusPollInterval">statusPollInterval</a></li>
+          </ul>
+        <li>Methods - API calls which can only be made on an object returned by a constructor</li>
+          <ul>
+            <li><a href="#fetch">fetch</a></li>
+            <li><a href="#init">init</a></li>
+            <li><a href="#start">start</a></li>
+            <li><a href="#stop">stop</a></li>
+          </ul>
+      </ul>
+      <h3>API Documentation</h3>
+        <h4 class="documentation-section">Constants</h4>
+          <section id="author">
+            <a name="//apple_ref/cpp/Constant/author" class="dashAnchor"></a>
+            <h5><a href="#author">author</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.author</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The author of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L35">Source/ClaudeUsage.spoon/init.lua line 35</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="homepage">
+            <a name="//apple_ref/cpp/Constant/homepage" class="dashAnchor"></a>
+            <h5><a href="#homepage">homepage</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.homepage</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The homepage for this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L45">Source/ClaudeUsage.spoon/init.lua line 45</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="license">
+            <a name="//apple_ref/cpp/Constant/license" class="dashAnchor"></a>
+            <h5><a href="#license">license</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.license</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The license for this Spoon (MIT)</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L40">Source/ClaudeUsage.spoon/init.lua line 40</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="name">
+            <a name="//apple_ref/cpp/Constant/name" class="dashAnchor"></a>
+            <h5><a href="#name">name</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.name</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The name of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L25">Source/ClaudeUsage.spoon/init.lua line 25</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="version">
+            <a name="//apple_ref/cpp/Constant/version" class="dashAnchor"></a>
+            <h5><a href="#version">version</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.version</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Constant</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The version of this Spoon</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L30">Source/ClaudeUsage.spoon/init.lua line 30</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Variables</h4>
+          <section id="autoRefreshToken">
+            <a name="//apple_ref/cpp/Variable/autoRefreshToken" class="dashAnchor"></a>
+            <h5><a href="#autoRefreshToken">autoRefreshToken</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.autoRefreshToken</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>When true, the spoon will attempt to refresh an expired OAuth token itself</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L99">Source/ClaudeUsage.spoon/init.lua line 99</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="claudeBinPaths">
+            <a name="//apple_ref/cpp/Variable/claudeBinPaths" class="dashAnchor"></a>
+            <h5><a href="#claudeBinPaths">claudeBinPaths</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.claudeBinPaths</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Extra locations to search for the <code>claude</code> binary, tried in order before the</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L76">Source/ClaudeUsage.spoon/init.lua line 76</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="incidentsPollInterval">
+            <a name="//apple_ref/cpp/Variable/incidentsPollInterval" class="dashAnchor"></a>
+            <h5><a href="#incidentsPollInterval">incidentsPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.incidentsPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between status.claude.com incident history fetches.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L62">Source/ClaudeUsage.spoon/init.lua line 62</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="modelsPollInterval">
+            <a name="//apple_ref/cpp/Variable/modelsPollInterval" class="dashAnchor"></a>
+            <h5><a href="#modelsPollInterval">modelsPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.modelsPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between api.anthropic.com model list fetches. Default 3600.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L69">Source/ClaudeUsage.spoon/init.lua line 69</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="pollInterval">
+            <a name="//apple_ref/cpp/Variable/pollInterval" class="dashAnchor"></a>
+            <h5><a href="#pollInterval">pollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.pollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Seconds between usage API fetches. Default 120.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L50">Source/ClaudeUsage.spoon/init.lua line 50</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="statusPollInterval">
+            <a name="//apple_ref/cpp/Variable/statusPollInterval" class="dashAnchor"></a>
+            <h5><a href="#statusPollInterval">statusPollInterval</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage.statusPollInterval</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Minimum seconds between status.claude.com component fetches. Default 300.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L55">Source/ClaudeUsage.spoon/init.lua line 55</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Methods</h4>
+          <section id="fetch">
+            <a name="//apple_ref/cpp/Method/fetch" class="dashAnchor"></a>
+            <h5><a href="#fetch">fetch</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage:fetch()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Immediately fetches current usage from the Anthropic API and updates the menu bar.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClaudeUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Called automatically on start and by the poll timer; can also be triggered manually via the &quot;Refresh now&quot; menu item.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L1450">Source/ClaudeUsage.spoon/init.lua line 1450</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="init">
+            <a name="//apple_ref/cpp/Method/init" class="dashAnchor"></a>
+            <h5><a href="#init">init</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage:init()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Prepares the menu bar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClaudeUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Called automatically by hs.loadSpoon(); do not call manually. Does not start background polling or make any network requests.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L1549">Source/ClaudeUsage.spoon/init.lua line 1549</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="start">
+            <a name="//apple_ref/cpp/Method/start" class="dashAnchor"></a>
+            <h5><a href="#start">start</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage:start()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Starts background polling.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClaudeUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Notes</th>
+                  <td><ul>
+<li>Performs an immediate fetch then schedules subsequent fetches every ClaudeUsage.pollInterval seconds.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L1569">Source/ClaudeUsage.spoon/init.lua line 1569</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="stop">
+            <a name="//apple_ref/cpp/Method/stop" class="dashAnchor"></a>
+            <h5><a href="#stop">stop</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ClaudeUsage:stop()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Stops background polling and removes the menu bar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ClaudeUsage object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ClaudeUsage.spoon/init.lua#L1605">Source/ClaudeUsage.spoon/init.lua line 1605</a></td>
+              </tr>
+            </table>
+          </section>
+  </body>
+</html>

@@ -259,14 +259,16 @@ end
 
 --- ClipboardBridge:stop()
 --- Method
---- Stops the clipboard watcher and Unix socket server. The socket file is
---- removed automatically by hs.socket on disconnect.
+--- Stops the clipboard watcher and Unix socket server.
 ---
 --- Parameters:
 ---  * None
 ---
 --- Returns:
 ---  * The ClipboardBridge object
+---
+--- Notes:
+---  * The socket file is removed automatically by hs.socket on disconnect.
 function obj:stop()
     resetRuntime()
     return self

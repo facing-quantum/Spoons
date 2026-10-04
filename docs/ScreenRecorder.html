@@ -1,0 +1,510 @@
+<html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Hammerspoon docs: ScreenRecorder</title>
+    <style type="text/css">
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      th { background-color: #DDDDDD; vertical-align: top; padding: 3px; }
+      td { width: 100%; background-color: #EEEEEE; vertical-align: top; padding: 3px; }
+      table { width: 100% ; border: 1px solid #0; text-align: left; }
+      section > table table td { width: 0; }
+    </style>
+    <link rel="stylesheet" href="docs.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <header>
+      <h1><a href="./index.html">docs</a> &raquo; ScreenRecorder</h1>
+      <p>Record a selected area of the screen to .mov, converted to GIF, WebP, AVIF or MP4 when ffmpeg is installed</p>
+<p>Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip">https://github.com/Hammerspoon/Spoons/raw/master/Spoons/ScreenRecorder.spoon.zip</a></p>
+
+      </header>
+      <h3>API Overview</h3>
+      <ul>
+        <li>Variables - Configurable values</li>
+          <ul>
+            <li><a href="#animationFps">animationFps</a></li>
+            <li><a href="#animationMaxWidth">animationMaxWidth</a></li>
+            <li><a href="#logger">logger</a></li>
+            <li><a href="#maxLengthChoices">maxLengthChoices</a></li>
+            <li><a href="#menuBarItem">menuBarItem</a></li>
+            <li><a href="#outputDir">outputDir</a></li>
+            <li><a href="#outputFormat">outputFormat</a></li>
+          </ul>
+        <li>Methods - API calls which can only be made on an object returned by a constructor</li>
+          <ul>
+            <li><a href="#bindHotkeys">bindHotkeys</a></li>
+            <li><a href="#format">format</a></li>
+            <li><a href="#maxSeconds">maxSeconds</a></li>
+            <li><a href="#setFormat">setFormat</a></li>
+            <li><a href="#setMaxSeconds">setMaxSeconds</a></li>
+            <li><a href="#start">start</a></li>
+            <li><a href="#stop">stop</a></li>
+            <li><a href="#toggleRecording">toggleRecording</a></li>
+          </ul>
+      </ul>
+      <h3>API Documentation</h3>
+        <h4 class="documentation-section">Variables</h4>
+          <section id="animationFps">
+            <a name="//apple_ref/cpp/Variable/animationFps" class="dashAnchor"></a>
+            <h5><a href="#animationFps">animationFps</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.animationFps</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Frame rate for GIF, WebP and AVIF output. Defaults to <code>10</code>. MP4 keeps the recording's native frame rate.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L34">Source/ScreenRecorder.spoon/init.lua line 34</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="animationMaxWidth">
+            <a name="//apple_ref/cpp/Variable/animationMaxWidth" class="dashAnchor"></a>
+            <h5><a href="#animationMaxWidth">animationMaxWidth</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.animationMaxWidth</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Maximum width in pixels for GIF, WebP and AVIF output. Defaults to <code>800</code>. MP4 keeps the recording's native size.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L39">Source/ScreenRecorder.spoon/init.lua line 39</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="logger">
+            <a name="//apple_ref/cpp/Variable/logger" class="dashAnchor"></a>
+            <h5><a href="#logger">logger</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.logger</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Logger object used within the Spoon. Messages appear in the Hammerspoon console.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L44">Source/ScreenRecorder.spoon/init.lua line 44</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="maxLengthChoices">
+            <a name="//apple_ref/cpp/Variable/maxLengthChoices" class="dashAnchor"></a>
+            <h5><a href="#maxLengthChoices">maxLengthChoices</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.maxLengthChoices</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Max recording lengths (seconds) offered in the menubar. <code>0</code> means no limit.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L23">Source/ScreenRecorder.spoon/init.lua line 23</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="menuBarItem">
+            <a name="//apple_ref/cpp/Variable/menuBarItem" class="dashAnchor"></a>
+            <h5><a href="#menuBarItem">menuBarItem</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.menuBarItem</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.menubar</code> item, created by <code>ScreenRecorder:start()</code>.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L49">Source/ScreenRecorder.spoon/init.lua line 49</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="outputDir">
+            <a name="//apple_ref/cpp/Variable/outputDir" class="dashAnchor"></a>
+            <h5><a href="#outputDir">outputDir</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.outputDir</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Folder where recordings are saved in the selected format. Defaults to <code>~/Desktop</code>.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L17">Source/ScreenRecorder.spoon/init.lua line 17</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="outputFormat">
+            <a name="//apple_ref/cpp/Variable/outputFormat" class="dashAnchor"></a>
+            <h5><a href="#outputFormat">outputFormat</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder.outputFormat</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Default output format: <code>&quot;gif&quot;</code>, <code>&quot;webp&quot;</code>, <code>&quot;avif&quot;</code> or <code>&quot;mp4&quot;</code>. Defaults to <code>&quot;gif&quot;</code>.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L28">Source/ScreenRecorder.spoon/init.lua line 28</a></td>
+              </tr>
+            </table>
+          </section>
+        <h4 class="documentation-section">Methods</h4>
+          <section id="bindHotkeys">
+            <a name="//apple_ref/cpp/Method/bindHotkeys" class="dashAnchor"></a>
+            <h5><a href="#bindHotkeys">bindHotkeys</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:bindHotkeys(mapping)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Binds hotkeys for ScreenRecorder.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>mapping - A table containing hotkey modifier/key details for the following items:<ul>
+<li>toggle - Select an area and start recording, or stop the current recording</li>
+</ul>
+</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ScreenRecorder object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L271">Source/ScreenRecorder.spoon/init.lua line 271</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="format">
+            <a name="//apple_ref/cpp/Method/format" class="dashAnchor"></a>
+            <h5><a href="#format">format</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:format()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Returns the output format recordings are converted to.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The format chosen in the menubar if one was saved, otherwise <code>ScreenRecorder.outputFormat</code></li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L165">Source/ScreenRecorder.spoon/init.lua line 165</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="maxSeconds">
+            <a name="//apple_ref/cpp/Method/maxSeconds" class="dashAnchor"></a>
+            <h5><a href="#maxSeconds">maxSeconds</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:maxSeconds()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Returns the configured max recording length.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The max length in seconds; <code>0</code> means no limit</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L137">Source/ScreenRecorder.spoon/init.lua line 137</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setFormat">
+            <a name="//apple_ref/cpp/Method/setFormat" class="dashAnchor"></a>
+            <h5><a href="#setFormat">setFormat</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:setFormat(format)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Sets and persists the output format, taking precedence over <code>ScreenRecorder.outputFormat</code>.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>format - <code>&quot;gif&quot;</code>, <code>&quot;webp&quot;</code>, <code>&quot;avif&quot;</code> or <code>&quot;mp4&quot;</code></li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L182">Source/ScreenRecorder.spoon/init.lua line 182</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setMaxSeconds">
+            <a name="//apple_ref/cpp/Method/setMaxSeconds" class="dashAnchor"></a>
+            <h5><a href="#setMaxSeconds">setMaxSeconds</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:setMaxSeconds(seconds)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Sets and persists the max recording length.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>seconds - Max length in seconds; <code>0</code> means no limit</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L152">Source/ScreenRecorder.spoon/init.lua line 152</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="start">
+            <a name="//apple_ref/cpp/Method/start" class="dashAnchor"></a>
+            <h5><a href="#start">start</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:start()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Creates the menubar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ScreenRecorder object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L235">Source/ScreenRecorder.spoon/init.lua line 235</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="stop">
+            <a name="//apple_ref/cpp/Method/stop" class="dashAnchor"></a>
+            <h5><a href="#stop">stop</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:stop()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Stops any recording or selection in progress and removes the menubar item.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The ScreenRecorder object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L252">Source/ScreenRecorder.spoon/init.lua line 252</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="toggleRecording">
+            <a name="//apple_ref/cpp/Method/toggleRecording" class="dashAnchor"></a>
+            <h5><a href="#toggleRecording">toggleRecording</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>ScreenRecorder:toggleRecording()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Stops the current recording; otherwise cancels an in-progress selection; otherwise lets the user drag an area and starts recording it.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/ScreenRecorder.spoon/init.lua#L343">Source/ScreenRecorder.spoon/init.lua line 343</a></td>
+              </tr>
+            </table>
+          </section>
+  </body>
+</html>

@@ -154,7 +154,7 @@
               </tr>
               <tr>
                 <th>Description</th>
-                <td><p>If <code>true</code>, set <a href="http://www.hammerspoon.org/docs/hs.window.html#setFrameCorrectness">setFrameCorrectness</a> for some resizing operations which fail when the window extends beyonds screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to <code>false</code></p>
+                <td><p>If <code>true</code>, use <a href="http://www.hammerspoon.org/docs/hs.window.html#setFrameWithWorkarounds">setFrameWithWorkarounds</a> when maximizing, for windows that end up the wrong size or position when they extend beyond screen boundaries. This may cause some jerkiness in the resizing, so experiment and determine if you need it. Defaults to <code>false</code></p>
 </td>
               </tr>
               <tr>
@@ -185,18 +185,22 @@
                   <th>Parameters</th>
                   <td><ul>
 <li>mapping - A table containing hotkey objifier/key details for the following items:<ul>
-<li>left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen</li>
+<li>left_half, right_half, top_half, bottom_half - resize to the corresponding half of the screen; repeating cycles through 40% and 60%</li>
+<li>half_left, half_right, half_top, half_bottom - resize to the corresponding half of the screen, without cycling</li>
 <li>third_left, third_right - resize to one horizontal-third of the screen and move left/right</li>
 <li>third_up, third_down - resize to one vertical-third of the screen and move up/down</li>
 <li>max - maximize the window</li>
 <li>max_toggle - toggle maximization</li>
 <li>left_third, middle_third_h, right_third - resize and move the window to the corresponding horizontal third of the screen</li>
+<li>left_two_third, right_two_third - resize and move the window to the corresponding horizontal two-thirds of the screen</li>
 <li>top_third, middle_third_v, bottom_third - resize and move the window to the corresponding vertical third of the screen</li>
+<li>top_two_third, bottom_two_third - resize and move the window to the corresponding vertical two-thirds of the screen</li>
 <li>top_left, top_right, bottom_left, bottom_right - resize and move the window to the corresponding quarter of the screen</li>
 <li>undo - restore window to position before last move</li>
 <li>center - move window to center of screen</li>
 <li>larger - grow window larger than its current size</li>
 <li>smaller - shrink window smaller than its current size</li>
+<li>left, right, top, bottom - legacy names for left_half, right_half, top_half, bottom_half</li>
 </ul>
 </li>
 </ul>
@@ -211,7 +215,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L416">Source/WindowHalfsAndThirds.spoon/init.lua line 416</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L426">Source/WindowHalfsAndThirds.spoon/init.lua line 426</a></td>
               </tr>
             </table>
           </section>
@@ -248,7 +252,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L350">Source/WindowHalfsAndThirds.spoon/init.lua line 350</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L360">Source/WindowHalfsAndThirds.spoon/init.lua line 360</a></td>
               </tr>
             </table>
           </section>
@@ -285,7 +289,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L368">Source/WindowHalfsAndThirds.spoon/init.lua line 368</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L378">Source/WindowHalfsAndThirds.spoon/init.lua line 378</a></td>
               </tr>
             </table>
           </section>
@@ -334,7 +338,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L268">Source/WindowHalfsAndThirds.spoon/init.lua line 268</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L267">Source/WindowHalfsAndThirds.spoon/init.lua line 267</a></td>
               </tr>
             </table>
           </section>
@@ -371,7 +375,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L392">Source/WindowHalfsAndThirds.spoon/init.lua line 392</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L402">Source/WindowHalfsAndThirds.spoon/init.lua line 402</a></td>
               </tr>
             </table>
           </section>
@@ -408,7 +412,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L313">Source/WindowHalfsAndThirds.spoon/init.lua line 313</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L319">Source/WindowHalfsAndThirds.spoon/init.lua line 319</a></td>
               </tr>
             </table>
           </section>
@@ -445,7 +449,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L336">Source/WindowHalfsAndThirds.spoon/init.lua line 336</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/WindowHalfsAndThirds.spoon/init.lua#L346">Source/WindowHalfsAndThirds.spoon/init.lua line 346</a></td>
               </tr>
             </table>
           </section>

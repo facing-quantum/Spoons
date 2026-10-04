@@ -15,22 +15,315 @@
   <body>
     <header>
       <h1><a href="./index.html">docs</a> &raquo; Caffeine</h1>
-      <p>Prevent the screen from going to sleep
-Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip">https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip</a></p>
+      <p>Prevent the screen from going to sleep</p>
+<p>Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip">https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffeine.spoon.zip</a></p>
 
       </header>
       <h3>API Overview</h3>
       <ul>
+        <li>Variables - Configurable values</li>
+          <ul>
+            <li><a href="#batteryWatcher">batteryWatcher</a></li>
+            <li><a href="#disableOnBattery">disableOnBattery</a></li>
+            <li><a href="#hotkeyToggle">hotkeyToggle</a></li>
+            <li><a href="#menuBarItem">menuBarItem</a></li>
+            <li><a href="#menuOnLeftClick">menuOnLeftClick</a></li>
+            <li><a href="#preventType">preventType</a></li>
+            <li><a href="#rightClickTap">rightClickTap</a></li>
+            <li><a href="#sessionEndTime">sessionEndTime</a></li>
+            <li><a href="#sessionTimer">sessionTimer</a></li>
+            <li><a href="#sleepWatcher">sleepWatcher</a></li>
+          </ul>
         <li>Methods - API calls which can only be made on an object returned by a constructor</li>
           <ul>
+            <li><a href="#_handleClick">_handleClick</a></li>
             <li><a href="#bindHotkeys">bindHotkeys</a></li>
+            <li><a href="#clicked">clicked</a></li>
+            <li><a href="#getMenuTable">getMenuTable</a></li>
+            <li><a href="#getState">getState</a></li>
+            <li><a href="#init">init</a></li>
+            <li><a href="#isCaffeinated">isCaffeinated</a></li>
+            <li><a href="#popupMenu">popupMenu</a></li>
+            <li><a href="#setDisableOnBattery">setDisableOnBattery</a></li>
+            <li><a href="#setDisplay">setDisplay</a></li>
+            <li><a href="#setMenuOnLeftClick">setMenuOnLeftClick</a></li>
+            <li><a href="#setPreventType">setPreventType</a></li>
             <li><a href="#setState">setState</a></li>
             <li><a href="#start">start</a></li>
+            <li><a href="#startTimed">startTimed</a></li>
             <li><a href="#stop">stop</a></li>
           </ul>
       </ul>
       <h3>API Documentation</h3>
+        <h4 class="documentation-section">Variables</h4>
+          <section id="batteryWatcher">
+            <a name="//apple_ref/cpp/Variable/batteryWatcher" class="dashAnchor"></a>
+            <h5><a href="#batteryWatcher">batteryWatcher</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.batteryWatcher</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.battery.watcher</code> used to automatically deactivate Caffeine when switching to battery power.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L32">Source/Caffeine.spoon/init.lua line 32</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="disableOnBattery">
+            <a name="//apple_ref/cpp/Variable/disableOnBattery" class="dashAnchor"></a>
+            <h5><a href="#disableOnBattery">disableOnBattery</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.disableOnBattery</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Boolean indicating whether Caffeine should automatically deactivate when the computer is running on battery power. Defaults to <code>false</code>.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L48">Source/Caffeine.spoon/init.lua line 48</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="hotkeyToggle">
+            <a name="//apple_ref/cpp/Variable/hotkeyToggle" class="dashAnchor"></a>
+            <h5><a href="#hotkeyToggle">hotkeyToggle</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.hotkeyToggle</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.hotkey</code> object for toggling Caffeine, if bound directly.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L22">Source/Caffeine.spoon/init.lua line 22</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="menuBarItem">
+            <a name="//apple_ref/cpp/Variable/menuBarItem" class="dashAnchor"></a>
+            <h5><a href="#menuBarItem">menuBarItem</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.menuBarItem</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.menubar</code> item for Caffeine.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L17">Source/Caffeine.spoon/init.lua line 17</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="menuOnLeftClick">
+            <a name="//apple_ref/cpp/Variable/menuOnLeftClick" class="dashAnchor"></a>
+            <h5><a href="#menuOnLeftClick">menuOnLeftClick</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.menuOnLeftClick</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Boolean indicating whether left-clicking the menubar icon displays the dropdown menu (<code>true</code>) or directly toggles state (<code>false</code>).</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L53">Source/Caffeine.spoon/init.lua line 53</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="preventType">
+            <a name="//apple_ref/cpp/Variable/preventType" class="dashAnchor"></a>
+            <h5><a href="#preventType">preventType</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.preventType</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The type of sleep prevention to enforce. Defaults to <code>&quot;displayIdle&quot;</code> (keeps screen and system awake).</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L42">Source/Caffeine.spoon/init.lua line 42</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="rightClickTap">
+            <a name="//apple_ref/cpp/Variable/rightClickTap" class="dashAnchor"></a>
+            <h5><a href="#rightClickTap">rightClickTap</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.rightClickTap</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.eventtap</code> used to detect secondary (right) clicks on the menubar item to display the context menu.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L37">Source/Caffeine.spoon/init.lua line 37</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="sessionEndTime">
+            <a name="//apple_ref/cpp/Variable/sessionEndTime" class="dashAnchor"></a>
+            <h5><a href="#sessionEndTime">sessionEndTime</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.sessionEndTime</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Unix timestamp representing the scheduled end time of the active timed caffeination session, or <code>nil</code> if indefinite/off.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L64">Source/Caffeine.spoon/init.lua line 64</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="sessionTimer">
+            <a name="//apple_ref/cpp/Variable/sessionTimer" class="dashAnchor"></a>
+            <h5><a href="#sessionTimer">sessionTimer</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.sessionTimer</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.timer</code> object managing timed caffeination sessions.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L59">Source/Caffeine.spoon/init.lua line 59</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="sleepWatcher">
+            <a name="//apple_ref/cpp/Variable/sleepWatcher" class="dashAnchor"></a>
+            <h5><a href="#sleepWatcher">sleepWatcher</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.sleepWatcher</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.caffeinate.watcher</code> used to resynchronize the menubar icon across system sleep/wake events.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L27">Source/Caffeine.spoon/init.lua line 27</a></td>
+              </tr>
+            </table>
+          </section>
         <h4 class="documentation-section">Methods</h4>
+          <section id="_handleClick">
+            <a name="//apple_ref/cpp/Method/_handleClick" class="dashAnchor"></a>
+            <h5><a href="#_handleClick">_handleClick</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:_handleClick(mods)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Internal click handler differentiating left-click toggle vs modifier/secondary click for menu.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>mods - A table of modifiers passed by hs.menubar click callback (or nil)</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L533">Source/Caffeine.spoon/init.lua line 533</a></td>
+              </tr>
+            </table>
+          </section>
           <section id="bindHotkeys">
             <a name="//apple_ref/cpp/Method/bindHotkeys" class="dashAnchor"></a>
             <h5><a href="#bindHotkeys">bindHotkeys</a></h5>
@@ -45,14 +338,15 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Description</th>
-                <td><p>Binds hotkeys for Caffeine</p>
+                <td><p>Binds hotkeys for Caffeine.</p>
 </td>
               </tr>
               <tr>
                   <th>Parameters</th>
                   <td><ul>
 <li>mapping - A table containing hotkey modifier/key details for the following items:<ul>
-<li>toggle - This will toggle the state of display sleep prevention, and update the menubar graphic</li>
+<li>toggle - This will toggle the state of sleep prevention, and update the menubar graphic</li>
+<li>menu - Open the right-click duration and settings popup menu</li>
 </ul>
 </li>
 </ul>
@@ -67,7 +361,377 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L32">Source/Caffeine.spoon/init.lua line 32</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L342">Source/Caffeine.spoon/init.lua line 342</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="clicked">
+            <a name="//apple_ref/cpp/Method/clicked" class="dashAnchor"></a>
+            <h5><a href="#clicked">clicked</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:clicked()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Toggles caffeination state and updates the menubar icon.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L518">Source/Caffeine.spoon/init.lua line 518</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="getMenuTable">
+            <a name="//apple_ref/cpp/Method/getMenuTable" class="dashAnchor"></a>
+            <h5><a href="#getMenuTable">getMenuTable</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:getMenuTable()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Generates a table formatted for <code>hs.menubar:setMenu()</code> representing the context menu options.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>A table of menu items</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L659">Source/Caffeine.spoon/init.lua line 659</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="getState">
+            <a name="//apple_ref/cpp/Method/getState" class="dashAnchor"></a>
+            <h5><a href="#getState">getState</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:getState()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Returns whether or not screen/system sleep prevention is currently active.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>A boolean, true if sleep prevention is active, false otherwise</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L368">Source/Caffeine.spoon/init.lua line 368</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="init">
+            <a name="//apple_ref/cpp/Method/init" class="dashAnchor"></a>
+            <h5><a href="#init">init</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:init()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Initializes the Spoon and restores any previously persisted user preferences.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L309">Source/Caffeine.spoon/init.lua line 309</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="isCaffeinated">
+            <a name="//apple_ref/cpp/Method/isCaffeinated" class="dashAnchor"></a>
+            <h5><a href="#isCaffeinated">isCaffeinated</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:isCaffeinated()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Alias of <code>Caffeine:getState()</code>.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>A boolean, true if sleep prevention is active, false otherwise</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L382">Source/Caffeine.spoon/init.lua line 382</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="popupMenu">
+            <a name="//apple_ref/cpp/Method/popupMenu" class="dashAnchor"></a>
+            <h5><a href="#popupMenu">popupMenu</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:popupMenu()</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Displays the context menu with duration options and settings at the current cursor or menubar position.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>None</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L741">Source/Caffeine.spoon/init.lua line 741</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setDisableOnBattery">
+            <a name="//apple_ref/cpp/Method/setDisableOnBattery" class="dashAnchor"></a>
+            <h5><a href="#setDisableOnBattery">setDisableOnBattery</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:setDisableOnBattery(enabled)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Enables or disables automatic deactivation when running on battery power and persists the preference.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>enabled - A boolean, true to automatically disable Caffeine on battery, false to allow battery caffeination.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L424">Source/Caffeine.spoon/init.lua line 424</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setDisplay">
+            <a name="//apple_ref/cpp/Method/setDisplay" class="dashAnchor"></a>
+            <h5><a href="#setDisplay">setDisplay</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:setDisplay(state)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Updates the menubar icon and tooltip to match the given state.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>state - A boolean, true for active (caffeinated), false for inactive</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L478">Source/Caffeine.spoon/init.lua line 478</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setMenuOnLeftClick">
+            <a name="//apple_ref/cpp/Method/setMenuOnLeftClick" class="dashAnchor"></a>
+            <h5><a href="#setMenuOnLeftClick">setMenuOnLeftClick</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:setMenuOnLeftClick(enabled)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Sets whether left-clicking the menubar icon displays the dropdown menu or directly toggles state.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>enabled - A boolean, true to open the dropdown menu on left click, false to directly toggle.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L446">Source/Caffeine.spoon/init.lua line 446</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setPreventType">
+            <a name="//apple_ref/cpp/Method/setPreventType" class="dashAnchor"></a>
+            <h5><a href="#setPreventType">setPreventType</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:setPreventType(preventType)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Sets the sleep prevention type.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>preventType - A string, either <code>&quot;displayIdle&quot;</code> (default, screen &amp; system sleep prevented) or <code>&quot;systemIdle&quot;</code> (system sleep prevented, screen allowed to sleep).</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L395">Source/Caffeine.spoon/init.lua line 395</a></td>
               </tr>
             </table>
           </section>
@@ -85,26 +749,26 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Description</th>
-                <td><p>Sets whether or not caffeination should be enabled</p>
+                <td><p>Sets whether or not caffeination should be enabled indefinitely.</p>
 </td>
               </tr>
               <tr>
                   <th>Parameters</th>
                   <td><ul>
-<li>on - A boolean, true if screens should be kept awake, false to let macOS send them to sleep</li>
+<li>on - A boolean, true if sleep should be prevented, false to let macOS sleep</li>
 </ul>
 </td>
               </tr>
               <tr>
                   <th>Returns</th>
                   <td><ul>
-<li>None</li>
+<li>The Caffeine object</li>
 </ul>
 </td>
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L105">Source/Caffeine.spoon/init.lua line 105</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L579">Source/Caffeine.spoon/init.lua line 579</a></td>
               </tr>
             </table>
           </section>
@@ -122,7 +786,7 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Description</th>
-                <td><p>Starts Caffeine</p>
+                <td><p>Starts Caffeine.</p>
 </td>
               </tr>
               <tr>
@@ -141,7 +805,44 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L53">Source/Caffeine.spoon/init.lua line 53</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L820">Source/Caffeine.spoon/init.lua line 820</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="startTimed">
+            <a name="//apple_ref/cpp/Method/startTimed" class="dashAnchor"></a>
+            <h5><a href="#startTimed">startTimed</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:startTimed(minutes)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Keeps macOS awake for a specified duration in minutes, then automatically returns to sleep allowed.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>minutes - Number of minutes to remain active (e.g. 15, 30, 60, 120)</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L613">Source/Caffeine.spoon/init.lua line 613</a></td>
               </tr>
             </table>
           </section>
@@ -159,7 +860,7 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Description</th>
-                <td><p>Stops Caffeine</p>
+                <td><p>Stops Caffeine.</p>
 </td>
               </tr>
               <tr>
@@ -178,7 +879,7 @@ Download: <a href="https://github.com/Hammerspoon/Spoons/raw/master/Spoons/Caffe
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L74">Source/Caffeine.spoon/init.lua line 74</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L890">Source/Caffeine.spoon/init.lua line 890</a></td>
               </tr>
             </table>
           </section>
