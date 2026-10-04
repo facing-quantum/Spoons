@@ -10,7 +10,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "WifiNotifier"
-obj.version = "1.0"
+obj.version = "1.1"
 obj.author = "Garth Mortensen"
 obj.homepage = "https://github.com/Hammerspoon/spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
@@ -27,7 +27,6 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 function obj:init()
     self.wifiNotifier = hs.wifi.watcher.new(function() self:ssidChangedCallback() end)
     self.lastSSID = hs.wifi.currentNetwork()
-    self.newSSID  = nil
     return self
 end
 
@@ -55,17 +54,18 @@ end
 --- Returns:
 ---  * The WifiNotifier object
 function obj:ssidChangedCallback()
-    self.newSSID = hs.wifi.currentNetwork()
+    local newSSID = hs.wifi.currentNetwork()
+    if newSSID == self.lastSSID then return end
 
-    if self.newSSID == nil then
-		hs.notify.new({title="Wifi disconnected", informativeText="Left " .. self.lastSSID}):send()
-	elseif lastSSID == nil then
-		hs.notify.new({title="Wifi connected", informativeText="Joined " .. self.newSSID}):send()
-	else
-		hs.notify.new({title="Network Change", informativeText="Left " .. self.lastSSID .. ". Joined " .. self.newSSID}):send()
-	end
+    if newSSID == nil then
+        hs.notify.new({title="Wifi disconnected", informativeText="Left " .. self.lastSSID}):send()
+    elseif self.lastSSID == nil then
+        hs.notify.new({title="Wifi connected", informativeText="Joined " .. newSSID}):send()
+    else
+        hs.notify.new({title="Network Change", informativeText="Left " .. self.lastSSID .. ". Joined " .. newSSID}):send()
+    end
 
-    self.lastSSID = self.newSSID
+    self.lastSSID = newSSID
 end
 
 return obj
