@@ -13,7 +13,7 @@
         "doc": "Internal click handler differentiating left-click toggle vs modifier/secondary click for menu.\n\nParameters:\n * mods - A table of modifiers passed by hs.menubar click callback (or nil)\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "533",
+        "lineno": "669",
         "name": "_handleClick",
         "notes": [],
         "parameters": [
@@ -32,7 +32,7 @@
         "doc": "Binds hotkeys for Caffeine.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of sleep prevention, and update the menubar graphic\n  * menu - Open the right-click duration and settings popup menu\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "342",
+        "lineno": "418",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -51,7 +51,7 @@
         "doc": "Toggles caffeination state and updates the menubar icon.\n\nParameters:\n * None\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "518",
+        "lineno": "654",
         "name": "clicked",
         "notes": [],
         "parameters": [
@@ -70,7 +70,7 @@
         "doc": "Generates a table formatted for `hs.menubar:setMenu()` representing the context menu options.\n\nParameters:\n * None\n\nReturns:\n * A table of menu items",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "659",
+        "lineno": "795",
         "name": "getMenuTable",
         "notes": [],
         "parameters": [
@@ -89,7 +89,7 @@
         "doc": "Returns whether or not screen/system sleep prevention is currently active.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if sleep prevention is active, false otherwise",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "368",
+        "lineno": "444",
         "name": "getState",
         "notes": [],
         "parameters": [
@@ -108,7 +108,7 @@
         "doc": "Initializes the Spoon and restores any previously persisted user preferences.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "309",
+        "lineno": "381",
         "name": "init",
         "notes": [],
         "parameters": [
@@ -127,7 +127,7 @@
         "doc": "Alias of `Caffeine:getState()`.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if sleep prevention is active, false otherwise",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "382",
+        "lineno": "458",
         "name": "isCaffeinated",
         "notes": [],
         "parameters": [
@@ -146,7 +146,7 @@
         "doc": "Displays the context menu with duration options and settings at the current cursor or menubar position.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "741",
+        "lineno": "882",
         "name": "popupMenu",
         "notes": [],
         "parameters": [
@@ -160,12 +160,31 @@
         "type": "Method"
       },
       {
+        "def": "Caffeine:setAnimateSteam(enabled)",
+        "desc": "Enables or disables the animated steam effect when Caffeine is active and persists the preference.",
+        "doc": "Enables or disables the animated steam effect when Caffeine is active and persists the preference.\n\nParameters:\n * enabled - A boolean, true to animate steam when active, false for static icon.\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "554",
+        "name": "setAnimateSteam",
+        "notes": [],
+        "parameters": [
+          " * enabled - A boolean, true to animate steam when active, false for static icon."
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:setAnimateSteam(enabled)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "Caffeine:setDisableOnBattery(enabled)",
         "desc": "Enables or disables automatic deactivation when running on battery power and persists the preference.",
         "doc": "Enables or disables automatic deactivation when running on battery power and persists the preference.\n\nParameters:\n * enabled - A boolean, true to automatically disable Caffeine on battery, false to allow battery caffeination.\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "424",
+        "lineno": "500",
         "name": "setDisableOnBattery",
         "notes": [],
         "parameters": [
@@ -184,7 +203,7 @@
         "doc": "Updates the menubar icon and tooltip to match the given state.\n\nParameters:\n * state - A boolean, true for active (caffeinated), false for inactive\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "478",
+        "lineno": "601",
         "name": "setDisplay",
         "notes": [],
         "parameters": [
@@ -203,7 +222,7 @@
         "doc": "Sets whether left-clicking the menubar icon displays the dropdown menu or directly toggles state.\n\nParameters:\n * enabled - A boolean, true to open the dropdown menu on left click, false to directly toggle.\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "446",
+        "lineno": "522",
         "name": "setMenuOnLeftClick",
         "notes": [],
         "parameters": [
@@ -222,7 +241,7 @@
         "doc": "Sets the sleep prevention type.\n\nParameters:\n * preventType - A string, either `\"displayIdle\"` (default, screen & system sleep prevented) or `\"systemIdle\"` (system sleep prevented, screen allowed to sleep).\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "395",
+        "lineno": "471",
         "name": "setPreventType",
         "notes": [],
         "parameters": [
@@ -241,7 +260,7 @@
         "doc": "Sets whether or not caffeination should be enabled indefinitely.\n\nParameters:\n * on - A boolean, true if sleep should be prevented, false to let macOS sleep\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "579",
+        "lineno": "715",
         "name": "setState",
         "notes": [],
         "parameters": [
@@ -260,7 +279,7 @@
         "doc": "Starts Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "820",
+        "lineno": "961",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -279,7 +298,7 @@
         "doc": "Keeps macOS awake for a specified duration in minutes, then automatically returns to sleep allowed.\n\nParameters:\n * minutes - Number of minutes to remain active (e.g. 15, 30, 60, 120)\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "613",
+        "lineno": "749",
         "name": "startTimed",
         "notes": [],
         "parameters": [
@@ -298,7 +317,7 @@
         "doc": "Stops Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "890",
+        "lineno": "1033",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -314,6 +333,17 @@
     ],
     "Variable": [
       {
+        "def": "Caffeine.animateSteam",
+        "desc": "Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.",
+        "doc": "Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "69",
+        "name": "animateSteam",
+        "signature": "Caffeine.animateSteam",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "Caffeine.batteryWatcher",
         "desc": "The `hs.battery.watcher` used to automatically deactivate Caffeine when switching to battery power.",
         "doc": "The `hs.battery.watcher` used to automatically deactivate Caffeine when switching to battery power.",
@@ -422,6 +452,17 @@
         "signature": "Caffeine.sleepWatcher",
         "stripped_doc": "",
         "type": "Variable"
+      },
+      {
+        "def": "Caffeine.steamTimer",
+        "desc": "The `hs.timer` object managing the steam animation loop when active.",
+        "doc": "The `hs.timer` object managing the steam animation loop when active.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "74",
+        "name": "steamTimer",
+        "signature": "Caffeine.steamTimer",
+        "stripped_doc": "",
+        "type": "Variable"
       }
     ],
     "desc": "Prevent the screen from going to sleep",
@@ -433,7 +474,7 @@
         "doc": "Internal click handler differentiating left-click toggle vs modifier/secondary click for menu.\n\nParameters:\n * mods - A table of modifiers passed by hs.menubar click callback (or nil)\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "533",
+        "lineno": "669",
         "name": "_handleClick",
         "notes": [],
         "parameters": [
@@ -445,6 +486,17 @@
         "signature": "Caffeine:_handleClick(mods)",
         "stripped_doc": "",
         "type": "Method"
+      },
+      {
+        "def": "Caffeine.animateSteam",
+        "desc": "Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.",
+        "doc": "Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "69",
+        "name": "animateSteam",
+        "signature": "Caffeine.animateSteam",
+        "stripped_doc": "",
+        "type": "Variable"
       },
       {
         "def": "Caffeine.batteryWatcher",
@@ -463,7 +515,7 @@
         "doc": "Binds hotkeys for Caffeine.\n\nParameters:\n * mapping - A table containing hotkey modifier/key details for the following items:\n  * toggle - This will toggle the state of sleep prevention, and update the menubar graphic\n  * menu - Open the right-click duration and settings popup menu\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "342",
+        "lineno": "418",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -482,7 +534,7 @@
         "doc": "Toggles caffeination state and updates the menubar icon.\n\nParameters:\n * None\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "518",
+        "lineno": "654",
         "name": "clicked",
         "notes": [],
         "parameters": [
@@ -512,7 +564,7 @@
         "doc": "Generates a table formatted for `hs.menubar:setMenu()` representing the context menu options.\n\nParameters:\n * None\n\nReturns:\n * A table of menu items",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "659",
+        "lineno": "795",
         "name": "getMenuTable",
         "notes": [],
         "parameters": [
@@ -531,7 +583,7 @@
         "doc": "Returns whether or not screen/system sleep prevention is currently active.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if sleep prevention is active, false otherwise",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "368",
+        "lineno": "444",
         "name": "getState",
         "notes": [],
         "parameters": [
@@ -561,7 +613,7 @@
         "doc": "Initializes the Spoon and restores any previously persisted user preferences.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "309",
+        "lineno": "381",
         "name": "init",
         "notes": [],
         "parameters": [
@@ -580,7 +632,7 @@
         "doc": "Alias of `Caffeine:getState()`.\n\nParameters:\n * None\n\nReturns:\n * A boolean, true if sleep prevention is active, false otherwise",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "382",
+        "lineno": "458",
         "name": "isCaffeinated",
         "notes": [],
         "parameters": [
@@ -621,7 +673,7 @@
         "doc": "Displays the context menu with duration options and settings at the current cursor or menubar position.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "741",
+        "lineno": "882",
         "name": "popupMenu",
         "notes": [],
         "parameters": [
@@ -679,12 +731,31 @@
         "type": "Variable"
       },
       {
+        "def": "Caffeine:setAnimateSteam(enabled)",
+        "desc": "Enables or disables the animated steam effect when Caffeine is active and persists the preference.",
+        "doc": "Enables or disables the animated steam effect when Caffeine is active and persists the preference.\n\nParameters:\n * enabled - A boolean, true to animate steam when active, false for static icon.\n\nReturns:\n * The Caffeine object",
+        "examples": [],
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "554",
+        "name": "setAnimateSteam",
+        "notes": [],
+        "parameters": [
+          " * enabled - A boolean, true to animate steam when active, false for static icon."
+        ],
+        "returns": [
+          " * The Caffeine object"
+        ],
+        "signature": "Caffeine:setAnimateSteam(enabled)",
+        "stripped_doc": "",
+        "type": "Method"
+      },
+      {
         "def": "Caffeine:setDisableOnBattery(enabled)",
         "desc": "Enables or disables automatic deactivation when running on battery power and persists the preference.",
         "doc": "Enables or disables automatic deactivation when running on battery power and persists the preference.\n\nParameters:\n * enabled - A boolean, true to automatically disable Caffeine on battery, false to allow battery caffeination.\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "424",
+        "lineno": "500",
         "name": "setDisableOnBattery",
         "notes": [],
         "parameters": [
@@ -703,7 +774,7 @@
         "doc": "Updates the menubar icon and tooltip to match the given state.\n\nParameters:\n * state - A boolean, true for active (caffeinated), false for inactive\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "478",
+        "lineno": "601",
         "name": "setDisplay",
         "notes": [],
         "parameters": [
@@ -722,7 +793,7 @@
         "doc": "Sets whether left-clicking the menubar icon displays the dropdown menu or directly toggles state.\n\nParameters:\n * enabled - A boolean, true to open the dropdown menu on left click, false to directly toggle.\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "446",
+        "lineno": "522",
         "name": "setMenuOnLeftClick",
         "notes": [],
         "parameters": [
@@ -741,7 +812,7 @@
         "doc": "Sets the sleep prevention type.\n\nParameters:\n * preventType - A string, either `\"displayIdle\"` (default, screen & system sleep prevented) or `\"systemIdle\"` (system sleep prevented, screen allowed to sleep).\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "395",
+        "lineno": "471",
         "name": "setPreventType",
         "notes": [],
         "parameters": [
@@ -760,7 +831,7 @@
         "doc": "Sets whether or not caffeination should be enabled indefinitely.\n\nParameters:\n * on - A boolean, true if sleep should be prevented, false to let macOS sleep\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "579",
+        "lineno": "715",
         "name": "setState",
         "notes": [],
         "parameters": [
@@ -790,7 +861,7 @@
         "doc": "Starts Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "820",
+        "lineno": "961",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -809,7 +880,7 @@
         "doc": "Keeps macOS awake for a specified duration in minutes, then automatically returns to sleep allowed.\n\nParameters:\n * minutes - Number of minutes to remain active (e.g. 15, 30, 60, 120)\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "613",
+        "lineno": "749",
         "name": "startTimed",
         "notes": [],
         "parameters": [
@@ -823,12 +894,23 @@
         "type": "Method"
       },
       {
+        "def": "Caffeine.steamTimer",
+        "desc": "The `hs.timer` object managing the steam animation loop when active.",
+        "doc": "The `hs.timer` object managing the steam animation loop when active.",
+        "file": "Source/Caffeine.spoon/init.lua",
+        "lineno": "74",
+        "name": "steamTimer",
+        "signature": "Caffeine.steamTimer",
+        "stripped_doc": "",
+        "type": "Variable"
+      },
+      {
         "def": "Caffeine:stop()",
         "desc": "Stops Caffeine.",
         "doc": "Stops Caffeine.\n\nParameters:\n * None\n\nReturns:\n * The Caffeine object",
         "examples": [],
         "file": "Source/Caffeine.spoon/init.lua",
-        "lineno": "890",
+        "lineno": "1033",
         "name": "stop",
         "notes": [],
         "parameters": [

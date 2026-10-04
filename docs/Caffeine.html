@@ -23,6 +23,7 @@
       <ul>
         <li>Variables - Configurable values</li>
           <ul>
+            <li><a href="#animateSteam">animateSteam</a></li>
             <li><a href="#batteryWatcher">batteryWatcher</a></li>
             <li><a href="#disableOnBattery">disableOnBattery</a></li>
             <li><a href="#hotkeyToggle">hotkeyToggle</a></li>
@@ -33,6 +34,7 @@
             <li><a href="#sessionEndTime">sessionEndTime</a></li>
             <li><a href="#sessionTimer">sessionTimer</a></li>
             <li><a href="#sleepWatcher">sleepWatcher</a></li>
+            <li><a href="#steamTimer">steamTimer</a></li>
           </ul>
         <li>Methods - API calls which can only be made on an object returned by a constructor</li>
           <ul>
@@ -44,6 +46,7 @@
             <li><a href="#init">init</a></li>
             <li><a href="#isCaffeinated">isCaffeinated</a></li>
             <li><a href="#popupMenu">popupMenu</a></li>
+            <li><a href="#setAnimateSteam">setAnimateSteam</a></li>
             <li><a href="#setDisableOnBattery">setDisableOnBattery</a></li>
             <li><a href="#setDisplay">setDisplay</a></li>
             <li><a href="#setMenuOnLeftClick">setMenuOnLeftClick</a></li>
@@ -56,6 +59,29 @@
       </ul>
       <h3>API Documentation</h3>
         <h4 class="documentation-section">Variables</h4>
+          <section id="animateSteam">
+            <a name="//apple_ref/cpp/Variable/animateSteam" class="dashAnchor"></a>
+            <h5><a href="#animateSteam">animateSteam</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.animateSteam</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to <code>true</code>.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L69">Source/Caffeine.spoon/init.lua line 69</a></td>
+              </tr>
+            </table>
+          </section>
           <section id="batteryWatcher">
             <a name="//apple_ref/cpp/Variable/batteryWatcher" class="dashAnchor"></a>
             <h5><a href="#batteryWatcher">batteryWatcher</a></h5>
@@ -286,6 +312,29 @@
               </tr>
             </table>
           </section>
+          <section id="steamTimer">
+            <a name="//apple_ref/cpp/Variable/steamTimer" class="dashAnchor"></a>
+            <h5><a href="#steamTimer">steamTimer</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine.steamTimer</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Variable</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>The <code>hs.timer</code> object managing the steam animation loop when active.</p>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L74">Source/Caffeine.spoon/init.lua line 74</a></td>
+              </tr>
+            </table>
+          </section>
         <h4 class="documentation-section">Methods</h4>
           <section id="_handleClick">
             <a name="//apple_ref/cpp/Method/_handleClick" class="dashAnchor"></a>
@@ -320,7 +369,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L533">Source/Caffeine.spoon/init.lua line 533</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L669">Source/Caffeine.spoon/init.lua line 669</a></td>
               </tr>
             </table>
           </section>
@@ -361,7 +410,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L342">Source/Caffeine.spoon/init.lua line 342</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L418">Source/Caffeine.spoon/init.lua line 418</a></td>
               </tr>
             </table>
           </section>
@@ -398,7 +447,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L518">Source/Caffeine.spoon/init.lua line 518</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L654">Source/Caffeine.spoon/init.lua line 654</a></td>
               </tr>
             </table>
           </section>
@@ -435,7 +484,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L659">Source/Caffeine.spoon/init.lua line 659</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L795">Source/Caffeine.spoon/init.lua line 795</a></td>
               </tr>
             </table>
           </section>
@@ -472,7 +521,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L368">Source/Caffeine.spoon/init.lua line 368</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L444">Source/Caffeine.spoon/init.lua line 444</a></td>
               </tr>
             </table>
           </section>
@@ -509,7 +558,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L309">Source/Caffeine.spoon/init.lua line 309</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L381">Source/Caffeine.spoon/init.lua line 381</a></td>
               </tr>
             </table>
           </section>
@@ -546,7 +595,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L382">Source/Caffeine.spoon/init.lua line 382</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L458">Source/Caffeine.spoon/init.lua line 458</a></td>
               </tr>
             </table>
           </section>
@@ -583,7 +632,44 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L741">Source/Caffeine.spoon/init.lua line 741</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L882">Source/Caffeine.spoon/init.lua line 882</a></td>
+              </tr>
+            </table>
+          </section>
+          <section id="setAnimateSteam">
+            <a name="//apple_ref/cpp/Method/setAnimateSteam" class="dashAnchor"></a>
+            <h5><a href="#setAnimateSteam">setAnimateSteam</a></h5>
+            <table>
+              <tr>
+                <th>Signature</th>
+                <td><code>Caffeine:setAnimateSteam(enabled)</code></td>
+              </tr>
+              <tr>
+                <th>Type</th>
+                <td>Method</td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><p>Enables or disables the animated steam effect when Caffeine is active and persists the preference.</p>
+</td>
+              </tr>
+              <tr>
+                  <th>Parameters</th>
+                  <td><ul>
+<li>enabled - A boolean, true to animate steam when active, false for static icon.</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                  <th>Returns</th>
+                  <td><ul>
+<li>The Caffeine object</li>
+</ul>
+</td>
+              </tr>
+              <tr>
+                <th>Source</th>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L554">Source/Caffeine.spoon/init.lua line 554</a></td>
               </tr>
             </table>
           </section>
@@ -620,7 +706,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L424">Source/Caffeine.spoon/init.lua line 424</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L500">Source/Caffeine.spoon/init.lua line 500</a></td>
               </tr>
             </table>
           </section>
@@ -657,7 +743,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L478">Source/Caffeine.spoon/init.lua line 478</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L601">Source/Caffeine.spoon/init.lua line 601</a></td>
               </tr>
             </table>
           </section>
@@ -694,7 +780,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L446">Source/Caffeine.spoon/init.lua line 446</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L522">Source/Caffeine.spoon/init.lua line 522</a></td>
               </tr>
             </table>
           </section>
@@ -731,7 +817,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L395">Source/Caffeine.spoon/init.lua line 395</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L471">Source/Caffeine.spoon/init.lua line 471</a></td>
               </tr>
             </table>
           </section>
@@ -768,7 +854,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L579">Source/Caffeine.spoon/init.lua line 579</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L715">Source/Caffeine.spoon/init.lua line 715</a></td>
               </tr>
             </table>
           </section>
@@ -805,7 +891,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L820">Source/Caffeine.spoon/init.lua line 820</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L961">Source/Caffeine.spoon/init.lua line 961</a></td>
               </tr>
             </table>
           </section>
@@ -842,7 +928,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L613">Source/Caffeine.spoon/init.lua line 613</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L749">Source/Caffeine.spoon/init.lua line 749</a></td>
               </tr>
             </table>
           </section>
@@ -879,7 +965,7 @@
               </tr>
               <tr>
                 <th>Source</th>
-                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L890">Source/Caffeine.spoon/init.lua line 890</a></td>
+                <td><a href="https://github.com/Hammerspoon/Spoons/blob/master/Source/Caffeine.spoon/init.lua#L1033">Source/Caffeine.spoon/init.lua line 1033</a></td>
               </tr>
             </table>
           </section>

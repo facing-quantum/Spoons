@@ -147,7 +147,14 @@ mockChooser = {
 -- Mock Timer
 local mockTimer = {
   doAfter = function(seconds, fn)
-    local t = { seconds = seconds, fn = fn, _stopped = false }
+    local t = { seconds = seconds, fn = fn, _stopped = false, _type = "doAfter" }
+    function t:stop() self._stopped = true end
+    function t:trigger() if not self._stopped then self.fn() end end
+    table.insert(mockTimers, t)
+    return t
+  end,
+  doEvery = function(interval, fn)
+    local t = { interval = interval, fn = fn, _stopped = false, _type = "doEvery" }
     function t:stop() self._stopped = true end
     function t:trigger() if not self._stopped then self.fn() end end
     table.insert(mockTimers, t)
@@ -237,7 +244,7 @@ local caffeine = require("init")
 -- [Test 1] Metadata & Version
 print("\n[Test 1] Metadata & Version")
 assert_equal("Caffeine", caffeine.name, "Spoon name is Caffeine")
-assert_equal("1.3", caffeine.version, "Spoon version is 1.3")
+assert_equal("1.4", caffeine.version, "Spoon version is 1.4")
 
 -- [Test 2] State Inspection (getState and isCaffeinated)
 print("\n[Test 2] State Inspection")
@@ -457,6 +464,63 @@ assert_true(_G.hs.spoons.lastBound.def.toggle ~= nil, "toggle hotkey bound")
 assert_true(_G.hs.spoons.lastBound.def.menu ~= nil, "menu hotkey bound")
 
 caffeine:stop()
+
+-- [Test 11] Steam Animation Lifecycle & Configurability
+print("\n[Test 11] Steam Animation Lifecycle & Configurability")
+caffeine:start()
+assert_equal(true, caffeine.animateSteam, "animateSteam is true by default")
+assert_equal(nil, caffeine.steamTimer, "steamTimer is nil when inactive")
+
+-- Activating Caffeine should start steam animation timer
+caffeine:setState(true)
+assert_true(caffeine.steamTimer ~= nil, "steamTimer is created when active and animateSteam is true")
+assert_true(not caffeine.steamTimer._stopped, "steamTimer is running")
+assert_true(caffeine._steamFrames ~= nil and #caffeine._steamFrames == 4, "pre-rendered 4 cyclic steam frames")
+
+-- Timer ticks cycle through frames
+local firstIcon = caffeine.menuBarItem._icon
+caffeine.steamTimer:trigger()
+local secondIcon = caffeine.menuBarItem._icon
+assert_true(firstIcon ~= secondIcon, "steam timer tick advances to next animated frame")
+
+-- Screen sleep pauses steam animation; wake resumes it
+mockWatcher.screensDidSleep = 3
+mockWatcher.systemWillSleep = 4
+caffeine.sleepWatcher._fn(mockWatcher.screensDidSleep)
+assert_equal(nil, caffeine.steamTimer, "steam animation stopped when screens go to sleep")
+caffeine.sleepWatcher._fn(mockWatcher.screensDidWake)
+assert_true(caffeine.steamTimer ~= nil and not caffeine.steamTimer._stopped, "steam animation resumed on wake")
+
+-- Context menu toggle check
+local menuTable = caffeine:getMenuTable()
+local foundAnimateToggle = false
+for _, item in ipairs(menuTable) do
+  if item.title == "Animate Steam When Active" then
+    foundAnimateToggle = true
+    assert_equal(true, item.checked, "Animate Steam toggle is checked in menu")
+  end
+end
+assert_true(foundAnimateToggle, "Animate Steam toggle present in context menu")
+
+-- Disabling animation switches to static icon and stops timer
+caffeine:setAnimateSteam(false)
+assert_equal(false, caffeine.animateSteam, "animateSteam updated to false")
+assert_equal(false, mockSettingsStore["Caffeine.animateSteam"], "animateSteam persisted to hs.settings")
+assert_equal(nil, caffeine.steamTimer, "steamTimer stopped when animation disabled")
+assert_equal(caffeine._icons["on"], caffeine.menuBarItem._icon, "menubar item reset to static ON icon")
+
+-- Re-enabling animation restarts timer while active
+caffeine:setAnimateSteam(true)
+assert_equal(true, caffeine.animateSteam, "animateSteam updated to true")
+assert_true(caffeine.steamTimer ~= nil and not caffeine.steamTimer._stopped, "steamTimer restarted when animation re-enabled")
+
+-- Deactivating Caffeine stops the steam timer
+caffeine:setState(false)
+assert_equal(nil, caffeine.steamTimer, "steamTimer stopped when Caffeine deactivated")
+assert_equal(caffeine._icons["off"], caffeine.menuBarItem._icon, "menubar item reset to inactive icon")
+
+caffeine:stop()
+assert_equal(nil, caffeine.steamTimer, "steamTimer cleaned up on stop()")
 
 print(string.format("\n=========================================\nTest Results: %d Passed, %d Failed\n=========================================", passed, failed))
 if failed > 0 then os.exit(1) end
