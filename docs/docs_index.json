@@ -384,6 +384,12 @@
     "type": "Module"
   },
   {
+    "desc": "Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.",
+    "module": "Caffeine",
+    "name": "animateSteam",
+    "type": "Variable"
+  },
+  {
     "desc": "The `hs.battery.watcher` used to automatically deactivate Caffeine when switching to battery power.",
     "module": "Caffeine",
     "name": "batteryWatcher",
@@ -444,6 +450,12 @@
     "type": "Variable"
   },
   {
+    "desc": "The `hs.timer` object managing the steam animation loop when active.",
+    "module": "Caffeine",
+    "name": "steamTimer",
+    "type": "Variable"
+  },
+  {
     "desc": "Internal click handler differentiating left-click toggle vs modifier/secondary click for menu.",
     "module": "Caffeine",
     "name": "_handleClick",
@@ -489,6 +501,12 @@
     "desc": "Displays the context menu with duration options and settings at the current cursor or menubar position.",
     "module": "Caffeine",
     "name": "popupMenu",
+    "type": "Method"
+  },
+  {
+    "desc": "Enables or disables the animated steam effect when Caffeine is active and persists the preference.",
+    "module": "Caffeine",
+    "name": "setAnimateSteam",
     "type": "Method"
   },
   {

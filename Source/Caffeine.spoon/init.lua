@@ -9,7 +9,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "Caffeine"
-obj.version = "1.3"
+obj.version = "1.4"
 obj.author = "Chris Jones <cmsj@tenshu.net>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
@@ -66,8 +66,93 @@ obj.sessionTimer = nil
 --- Unix timestamp representing the scheduled end time of the active timed caffeination session, or `nil` if indefinite/off.
 obj.sessionEndTime = nil
 
+--- Caffeine.animateSteam
+--- Variable
+--- Boolean indicating whether to animate the steam rising from the cup when Caffeine is active. Defaults to `true`.
+obj.animateSteam = true
+
+--- Caffeine.steamTimer
+--- Variable
+--- The `hs.timer` object managing the steam animation loop when active.
+obj.steamTimer = nil
+
+-- Raw base coordinates for the two authentic steam plumes (prior to dy offset)
+local RAW_PLUME_1 = {
+    { x = 4.66, y = 0.59 },
+    { c1x = 5.16, c1y = 0.59, c2x = 5.62, c2y = 0.58, x = 6.08, y = 0.59 },
+    { c1x = 6.13, c1y = 0.59, c2x = 6.19, c2y = 0.63, x = 6.23, y = 0.66 },
+    { c1x = 6.75, c1y = 1.05, c2x = 6.89, c2y = 1.54, x = 6.60, y = 2.13 },
+    { c1x = 6.44, c1y = 2.45, c2x = 6.22, c2y = 2.73, x = 6.03, y = 3.04 },
+    { c1x = 5.88, c1y = 3.29, c2x = 5.72, c2y = 3.54, x = 5.61, y = 3.81 },
+    { c1x = 5.42, c1y = 4.29, c2x = 5.54, c2y = 4.69, x = 5.92, y = 5.03 },
+    { c1x = 5.97, c1y = 5.07, c2x = 6.02, c2y = 5.12, x = 6.10, y = 5.19 },
+    { c1x = 5.59, c1y = 5.19, c2x = 5.12, c2y = 5.25, x = 4.67, y = 5.17 },
+    { c1x = 4.34, c1y = 5.11, c2x = 4.11, c2y = 4.79, x = 4.05, y = 4.45 },
+    { c1x = 4.01, c1y = 4.24, c2x = 4.03, c2y = 3.98, x = 4.11, y = 3.78 },
+    { c1x = 4.26, c1y = 3.44, c2x = 4.48, c2y = 3.14, x = 4.67, y = 2.82 },
+    { c1x = 4.81, c1y = 2.59, c2x = 4.96, c2y = 2.37, x = 5.08, y = 2.13 },
+    { c1x = 5.36, c1y = 1.55, c2x = 5.27, c2y = 1.14, x = 4.80, y = 0.71 },
+    { c1x = 4.76, c1y = 0.68, c2x = 4.73, c2y = 0.65, x = 4.66, y = 0.59 }
+}
+
+local RAW_PLUME_2 = {
+    { x = 7.74, y = 0.59 },
+    { c1x = 8.25, c1y = 0.59, c2x = 8.71, c2y = 0.58, x = 9.18, y = 0.59 },
+    { c1x = 9.25, c1y = 0.59, c2x = 9.33, c2y = 0.67, x = 9.39, y = 0.72 },
+    { c1x = 9.84, c1y = 1.09, c2x = 9.96, c2y = 1.55, x = 9.71, y = 2.07 },
+    { c1x = 9.54, c1y = 2.40, c2x = 9.32, c2y = 2.70, x = 9.13, y = 3.02 },
+    { c1x = 8.98, c1y = 3.27, c2x = 8.81, c2y = 3.51, x = 8.71, y = 3.78 },
+    { c1x = 8.50, c1y = 4.27, c2x = 8.62, c2y = 4.68, x = 9.02, y = 5.04 },
+    { c1x = 9.06, c1y = 5.08, c2x = 9.11, c2y = 5.12, x = 9.18, y = 5.19 },
+    { c1x = 8.68, c1y = 5.19, c2x = 8.20, c2y = 5.25, x = 7.75, y = 5.17 },
+    { c1x = 7.42, c1y = 5.11, c2x = 7.20, c2y = 4.79, x = 7.13, y = 4.45 },
+    { c1x = 7.09, c1y = 4.24, c2x = 7.11, c2y = 3.98, x = 7.20, y = 3.78 },
+    { c1x = 7.34, c1y = 3.45, c2x = 7.56, c2y = 3.14, x = 7.75, y = 2.82 },
+    { c1x = 7.89, c1y = 2.59, c2x = 8.05, c2y = 2.37, x = 8.16, y = 2.13 },
+    { c1x = 8.44, c1y = 1.55, c2x = 8.35, c2y = 1.14, x = 7.88, y = 0.71 },
+    { c1x = 7.85, c1y = 0.68, c2x = 7.81, c2y = 0.65, x = 7.74, y = 0.59 }
+}
+
+-- Calculate parametric wafting and vertical drift offset for steam animation frames
+local function getPlumeOffset(plumeNum, frameIdx, y)
+    if not frameIdx then return 0, 0 end
+    -- h is 0 at steam base (y >= 5.2 near cup rim) and smoothly scales up to 1.0 at steam tip (y <= 0.6)
+    local h = math.max(0, math.min(1, (5.2 - y) / 4.6))
+    -- 4 cyclic frames: plume 1 and plume 2 waft 90 degrees out of phase for organic shimmer
+    local phi = (frameIdx - 1) * (math.pi / 2)
+    if plumeNum == 2 then
+        phi = phi + (math.pi / 2)
+    end
+    local dx = h * 0.45 * math.sin(phi)
+    local dy_offset = -h * 0.35 * math.abs(math.sin(phi))
+    return dx, dy_offset
+end
+
+local function transformSteamCoords(rawCoords, plumeNum, frameIdx, dy)
+    local res = {}
+    for i, pt in ipairs(rawCoords) do
+        local offX, offY = getPlumeOffset(plumeNum, frameIdx, pt.y)
+        local newPt = {
+            x = pt.x + offX,
+            y = pt.y + dy + offY
+        }
+        if pt.c1x then
+            local c1offX, c1offY = getPlumeOffset(plumeNum, frameIdx, pt.c1y)
+            newPt.c1x = pt.c1x + c1offX
+            newPt.c1y = pt.c1y + dy + c1offY
+        end
+        if pt.c2x then
+            local c2offX, c2offY = getPlumeOffset(plumeNum, frameIdx, pt.c2y)
+            newPt.c2x = pt.c2x + c2offX
+            newPt.c2y = pt.c2y + dy + c2offY
+        end
+        res[i] = newPt
+    end
+    return res
+end
+
 -- Internal helper to draw the authentic Caffeine coffee cup icon programmatically via hs.canvas
-local function drawCanvasIcon(state)
+local function drawCanvasIcon(state, frameIdx)
     if not (hs and hs.canvas and hs.canvas.new) then return nil end
 
     -- Both Active (ON) and Inactive (OFF) use an identical 16x22 canvas frame.
@@ -163,23 +248,7 @@ local function drawCanvasIcon(state)
             action = "fill",
             fillColor = color,
             closed = true,
-            coordinates = {
-                { x = 4.66, y = 0.59 + dy },
-                { c1x = 5.16, c1y = 0.59 + dy, c2x = 5.62, c2y = 0.58 + dy, x = 6.08, y = 0.59 + dy },
-                { c1x = 6.13, c1y = 0.59 + dy, c2x = 6.19, c2y = 0.63 + dy, x = 6.23, y = 0.66 + dy },
-                { c1x = 6.75, c1y = 1.05 + dy, c2x = 6.89, c2y = 1.54 + dy, x = 6.60, y = 2.13 + dy },
-                { c1x = 6.44, c1y = 2.45 + dy, c2x = 6.22, c2y = 2.73 + dy, x = 6.03, y = 3.04 + dy },
-                { c1x = 5.88, c1y = 3.29 + dy, c2x = 5.72, c2y = 3.54 + dy, x = 5.61, y = 3.81 + dy },
-                { c1x = 5.42, c1y = 4.29 + dy, c2x = 5.54, c2y = 4.69 + dy, x = 5.92, y = 5.03 + dy },
-                { c1x = 5.97, c1y = 5.07 + dy, c2x = 6.02, c2y = 5.12 + dy, x = 6.10, y = 5.19 + dy },
-                { c1x = 5.59, c1y = 5.19 + dy, c2x = 5.12, c2y = 5.25 + dy, x = 4.67, y = 5.17 + dy },
-                { c1x = 4.34, c1y = 5.11 + dy, c2x = 4.11, c2y = 4.79 + dy, x = 4.05, y = 4.45 + dy },
-                { c1x = 4.01, c1y = 4.24 + dy, c2x = 4.03, c2y = 3.98 + dy, x = 4.11, y = 3.78 + dy },
-                { c1x = 4.26, c1y = 3.44 + dy, c2x = 4.48, c2y = 3.14 + dy, x = 4.67, y = 2.82 + dy },
-                { c1x = 4.81, c1y = 2.59 + dy, c2x = 4.96, c2y = 2.37 + dy, x = 5.08, y = 2.13 + dy },
-                { c1x = 5.36, c1y = 1.55 + dy, c2x = 5.27, c2y = 1.14 + dy, x = 4.80, y = 0.71 + dy },
-                { c1x = 4.76, c1y = 0.68 + dy, c2x = 4.73, c2y = 0.65 + dy, x = 4.66, y = 0.59 + dy }
-            }
+            coordinates = transformSteamCoords(RAW_PLUME_1, 1, frameIdx, dy)
         })
 
         -- Steam plume 2 (Right)
@@ -188,23 +257,7 @@ local function drawCanvasIcon(state)
             action = "fill",
             fillColor = color,
             closed = true,
-            coordinates = {
-                { x = 7.74, y = 0.59 + dy },
-                { c1x = 8.25, c1y = 0.59 + dy, c2x = 8.71, c2y = 0.58 + dy, x = 9.18, y = 0.59 + dy },
-                { c1x = 9.25, c1y = 0.59 + dy, c2x = 9.33, c2y = 0.67 + dy, x = 9.39, y = 0.72 + dy },
-                { c1x = 9.84, c1y = 1.09 + dy, c2x = 9.96, c2y = 1.55 + dy, x = 9.71, y = 2.07 + dy },
-                { c1x = 9.54, c1y = 2.40 + dy, c2x = 9.32, c2y = 2.70 + dy, x = 9.13, y = 3.02 + dy },
-                { c1x = 8.98, c1y = 3.27 + dy, c2x = 8.81, c2y = 3.51 + dy, x = 8.71, y = 3.78 + dy },
-                { c1x = 8.50, c1y = 4.27 + dy, c2x = 8.62, c2y = 4.68 + dy, x = 9.02, y = 5.04 + dy },
-                { c1x = 9.06, c1y = 5.08 + dy, c2x = 9.11, c2y = 5.12 + dy, x = 9.18, y = 5.19 + dy },
-                { c1x = 8.68, c1y = 5.19 + dy, c2x = 8.20, c2y = 5.25 + dy, x = 7.75, y = 5.17 + dy },
-                { c1x = 7.42, c1y = 5.11 + dy, c2x = 7.20, c2y = 4.79 + dy, x = 7.13, y = 4.45 + dy },
-                { c1x = 7.09, c1y = 4.24 + dy, c2x = 7.11, c2y = 3.98 + dy, x = 7.20, y = 3.78 + dy },
-                { c1x = 7.34, c1y = 3.45 + dy, c2x = 7.56, c2y = 3.14 + dy, x = 7.75, y = 2.82 + dy },
-                { c1x = 7.89, c1y = 2.59 + dy, c2x = 8.05, c2y = 2.37 + dy, x = 8.16, y = 2.13 + dy },
-                { c1x = 8.44, c1y = 1.55 + dy, c2x = 8.35, c2y = 1.14 + dy, x = 7.88, y = 0.71 + dy },
-                { c1x = 7.85, c1y = 0.68 + dy, c2x = 7.81, c2y = 0.65 + dy, x = 7.74, y = 0.59 + dy }
-            }
+            coordinates = transformSteamCoords(RAW_PLUME_2, 2, frameIdx, dy)
         })
     end
 
@@ -271,6 +324,25 @@ local function getIcon(self, state)
     return self._icons[key]
 end
 
+-- Pre-generate and cache the cyclic steam animation frames
+local function getSteamFrames(self)
+    if self._steamFrames then return self._steamFrames end
+    self._steamFrames = {}
+    for i = 1, 4 do
+        local img = drawCanvasIcon(true, i)
+        if img then
+            table.insert(self._steamFrames, img)
+        end
+    end
+    if #self._steamFrames == 0 then
+        local fallback = getIcon(self, true)
+        if fallback then
+            table.insert(self._steamFrames, fallback)
+        end
+    end
+    return self._steamFrames
+end
+
 -- Internal helper to detect host macOS / Darwin major version
 local function getOSMajorVersion()
     if hs and hs.host and hs.host.operatingSystemVersion then
@@ -324,6 +396,10 @@ function obj:init()
         local savedPrevent = hs.settings.get("Caffeine.preventType")
         if savedPrevent ~= nil and (savedPrevent == "displayIdle" or savedPrevent == "systemIdle") then
             self.preventType = savedPrevent
+        end
+        local savedAnimate = hs.settings.get("Caffeine.animateSteam")
+        if savedAnimate ~= nil then
+            self.animateSteam = (savedAnimate == true)
         end
         -- Clear any stale menuOnLeftClick in hs.settings so it never overrides 1-click toggle
         if hs.settings.clear then
@@ -475,6 +551,53 @@ function obj:setMenuOnLeftClick(enabled)
     return self
 end
 
+--- Caffeine:setAnimateSteam(enabled)
+--- Method
+--- Enables or disables the animated steam effect when Caffeine is active and persists the preference.
+---
+--- Parameters:
+---  * enabled - A boolean, true to animate steam when active, false for static icon.
+---
+--- Returns:
+---  * The Caffeine object
+function obj:setAnimateSteam(enabled)
+    self.animateSteam = (enabled == true)
+    if hs and hs.settings and hs.settings.set then
+        hs.settings.set("Caffeine.animateSteam", self.animateSteam)
+    end
+    if self.menuBarItem and self:getState() then
+        self:setDisplay(true)
+    end
+    return self
+end
+
+function obj:_startSteamAnimation()
+    if not self.animateSteam or self.steamTimer or not self.menuBarItem then return end
+    local frames = getSteamFrames(self)
+    if not frames or #frames <= 1 then return end
+
+    local currentFrame = 1
+    self.menuBarItem:setIcon(frames[currentFrame])
+
+    if hs and hs.timer and hs.timer.doEvery then
+        self.steamTimer = hs.timer.doEvery(0.25, function()
+            if not self.menuBarItem or not self:getState() then
+                self:_stopSteamAnimation()
+                return
+            end
+            currentFrame = (currentFrame % #frames) + 1
+            self.menuBarItem:setIcon(frames[currentFrame])
+        end)
+    end
+end
+
+function obj:_stopSteamAnimation()
+    if self.steamTimer then
+        self.steamTimer:stop()
+        self.steamTimer = nil
+    end
+end
+
 --- Caffeine:setDisplay(state)
 --- Method
 --- Updates the menubar icon and tooltip to match the given state.
@@ -491,9 +614,22 @@ function obj.setDisplay(self, state)
     end
     if not self.menuBarItem then return self end
 
-    local icon = getIcon(self, state)
-    if icon then
-        self.menuBarItem:setIcon(icon)
+    if state then
+        local icon = getIcon(self, true)
+        if icon then
+            self.menuBarItem:setIcon(icon)
+        end
+        if self.animateSteam then
+            self:_startSteamAnimation()
+        else
+            self:_stopSteamAnimation()
+        end
+    else
+        self:_stopSteamAnimation()
+        local icon = getIcon(self, false)
+        if icon then
+            self.menuBarItem:setIcon(icon)
+        end
     end
 
     if self.menuBarItem.setTooltip then
@@ -730,6 +866,11 @@ function obj:getMenuTable()
             fn = function() self:setDisableOnBattery(not self.disableOnBattery) end
         },
         {
+            title = "Animate Steam When Active",
+            checked = self.animateSteam == true,
+            fn = function() self:setAnimateSteam(not self.animateSteam) end
+        },
+        {
             title = "Open Menu on Left Click",
             checked = self.menuOnLeftClick == true,
             fn = function() self:setMenuOnLeftClick(not self.menuOnLeftClick) end
@@ -849,6 +990,8 @@ function obj:start()
             local w = hs.caffeinate.watcher
             if event == w.systemDidWake or event == w.screensDidWake then
                 self:setDisplay(self:getState())
+            elseif event == w.systemWillSleep or event == w.screensDidSleep then
+                self:_stopSteamAnimation()
             end
         end):start()
     end
@@ -897,6 +1040,7 @@ end
 --- Returns:
 ---  * The Caffeine object
 function obj:stop()
+    self:_stopSteamAnimation()
     if self.sessionTimer then
         self.sessionTimer:stop()
         self.sessionTimer = nil
