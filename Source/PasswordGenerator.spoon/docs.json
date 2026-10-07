@@ -32,7 +32,7 @@
         "doc": "Binds hotkeys for PasswordGenerator.\n\nParameters:\n * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2600",
+        "lineno": "2627",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -226,7 +226,7 @@
         "doc": "Closes and dismisses the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2438",
+        "lineno": "2465",
         "name": "hideInteractiveMenu",
         "notes": [],
         "parameters": [
@@ -399,7 +399,7 @@
         "doc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2291",
+        "lineno": "2312",
         "name": "showInteractiveMenu",
         "notes": [],
         "parameters": [
@@ -418,7 +418,7 @@
         "doc": "Starts the menubar display for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2538",
+        "lineno": "2565",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -437,7 +437,7 @@
         "doc": "Stops and removes the menubar item for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2565",
+        "lineno": "2592",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -456,7 +456,7 @@
         "doc": "Toggles visibility of the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2464",
+        "lineno": "2491",
         "name": "toggleInteractiveMenu",
         "notes": [],
         "parameters": [
@@ -698,7 +698,7 @@
         "doc": "Binds hotkeys for PasswordGenerator.\n\nParameters:\n * mapping - A table containing action or item IDs mapped to key details:\n   * `copy` - Generate default password and copy to clipboard\n   * `paste` - Generate default password and paste\n   * `menu` - Toggle interactive segmented-bar dropdown menu\n   * `interactive` - Toggle interactive segmented-bar dropdown menu\n   * Or any configured item ID (e.g. `diceware`, `pin`, `strong`, `passphrase`) to generate that specific item\n\nReturns:\n * None",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2600",
+        "lineno": "2627",
         "name": "bindHotkeys",
         "notes": [],
         "parameters": [
@@ -925,7 +925,7 @@
         "doc": "Closes and dismisses the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2438",
+        "lineno": "2465",
         "name": "hideInteractiveMenu",
         "notes": [],
         "parameters": [
@@ -1208,7 +1208,7 @@
         "doc": "Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2291",
+        "lineno": "2312",
         "name": "showInteractiveMenu",
         "notes": [],
         "parameters": [
@@ -1227,7 +1227,7 @@
         "doc": "Starts the menubar display for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2538",
+        "lineno": "2565",
         "name": "start",
         "notes": [],
         "parameters": [
@@ -1246,7 +1246,7 @@
         "doc": "Stops and removes the menubar item for PasswordGenerator.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2565",
+        "lineno": "2592",
         "name": "stop",
         "notes": [],
         "parameters": [
@@ -1276,7 +1276,7 @@
         "doc": "Toggles visibility of the interactive menu dropdown.\n\nParameters:\n * None\n\nReturns:\n * The PasswordGenerator object for method chaining",
         "examples": [],
         "file": "Source/PasswordGenerator.spoon/init.lua",
-        "lineno": "2464",
+        "lineno": "2491",
         "name": "toggleInteractiveMenu",
         "notes": [],
         "parameters": [

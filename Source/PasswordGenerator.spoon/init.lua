@@ -9,7 +9,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "PasswordGenerator"
-obj.version = "2.3"
+obj.version = "2.4"
 obj.author = "Jon Lorusso <jonlorusso@gmail.com>, modern overhaul"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
@@ -2288,6 +2288,27 @@ function obj:_handleInteractiveMouse(canvas, eventName, id, x, y)
   end
 end
 
+-- Returns the menubar item's frame in Hammerspoon (top-left origin) coordinates.
+-- hs.menubar:frame() flips the raw Cocoa frame using hs.screen.mainScreen()
+-- (the screen with keyboard focus), but Cocoa coordinates are relative to the
+-- *primary* screen. With multiple displays of different heights (e.g. a 14"
+-- MacBook Pro next to a taller external), that puts the y value hundreds of
+-- points too low. Flip against the primary screen ourselves instead.
+function obj:_menubarItemFrame()
+  local mb = self.menubar
+  if not mb then return nil end
+  local primary = (has_hs and hs.screen and hs.screen.primaryScreen) and hs.screen.primaryScreen() or nil
+  if mb._frame and primary and primary.fullFrame then
+    local raw = mb:_frame()
+    if raw then
+      local pf = primary:fullFrame()
+      return { x = raw.x, y = pf.h - raw.y - raw.h, w = raw.w, h = raw.h }
+    end
+    return nil
+  end
+  return mb.frame and mb:frame() or nil
+end
+
 --- PasswordGenerator:showInteractiveMenu()
 --- Method
 --- Displays the interactive menu dropdown attached to the menubar icon with segmented length bar and preset items.
@@ -2315,13 +2336,17 @@ function obj:showInteractiveMenu()
   local originX, originY
 
   -- Position directly underneath the menubar icon if available
-  if self.menubar and self.menubar.frame then
-    local mf = self.menubar:frame()
-    if mf and mf.w and mf.w > 0 then
-      local scr = (has_hs and hs.mouse and hs.mouse.getCurrentScreen) and hs.mouse.getCurrentScreen() or nil
-      local sf = (scr and scr.fullFrame) and scr:fullFrame() or { x = 0, y = 0, w = 1920, h = 1080 }
-      originX = math.min(math.max(sf.x + 10, mf.x + (mf.w / 2) - (W / 2)), sf.x + sf.w - W - 10)
-      originY = mf.y + mf.h + 2
+  local mf = self:_menubarItemFrame()
+  if mf and mf.w and mf.w > 0 then
+    local scr = (has_hs and hs.mouse and hs.mouse.getCurrentScreen) and hs.mouse.getCurrentScreen() or nil
+    local sf = (scr and scr.fullFrame) and scr:fullFrame() or { x = 0, y = 0, w = 1920, h = 1080 }
+    originX = math.min(math.max(sf.x + 10, mf.x + (mf.w / 2) - (W / 2)), sf.x + sf.w - W - 10)
+    originY = mf.y + mf.h + 2
+    -- Safety net: if the computed y is not near the top of the screen the icon
+    -- lives on, snap to just below that screen's menubar instead.
+    if originY < sf.y or originY > sf.y + 100 then
+      local usable = (scr and scr.frame) and scr:frame() or nil
+      originY = (usable and usable.y > sf.y) and (usable.y + 2) or (sf.y + 40)
     end
   end
 
@@ -2365,8 +2390,8 @@ function obj:showInteractiveMenu()
         local cf = self.interactiveCanvas:frame()
         if pos.x < cf.x or pos.x > cf.x + cf.w or pos.y < cf.y or pos.y > cf.y + cf.h then
           -- If clicked inside menubar item itself, ignore outside tap (toggle handles it)
-          if self.menubar and self.menubar.frame then
-            local mf = self.menubar:frame()
+          do
+            local mf = self:_menubarItemFrame()
             if mf and pos.x >= mf.x and pos.x <= mf.x + mf.w and pos.y >= mf.y and pos.y <= mf.y + mf.h then
               return false
             end

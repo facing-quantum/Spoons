@@ -779,6 +779,40 @@ assert_true(pg.interactiveCanvas ~= nil and pg.interactiveCanvas._visible, "show
 pg:showChooser()
 assert_equal(nil, pg.interactiveCanvas, "showChooser second invocation closes interactive menu")
 
+-- Regression: on a 14" MBP (982pt tall, notch menubar 37pt) as the primary display,
+-- hs.menubar:frame() flips against hs.screen.mainScreen(); if that is a taller
+-- external display the dropdown landed mid-screen. We flip against primaryScreen.
+do
+  if pg.interactiveCanvas then pg:hideInteractiveMenu() end
+  local mbpFull = { x = 0, y = 0, w = 1512, h = 982 }
+  _G.hs.screen = { primaryScreen = function() return { fullFrame = function() return mbpFull end } end }
+  local savedGetScreen = _G.hs.mouse.getCurrentScreen
+  _G.hs.mouse.getCurrentScreen = function()
+    return {
+      fullFrame = function() return mbpFull end,
+      frame = function() return { x = 0, y = 37, w = 1512, h = 945 } end
+    }
+  end
+  local savedFrame = pg.menubar.frame
+  -- Raw Cocoa frame (bottom-left origin) of the status item at the top of the MBP
+  pg.menubar._frame = function() return { x = 1200, y = 945, w = 24, h = 37 } end
+  -- Simulate the buggy hs.menubar:frame() result (flipped against a 1440pt screen)
+  pg.menubar.frame = function() return { x = 1200, y = 458, w = 24, h = 37 } end
+  pg:showInteractiveMenu()
+  assert_equal(39, pg.interactiveCanvas:frame().y, "dropdown placed under notch menubar on primary MBP screen")
+  pg:hideInteractiveMenu()
+
+  -- Without _frame, the safety net still snaps a bogus y to the top of the screen
+  pg.menubar._frame = nil
+  pg:showInteractiveMenu()
+  assert_equal(39, pg.interactiveCanvas:frame().y, "bogus menubar frame y snapped below current screen's menubar")
+  pg:hideInteractiveMenu()
+
+  pg.menubar.frame = savedFrame
+  _G.hs.mouse.getCurrentScreen = savedGetScreen
+  _G.hs.screen = nil
+end
+
 -- Hotkey bindings
 pg:bindHotkeys({
   copy = { { "cmd", "alt" }, "c" },

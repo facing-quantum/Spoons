@@ -9,7 +9,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "Caffeine"
-obj.version = "1.4"
+obj.version = "1.5"
 obj.author = "Chris Jones <cmsj@tenshu.net>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "MIT - https://opensource.org/licenses/MIT"
@@ -112,6 +112,25 @@ local RAW_PLUME_2 = {
     { c1x = 8.44, c1y = 1.55, c2x = 8.35, c2y = 1.14, x = 7.88, y = 0.71 },
     { c1x = 7.85, c1y = 0.68, c2x = 7.81, c2y = 0.65, x = 7.74, y = 0.59 }
 }
+
+-- Returns the menubar item's frame in Hammerspoon (top-left origin) coordinates.
+-- hs.menubar:frame() flips the raw Cocoa frame using hs.screen.mainScreen()
+-- (the screen with keyboard focus), but Cocoa coordinates are relative to the
+-- *primary* screen. With displays of different heights (e.g. a 14" MacBook Pro
+-- beside a lower-resolution primary monitor) the result is off by the height
+-- difference, which can push the popup point off-screen so the menu never shows.
+-- hs.menubar:popupMenu() flips back using the primary screen, so we must match it.
+local function menubarItemFrame(mb)
+    if not mb then return nil end
+    local primary = (hs and hs.screen and hs.screen.primaryScreen) and hs.screen.primaryScreen() or nil
+    if mb._frame and primary and primary.fullFrame then
+        local raw = mb:_frame()
+        if not raw then return nil end
+        local pf = primary:fullFrame()
+        return { x = raw.x, y = pf.h - raw.y - raw.h, w = raw.w, h = raw.h }
+    end
+    return mb.frame and mb:frame() or nil
+end
 
 -- Calculate parametric wafting and vertical drift offset for steam animation frames
 local function getPlumeOffset(plumeNum, frameIdx, y)
@@ -893,14 +912,12 @@ function obj:popupMenu()
     local pos = nil
 
     -- Prefer positioning cleanly below the menubar item so the menu does not overlap the icon or cursor
-    if self.menuBarItem and self.menuBarItem.frame then
-        local f = self.menuBarItem:frame()
-        if f and f.h and f.h > 0 then
-            pos = {
-                x = math.floor(f.x),
-                y = math.floor(f.y + f.h + 4)
-            }
-        end
+    local f = menubarItemFrame(self.menuBarItem)
+    if f and f.h and f.h > 0 then
+        pos = {
+            x = math.floor(f.x),
+            y = math.floor(f.y + f.h + 4)
+        }
     end
 
     if not pos and hs and hs.mouse then
@@ -1012,8 +1029,8 @@ function obj:start()
         local rightMouseDownType = hs.eventtap.event.types.rightMouseDown
         if rightMouseDownType then
             self.rightClickTap = hs.eventtap.new({ rightMouseDownType }, function(event)
-                if not self.menuBarItem or not self.menuBarItem.frame then return false end
-                local mf = self.menuBarItem:frame()
+                if not self.menuBarItem then return false end
+                local mf = menubarItemFrame(self.menuBarItem)
                 if not mf then return false end
                 local getPos = hs.mouse and (hs.mouse.absolutePosition or hs.mouse.getAbsolutePosition)
                 local loc = (event and event.location and event:location()) or (getPos and getPos()) or { x = 0, y = 0 }

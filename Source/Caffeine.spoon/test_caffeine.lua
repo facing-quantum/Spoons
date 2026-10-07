@@ -244,7 +244,7 @@ local caffeine = require("init")
 -- [Test 1] Metadata & Version
 print("\n[Test 1] Metadata & Version")
 assert_equal("Caffeine", caffeine.name, "Spoon name is Caffeine")
-assert_equal("1.4", caffeine.version, "Spoon version is 1.4")
+assert_equal("1.5", caffeine.version, "Spoon version is 1.5")
 
 -- [Test 2] State Inspection (getState and isCaffeinated)
 print("\n[Test 2] State Inspection")
@@ -518,6 +518,25 @@ assert_true(caffeine.steamTimer ~= nil and not caffeine.steamTimer._stopped, "st
 caffeine:setState(false)
 assert_equal(nil, caffeine.steamTimer, "steamTimer stopped when Caffeine deactivated")
 assert_equal(caffeine._icons["off"], caffeine.menuBarItem._icon, "menubar item reset to inactive icon")
+
+-- Regression: lower-res primary monitor (1080pt) with the 14" MBP (982pt) beside it,
+-- tops aligned. hs.menubar:frame() flips against the focused (MBP) screen, giving a
+-- negative y so the popup never appears. We must flip against the primary screen.
+do
+    local mb = caffeine.menuBarItem
+    local savedFrame, savedScreen = mb.frame, _G.hs.screen
+    _G.hs.screen = { primaryScreen = function()
+        return { fullFrame = function() return { x = 0, y = 0, w = 1920, h = 1080 } end }
+    end }
+    -- Raw Cocoa frame (bottom-left origin, relative to primary) of the item on the MBP menubar
+    mb._frame = function() return { x = 2500, y = 1043, w = 24, h = 37 } end
+    -- What buggy hs.menubar:frame() returns when flipped against the 982pt MBP
+    mb.frame = function() return { x = 2500, y = -98, w = 24, h = 37 } end
+    mb._poppedPos = nil
+    caffeine:popupMenu()
+    assert_equal(41, mb._poppedPos and mb._poppedPos.y, "popup placed below MBP menubar when primary is a different height")
+    mb._frame, mb.frame, _G.hs.screen = nil, savedFrame, savedScreen
+end
 
 caffeine:stop()
 assert_equal(nil, caffeine.steamTimer, "steamTimer cleaned up on stop()")
